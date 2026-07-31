@@ -1,0 +1,6 @@
+{
+  "name": "Swoon Plans",
+  "description": "Swoon Plans - Turnkey Date Planning Concierge & Bespoke Romantic Itineraries for Men",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
