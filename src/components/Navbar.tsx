@@ -1,0 +1,126 @@
+import React from 'react';
+import { Camera, Volume2, VolumeX, Sparkles } from 'lucide-react';
+
+interface NavbarProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  onOpenInquire: () => void;
+  isMuted: boolean;
+  toggleAudio: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenInquire,
+  isMuted,
+  toggleAudio,
+}) => {
+  return (
+    <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E8E2D9] transition-all">
+      {/* Main Header Layout matching Sleek Interface Theme */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 sm:h-24 grid grid-cols-3 items-center">
+        {/* Left Navigation */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs sm:text-sm font-medium uppercase tracking-[0.2em] font-sans justify-start">
+          <button
+            onClick={() => setActiveTab('stories')}
+            className={`transition-all duration-200 cursor-pointer ${
+              activeTab === 'stories'
+                ? 'text-[#1A1816] font-bold border-b-2 border-[#1A1816] pb-0.5'
+                : 'text-[#6E675F] hover:text-[#1A1816]'
+            }`}
+          >
+            Home
+          </button>
+          <button
+            onClick={() => setActiveTab('itineraries')}
+            className={`transition-all duration-200 cursor-pointer ${
+              activeTab === 'itineraries'
+                ? 'text-[#1A1816] font-bold border-b-2 border-[#1A1816] pb-0.5'
+                : 'text-[#6E675F] hover:text-[#1A1816]'
+            }`}
+          >
+            Itineraries
+          </button>
+          <button
+            onClick={() => setActiveTab('blog')}
+            className={`transition-all duration-200 cursor-pointer ${
+              activeTab === 'blog'
+                ? 'text-[#1A1816] font-bold border-b-2 border-[#1A1816] pb-0.5'
+                : 'text-[#6E675F] hover:text-[#1A1816]'
+            }`}
+          >
+            Blog
+          </button>
+          <button
+            onClick={() => setActiveTab('for-women')}
+            className={`px-3.5 py-1.5 rounded-full font-bold transition-all duration-200 cursor-pointer text-xs tracking-[0.15em] border ${
+              activeTab === 'for-women'
+                ? 'bg-[#1A1816] text-[#D5C29F] border-[#1A1816] shadow-sm'
+                : 'bg-[#D5C29F]/25 text-[#1A1816] hover:bg-[#D5C29F] border-[#D5C29F]/60'
+            }`}
+          >
+            For Women Only
+          </button>
+        </nav>
+
+        {/* Center Logo */}
+        <div className="text-center col-span-3 lg:col-span-1">
+          <button
+            onClick={() => setActiveTab('stories')}
+            className="group cursor-pointer inline-block text-center"
+          >
+            <span className="block text-xl sm:text-2xl md:text-3xl font-serif tracking-[0.2em] font-medium text-[#1A1816] group-hover:opacity-80 transition-opacity">
+              Swoon Plans
+            </span>
+            <span className="block text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-[#1A1816] mt-0.5">
+              Your Date Planning Concierge
+            </span>
+          </button>
+        </div>
+
+        {/* Right Navigation */}
+        <div className="hidden lg:flex items-center justify-end gap-4 sm:gap-8 text-xs font-medium uppercase tracking-[0.2em] font-sans">
+          <button
+            onClick={onOpenInquire}
+            className="px-5 py-2.5 bg-[#1A1816] text-[#FAF8F5] hover:bg-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer shadow-sm border border-[#D5C29F]/30"
+          >
+            FIRST PLAN FREE
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Nav Tabs */}
+      <div className="lg:hidden flex items-center justify-around py-2.5 px-2 border-t border-[#E8E2D9] text-xs uppercase tracking-[0.15em] font-sans text-[#6E675F] overflow-x-auto gap-2">
+        <button
+          onClick={() => setActiveTab('stories')}
+          className={activeTab === 'stories' ? 'text-[#1A1816] font-bold underline' : ''}
+        >
+          Home
+        </button>
+        <button
+          onClick={() => setActiveTab('itineraries')}
+          className={activeTab === 'itineraries' ? 'text-[#1A1816] font-bold underline' : ''}
+        >
+          Itineraries
+        </button>
+        <button
+          onClick={() => setActiveTab('blog')}
+          className={activeTab === 'blog' ? 'text-[#1A1816] font-bold underline' : ''}
+        >
+          Blog
+        </button>
+        <button
+          onClick={() => setActiveTab('for-women')}
+          className={`px-2.5 py-1 rounded-full font-bold transition-all text-xs tracking-[0.1em] ${
+            activeTab === 'for-women'
+              ? 'bg-[#1A1816] text-[#D5C29F]'
+              : 'bg-[#D5C29F]/30 text-[#1A1816] border border-[#D5C29F]/60'
+          }`}
+        >
+          For Women
+        </button>
+      </div>
+    </header>
+  );
+};
