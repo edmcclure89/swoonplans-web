@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, RefreshCw, CheckCircle2, Sparkles, Lock } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, RefreshCw, CheckCircle2, Sparkles, Lock, MessageSquare } from 'lucide-react';
 import { supabase, refreshMe, MeStatus, hasFamPass, stripFamPass, maxProfilesForPlan, loadProfiles, saveProfiles, SavedProfile } from '../lib/supabase';
 import { introSteps, personalityQuestions, holidayStep, dateMoodStep, QuizStep, TYPE_PROFILES, PRICE_IDS } from '../data/personality';
 import { generateItinerary, rerollStop, venueReservation, Itinerary } from '../lib/itinerary';
@@ -308,6 +308,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
               itinerary={itinerary}
               onReroll={handleReroll}
               onSwitchDate={() => { setDateName(''); setScreen('welcome'); }}
+              plan={meStatus?.plan || null}
+              isVip={isVipFamily}
             />
           ) : screen === 'pricing' ? (
             <PricingScreen onClose={onClose} email={meStatus?.email} />
@@ -496,7 +498,12 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
                     {i === 0 ? (v.name || 'First stop') : (
                       <span className="inline-flex items-center gap-1.5 text-[#6E675F] max-w-full">
                         <Lock className="w-3 h-3 shrink-0" />
-                        <span className="blur-[3px] select-none truncate">{v.name || 'Reserved venue'}</span>
+                        {/* Never render the real name here. A CSS blur still leaves
+                            the text readable in the DOM and in view-source, so the
+                            locked rows get a length-matched placeholder instead. */}
+                        <span className="blur-[3px] select-none truncate" aria-label="Locked venue">
+                          {'\u2022'.repeat(Math.min(18, Math.max(8, (v.name || '').length || 12)))}
+                        </span>
                       </span>
                     )}
                   </div>
@@ -660,7 +667,22 @@ function LoadingScreen() {
   );
 }
 
-function OutputScreen({ itinerary, onReroll, onSwitchDate }: { itinerary: Itinerary; onReroll: (i: number) => void; onSwitchDate: () => void }) {
+function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itinerary: Itinerary; onReroll: (i: number) => void; onSwitchDate: () => void; plan?: string | null; isVip?: boolean }) {
+  // Texting the plan is an Operator/Command perk. Starter and free stay read-only.
+  const canText = !!isVip || plan === 'operator' || plan === 'command';
+
+  const smsHref = useMemo(() => {
+    const lines = itinerary.stops.map((s, i) => {
+      const r = venueReservation(s.venue);
+      const link = r.type === 'link' ? `\n${r.url}` : '';
+      return `${i + 1}. ${s.venue.name}\n${s.venue.address}${link}`;
+    });
+    const body = `Tonight's plan:\n\n${lines.join('\n\n')}`;
+    // iOS wants &body=, Android wants ?body=. The '?' form works on both modern
+    // iOS and Android; the leading separator is what older iOS chokes on.
+    return `sms:?&body=${encodeURIComponent(body)}`;
+  }, [itinerary]);
+
   return (
     <div>
       <div className="flex items-start justify-between pb-6 border-b border-[#38332E] gap-4">
@@ -671,14 +693,6 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate }: { itinerary: Itiner
         <button onClick={onSwitchDate} className="text-xs font-semibold text-[#A89B88] hover:text-white bg-[#262320] hover:bg-[#38332E] px-3.5 py-2.5 rounded-full transition font-sans shrink-0">
           Switch Date
         </button>
-      </div>
-
-      <div className="my-6 p-5 rounded border border-[#38332E] bg-[#262320]">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-bold text-[#1A1816] bg-[#D5C29F] px-2 py-0.5 rounded tracking-widest font-sans">{itinerary.typeCode}</span>
-          <span className="text-sm font-semibold text-white font-sans">{itinerary.typeName}</span>
-        </div>
-        <p className="text-sm text-[#A89B88] mt-1.5 leading-relaxed font-sans font-light">{itinerary.typeBlurb}</p>
       </div>
 
       <div className="space-y-4 my-6">
@@ -713,13 +727,20 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate }: { itinerary: Itiner
         })}
       </div>
 
-      <div className="p-5 rounded bg-[#D5C29F]/5 border border-[#D5C29F]/20 mt-6">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-[#D5C29F] mb-3 font-sans">The Coach's Briefing</h4>
-        <ul className="space-y-2 text-sm text-[#E2D5C3] leading-relaxed font-sans font-light">
-          {itinerary.coachTips.map((tip, i) => <li key={i}>• {tip}</li>)}
-        </ul>
-        <p className="text-xs text-[#8C8377] mt-4 pt-3 border-t border-[#D5C29F]/10 font-sans">{itinerary.logistics}</p>
-      </div>
+      {canText && (
+        <div className="mt-6 pt-6 border-t border-[#38332E]">
+          <a
+            href={smsHref}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-lg shadow-[#D5C29F]/10"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Text Her This Plan
+          </a>
+          <p className="text-[11px] text-[#6E675F] font-sans mt-3 text-center">
+            Opens your messages app with the itinerary ready to send.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
