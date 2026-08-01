@@ -15,6 +15,7 @@ import { ForWomenSection } from './components/ForWomenSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
+import { PricingSection } from './components/PricingSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Instagram, Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
@@ -87,6 +88,7 @@ export default function App() {
             <GalleryGrid onSelectPhoto={handleOpenLightboxByPhoto} />
             <AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
             <HusbandsTestimonialsSection />
+            <PricingSection onOpenInquire={() => setIsInquireOpen(true)} />
           </>
         )}
 
