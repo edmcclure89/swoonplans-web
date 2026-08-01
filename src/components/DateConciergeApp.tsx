@@ -99,7 +99,12 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     if (!signedIn) { setScreen('welcome'); return; }
     if (vip) { setScreen('welcome'); return; }
     if (!ms) { setScreen('welcome'); return; }
-    if (ms.subscription_status === 'active' || !ms.trial_used) { setScreen('welcome'); }
+    // 'past_due' keeps access while Stripe retries the card. A genuinely
+    // cancelled subscription comes through as 'canceled' and is blocked here.
+    const entitled = ms.subscription_status === 'active'
+      || ms.subscription_status === 'trialing'
+      || ms.subscription_status === 'past_due';
+    if (entitled || !ms.trial_used) { setScreen('welcome'); }
     else { setScreen('pricing'); }
   }
 
@@ -669,6 +674,7 @@ function LoadingScreen() {
 
 function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itinerary: Itinerary; onReroll: (i: number) => void; onSwitchDate: () => void; plan?: string | null; isVip?: boolean }) {
   // Texting the plan is an Operator/Command perk. Starter and free stay read-only.
+  // Cancelled accounts have plan cleared by the webhook, so they lose this too.
   const canText = !!isVip || plan === 'operator' || plan === 'command';
   const [copied, setCopied] = useState(false);
 
@@ -784,10 +790,19 @@ function PricingScreen({ onClose, email }: { onClose: () => void; email?: string
     setError('');
     setLoadingPlan(key);
     try {
+      // Send the Supabase user ID so the webhook can unlock the right account
+      // even if they pay with a different email than they signed up with.
+      let userId: string | undefined;
+      try {
+        const { data } = await supabase.auth.getUser();
+        userId = data?.user?.id;
+      } catch {
+        userId = undefined;
+      }
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, email: email || undefined }),
+        body: JSON.stringify({ priceId, email: email || undefined, userId }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) {
