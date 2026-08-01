@@ -670,18 +670,31 @@ function LoadingScreen() {
 function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itinerary: Itinerary; onReroll: (i: number) => void; onSwitchDate: () => void; plan?: string | null; isVip?: boolean }) {
   // Texting the plan is an Operator/Command perk. Starter and free stay read-only.
   const canText = !!isVip || plan === 'operator' || plan === 'command';
+  const [copied, setCopied] = useState(false);
 
-  const smsHref = useMemo(() => {
+  const planText = useMemo(() => {
     const lines = itinerary.stops.map((s, i) => {
       const r = venueReservation(s.venue);
       const link = r.type === 'link' ? `\n${r.url}` : '';
       return `${i + 1}. ${s.venue.name}\n${s.venue.address}${link}`;
     });
-    const body = `Tonight's plan:\n\n${lines.join('\n\n')}`;
-    // iOS wants &body=, Android wants ?body=. The '?' form works on both modern
-    // iOS and Android; the leading separator is what older iOS chokes on.
-    return `sms:?&body=${encodeURIComponent(body)}`;
+    return `Tonight's plan:\n\n${lines.join('\n\n')}`;
   }, [itinerary]);
+
+  // sms: links only do something on a phone. On desktop the same button copies
+  // the plan instead, so it is never a dead control.
+  const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const smsHref = `sms:?&body=${encodeURIComponent(planText)}`;
+
+  async function copyPlan() {
+    try {
+      await navigator.clipboard.writeText(planText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   return (
     <div>
@@ -729,15 +742,27 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
 
       {canText && (
         <div className="mt-6 pt-6 border-t border-[#38332E]">
-          <a
-            href={smsHref}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-lg shadow-[#D5C29F]/10"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Text Her This Plan
-          </a>
+          {isMobile ? (
+            <a
+              href={smsHref}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-lg shadow-[#D5C29F]/10"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Text Her This Plan
+            </a>
+          ) : (
+            <button
+              onClick={copyPlan}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-lg shadow-[#D5C29F]/10"
+            >
+              {copied ? <CheckCircle2 className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+              {copied ? 'Copied' : 'Copy Plan to Text Her'}
+            </button>
+          )}
           <p className="text-[11px] text-[#6E675F] font-sans mt-3 text-center">
-            Opens your messages app with the itinerary ready to send.
+            {isMobile
+              ? 'Opens your messages app with the itinerary ready to send.'
+              : 'Copies the itinerary so you can paste it into a text.'}
           </p>
         </div>
       )}
