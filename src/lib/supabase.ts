@@ -53,12 +53,26 @@ export function maxProfilesForPlan(plan: string | null): number {
   return 999;
 }
 
-const PROFILE_KEY = 'swoon_profiles';
+// v2 key: bumped to force-invalidate old test-era profile data (e.g. 'penny')
+// that was leaking into the WelcomeScreen. Old key 'swoon_profiles' is auto-cleared below.
+const PROFILE_KEY = 'swoon_profiles_v2';
+const LEGACY_PROFILE_KEYS = ['swoon_profiles'];
+
 export interface SavedProfile {
   code: string;
   axes: Record<string, string>;
 }
+
+function clearLegacyProfileKeys(): void {
+  try {
+    LEGACY_PROFILE_KEYS.forEach((k) => localStorage.removeItem(k));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function loadProfiles(): Record<string, SavedProfile> {
+  clearLegacyProfileKeys();
   try {
     return JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
   } catch {
