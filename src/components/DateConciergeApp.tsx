@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, RefreshCw, CheckCircle2, Sparkles } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, RefreshCw, CheckCircle2, Sparkles, Lock } from 'lucide-react';
 import { supabase, refreshMe, MeStatus, hasFamPass, stripFamPass, maxProfilesForPlan, loadProfiles, saveProfiles, SavedProfile } from '../lib/supabase';
 import { introSteps, personalityQuestions, holidayStep, dateMoodStep, QuizStep, TYPE_PROFILES, PRICE_IDS } from '../data/personality';
 import { generateItinerary, rerollStop, venueReservation, Itinerary } from '../lib/itinerary';
@@ -9,7 +9,23 @@ interface DateConciergeAppProps {
   onClose: () => void;
 }
 
-type Screen = 'register' | 'signin' | 'checkEmail' | 'welcome' | 'quiz' | 'loading' | 'output' | 'pricing';
+type Screen = 'register' | 'signin' | 'checkEmail' | 'welcome' | 'quiz' | 'loading' | 'output' | 'pricing' | 'gate';
+
+// --- In-progress work persistence -------------------------------------------
+// The magic-link sign-in bounces the user out to their inbox and back, which
+// used to wipe 15 answers. We stash the finished plan so returning users land
+// straight on their result instead of starting over.
+const PENDING_KEY = 'swoon_pending_plan';
+
+function savePendingPlan(payload: { answers: any; itinerary: any; dateName: string }) {
+  try { localStorage.setItem(PENDING_KEY, JSON.stringify(payload)); } catch { /* ignore */ }
+}
+function loadPendingPlan(): { answers: any; itinerary: any; dateName: string } | null {
+  try { return JSON.parse(localStorage.getItem(PENDING_KEY) || 'null'); } catch { return null; }
+}
+function clearPendingPlan() {
+  try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
+}
 
 const GOLD = '#D5C29F';
 const INK = '#1A1816';
@@ -49,21 +65,38 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     (async () => {
       const { data } = await supabase.auth.getSession();
       const session = data?.session;
+      const pending = loadPendingPlan();
+
       if (session) {
         setHasSession(true);
         const { meStatus: ms, isVipFamily: vip } = await refreshMe();
         setMeStatus(ms);
         setIsVipFamily(vip);
+
+        // Came back from the email link with a finished plan waiting? Show it.
+        // Making them redo 15 questions after signing in was the single worst
+        // drop-off point in the funnel.
+        if (pending && pending.itinerary) {
+          setAnswers(pending.answers || {});
+          setDateName(pending.dateName || '');
+          setItinerary(pending.itinerary);
+          setScreen('output');
+          clearPendingPlan();
+          setChecking(false);
+          return;
+        }
         route(ms, vip, true);
       } else {
-        setScreen('register');
+        // No account yet: let them straight into the quiz. We ask for an email
+        // at the end, once they've actually seen what they're getting.
+        setScreen('welcome');
       }
       setChecking(false);
     })();
   }, [isOpen]);
 
   function route(ms: MeStatus | null, vip: boolean, signedIn: boolean) {
-    if (!signedIn) { setScreen('register'); return; }
+    if (!signedIn) { setScreen('welcome'); return; }
     if (vip) { setScreen('welcome'); return; }
     if (!ms) { setScreen('welcome'); return; }
     if (ms.subscription_status === 'active' || !ms.trial_used) { setScreen('welcome'); }
@@ -129,6 +162,15 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
       setAnswers({ ...answers, [step.id]: next });
     } else {
       setAnswers({ ...answers, [step.id]: key });
+      // Single-choice questions advance on their own. Making someone tap an
+      // answer and then tap "Next" 15 times in a row is 15 needless taps.
+      // Searchable steps (like the city list) stay manual so the user can
+      // confirm they picked the right one.
+      if (!step.searchable) {
+        setTimeout(() => {
+          setStepIndex((i) => (i < steps.length - 1 ? i + 1 : i));
+        }, 260);
+      }
     }
   }
 
@@ -171,7 +213,15 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
       const profiles = loadProfiles();
       profiles[name] = { code, axes: {} };
       saveProfiles(profiles);
-      setScreen('output');
+
+      if (hasSession) {
+        setScreen('output');
+      } else {
+        // They've done the work and the plan exists. Now, and only now, ask
+        // for an email. Stash everything so the inbox round trip is lossless.
+        savePendingPlan({ answers, itinerary: plan, dateName: name });
+        setScreen('gate');
+      }
     }, 1400);
   }
 
@@ -243,6 +293,16 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
             />
           ) : screen === 'loading' ? (
             <LoadingScreen />
+          ) : screen === 'gate' ? (
+            <GateScreen
+              itinerary={itinerary}
+              dateName={answers['dateName'] || dateName}
+              email={regEmail} setEmail={setRegEmail}
+              name={regName} setName={setRegName}
+              error={regError} busy={regBusy}
+              onSubmit={submitRegistration}
+              onSwitchToSignIn={() => setScreen('signin')}
+            />
           ) : screen === 'output' && itinerary ? (
             <OutputScreen
               itinerary={itinerary}
@@ -268,13 +328,14 @@ function RegisterScreen({ name, setName, email, setEmail, error, busy, onSubmit,
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">No password needed. We'll email you a link, then your first plan is free.</p>
       <div className="mt-6 space-y-3">
         <input
-          type="text" placeholder="Full Name" value={name}
+          type="text" placeholder="Full Name (optional)" value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         <input
           type="email" placeholder="Email Address" value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
           className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
       </div>
@@ -334,8 +395,17 @@ function CheckEmailScreen({ text, onBack }: any) {
 }
 
 function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
-  const profiles = loadProfiles();
+  const [profiles, setProfiles] = useState<Record<string, SavedProfile>>(() => loadProfiles());
   const names = Object.keys(profiles);
+  const hasName = !!dateName.trim();
+
+  function deleteProfile(n: string) {
+    const next = { ...profiles };
+    delete next[n];
+    saveProfiles(next);
+    setProfiles(next);
+  }
+
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">WELCOME</span>
@@ -343,34 +413,140 @@ function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">Answer 15 quick questions about her and get a custom date plan in under a minute.</p>
 
       {names.length > 0 && (
-        <div className="mt-6 space-y-2">
-          {names.map((n) => (
-            <div key={n} className="flex items-center justify-between p-4 rounded border border-[#38332E] bg-[#262320]">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white">{n}</span>
-                <span className="text-[10px] font-bold text-[#1A1816] bg-[#D5C29F] px-1.5 py-0.5 rounded tracking-widest">{profiles[n].code}</span>
+        <div className="mt-6">
+          <label className="text-[11px] uppercase tracking-[0.25em] font-sans font-bold text-[#A89B88]">Saved Profiles</label>
+          <div className="mt-3 space-y-2">
+            {names.map((n) => (
+              <div key={n} className="flex items-center justify-between p-4 rounded border border-[#38332E] bg-[#262320] hover:border-[#D5C29F]/40 transition-colors">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-base font-semibold text-white truncate">{n}</span>
+                  <span className="text-[10px] font-bold text-[#1A1816] bg-[#D5C29F] px-2 py-0.5 rounded tracking-widest shrink-0">{profiles[n].code}</span>
+                </div>
+                <button
+                  onClick={() => deleteProfile(n)}
+                  className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F] hover:text-[#D5C29F] transition-colors cursor-pointer shrink-0 ml-3"
+                  aria-label={`Remove ${n}`}
+                >
+                  Remove
+                </button>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8 pt-8 border-t border-[#38332E]">
+        <div className="flex items-baseline justify-between mb-3">
+          <label htmlFor="new-date-name" className="text-base font-semibold text-white font-sans">
+            {names.length > 0 ? 'Plan for Someone New' : 'Get Started'}
+          </label>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F]">Step 1 of 15</span>
+        </div>
+        <input
+          id="new-date-name"
+          type="text" placeholder="Her name (or nickname)" value={dateName}
+          onChange={(e) => setDateName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && hasName) onStart(); }}
+          autoFocus
+          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-4 text-base text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+        />
+        <button
+          onClick={onStart}
+          disabled={!hasName}
+          className={`mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all ${
+            hasName
+              ? 'bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] cursor-pointer shadow-lg shadow-[#D5C29F]/10'
+              : 'bg-[#38332E] text-[#6E675F] cursor-not-allowed'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          Start Her Date Plan
+          <ArrowRight className="w-4 h-4" />
+        </button>
+        <p className="text-[11px] text-[#6E675F] font-sans mt-3 text-center">Takes about 60 seconds. No signup to start.</p>
+      </div>
+    </div>
+  );
+}
+
+function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error, busy, onSubmit, onSwitchToSignIn }: any) {
+  const stops = (itinerary && itinerary.stops) || [];
+  const her = (dateName || 'Her').trim();
+  return (
+    <div>
+      <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">Plan Ready</span>
+      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-white mt-2">
+        {her}'s Night Is Mapped
+      </h2>
+      <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">
+        {stops.length} stops picked around her answers, with addresses and reservation links. Tell us where to send it.
+      </p>
+
+      {stops.length > 0 && (
+        <div className="mt-6 space-y-2">
+          {stops.map((s: any, i: number) => {
+            const v = s.venue || {};
+            return (
+              <div key={i} className="flex items-center gap-3 p-4 rounded border border-[#38332E] bg-[#262320]">
+                <span className="text-[10px] font-bold text-[#1A1816] bg-[#D5C29F] w-6 h-6 flex items-center justify-center rounded-full shrink-0">
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-semibold text-white truncate">
+                    {i === 0 ? (v.name || 'First stop') : (
+                      <span className="inline-flex items-center gap-1.5 text-[#6E675F] max-w-full">
+                        <Lock className="w-3 h-3 shrink-0" />
+                        <span className="blur-[3px] select-none truncate">{v.name || 'Reserved venue'}</span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-[#A89B88] font-sans mt-0.5 truncate">
+                    {i === 0 ? (v.address || 'Address included') : 'Address and reservation link included'}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       <div className="mt-6 pt-6 border-t border-[#38332E]">
-        <label className="text-sm font-semibold text-white font-sans">Add a New Date</label>
-        <div className="flex flex-col sm:flex-row gap-2 mt-2">
-          <input
-            type="text" placeholder="Her name" value={dateName}
-            onChange={(e) => setDateName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') onStart(); }}
-            className="flex-1 bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
-          />
-          <button
-            onClick={onStart}
-            className="px-6 py-3 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded-sm transition-all shrink-0"
-          >
-            Start
-          </button>
-        </div>
+        <label htmlFor="gate-email" className="text-sm font-semibold text-white font-sans">
+          Where should we send it?
+        </label>
+        <input
+          id="gate-email"
+          type="email" placeholder="you@email.com" value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
+          autoFocus
+          className="w-full mt-2 bg-[#262320] border border-[#38332E] rounded px-4 py-4 text-base text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+        />
+        <input
+          type="text" placeholder="Your first name (optional)" value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full mt-2 bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+        />
+        {error && <p className="text-xs text-red-400 mt-2 font-sans">{error}</p>}
+        <button
+          onClick={onSubmit}
+          disabled={busy || !email.includes('@')}
+          className={`mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 font-bold text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all ${
+            !busy && email.includes('@')
+              ? 'bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] cursor-pointer shadow-lg shadow-[#D5C29F]/10'
+              : 'bg-[#38332E] text-[#6E675F] cursor-not-allowed'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          {busy ? 'Sending...' : 'Unlock the Full Plan'}
+        </button>
+        <p className="text-[11px] text-[#6E675F] font-sans mt-3 text-center">
+          No password. First plan is free. Your answers are already saved.
+        </p>
+        <p className="text-center text-xs text-[#6E675F] font-sans mt-3">
+          Already have an account?{' '}
+          <button onClick={onSwitchToSignIn} className="text-[#D5C29F] font-medium hover:underline">Sign in</button>
+        </p>
       </div>
     </div>
   );
@@ -395,10 +571,21 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
       <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-white mt-2">{step.title}</h2>
       {step.subtitle && <p className="text-sm text-[#A89B88] font-sans mt-1.5 font-light">{step.subtitle}</p>}
 
-      <div className="flex items-center gap-1.5 mt-6 mb-6 flex-wrap">
-        {Array.from({ length: intakeTotal + personalityTotal }).map((_, i) => (
-          <div key={i} className={`w-2 h-2 rounded-full ${i < stepIndex ? 'bg-[#D5C29F]' : i === stepIndex ? 'bg-white ring-2 ring-[#D5C29F]' : 'bg-[#38332E]'}`} />
-        ))}
+      <div className="mt-6 mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#A89B88] font-bold">
+            Question {stepIndex + 1} of {intakeTotal + personalityTotal}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F]">
+            {Math.max(0, (intakeTotal + personalityTotal) - (stepIndex + 1))} left
+          </span>
+        </div>
+        <div className="h-1.5 w-full bg-[#38332E] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[#D5C29F] rounded-full transition-all duration-300"
+            style={{ width: `${((stepIndex + 1) / (intakeTotal + personalityTotal)) * 100}%` }}
+          />
+        </div>
       </div>
 
       {step.searchable && (
@@ -455,7 +642,8 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
           disabled={!canGoNext}
           className="flex items-center gap-1.5 px-6 py-3 bg-[#D5C29F] hover:bg-[#E5D2AF] disabled:opacity-40 disabled:cursor-default text-[#1A1816] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded-sm transition-all"
         >
-          Next <ArrowRight className="w-3.5 h-3.5" />
+          {stepIndex === (intakeTotal + personalityTotal) - 1 ? 'See Her Plan' : 'Next'}
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
