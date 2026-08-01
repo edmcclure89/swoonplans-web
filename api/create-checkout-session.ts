@@ -13,20 +13,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { priceId, email } = req.body || {};
+  const { priceId, email, userId } = req.body || {};
   if (!priceId || typeof priceId !== 'string') {
     res.status(400).json({ error: 'A priceId is required.' });
     return;
   }
+  const supabaseUserId = typeof userId === 'string' && userId ? userId : undefined;
 
   try {
     const stripe = new Stripe(secretKey, { apiVersion: '2026-07-29.dahlia' as Stripe.LatestApiVersion });
     const origin = (req.headers.origin as string) || `https://${req.headers.host}`;
 
+    // The Supabase user ID is carried through checkout so the webhook can
+    // identify the buyer directly. Email matching alone breaks when someone
+    // pays with a different address than the one they signed up with, and it
+    // is unavailable entirely on later subscription lifecycle events.
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: typeof email === 'string' ? email : undefined,
+      client_reference_id: supabaseUserId,
+      metadata: supabaseUserId ? { supabase_user_id: supabaseUserId } : undefined,
+      subscription_data: supabaseUserId
+        ? { metadata: { supabase_user_id: supabaseUserId } }
+        : undefined,
       success_url: `${origin}/?checkout=success`,
       cancel_url: `${origin}/?checkout=cancelled`,
     });

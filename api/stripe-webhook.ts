@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export const config = { api: { bodyParser: false } };
 
@@ -19,6 +19,77 @@ function planForPrice(priceId: string | null | undefined): string | null {
   if (priceId === process.env.PRICE_ID_OPERATOR) return 'operator';
   if (priceId === process.env.PRICE_ID_COMMAND) return 'command';
   return null;
+}
+
+type AdminUser = { id: string; email?: string | null; user_metadata?: Record<string, any> };
+
+// Email lookup used to be a single listUsers({ perPage: 1000 }) call, which
+// silently stopped finding buyers once the user table passed 1000 rows: the
+// customer would be charged and never unlocked. This pages all the way through.
+async function findUserByEmail(admin: SupabaseClient, email: string): Promise<AdminUser | null> {
+  const target = email.trim().toLowerCase();
+  const perPage = 200;
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) return null;
+    const users = ((data as any)?.users || []) as AdminUser[];
+    const hit = users.find((u) => (u.email || '').toLowerCase() === target);
+    if (hit) return hit;
+    if (users.length < perPage) return null; // last page
+  }
+  return null;
+}
+
+async function getUserById(admin: SupabaseClient, id: string): Promise<AdminUser | null> {
+  try {
+    const { data, error } = await admin.auth.admin.getUserById(id);
+    if (error || !(data as any)?.user) return null;
+    return (data as any).user as AdminUser;
+  } catch {
+    return null;
+  }
+}
+
+// Resolves the Supabase user for a Stripe event. Prefers the ID we stamp onto
+// the Stripe customer/subscription at checkout, because subscription lifecycle
+// events (cancel, payment failure) carry a customer ID rather than an email.
+async function resolveUser(
+  admin: SupabaseClient,
+  stripe: Stripe,
+  opts: { userId?: string | null; customerId?: string | null; email?: string | null }
+): Promise<AdminUser | null> {
+  if (opts.userId) {
+    const byId = await getUserById(admin, opts.userId);
+    if (byId) return byId;
+  }
+
+  let email = opts.email || null;
+
+  if (opts.customerId) {
+    try {
+      const customer = await stripe.customers.retrieve(opts.customerId);
+      if (customer && !(customer as any).deleted) {
+        const c = customer as Stripe.Customer;
+        const linkedId = c.metadata?.supabase_user_id;
+        if (linkedId) {
+          const byMeta = await getUserById(admin, linkedId);
+          if (byMeta) return byMeta;
+        }
+        if (!email && c.email) email = c.email;
+      }
+    } catch {
+      /* fall through to email lookup */
+    }
+  }
+
+  if (email) return findUserByEmail(admin, email);
+  return null;
+}
+
+async function patchMetadata(admin: SupabaseClient, user: AdminUser, patch: Record<string, any>) {
+  await admin.auth.admin.updateUserById(user.id, {
+    user_metadata: { ...(user.user_metadata || {}), ...patch },
+  });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -49,36 +120,108 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // This is the event that fires right after a successful Stripe Checkout —
-  // it's what actually unlocks the account after payment.
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const email = session.customer_details?.email || session.customer_email;
+  const admin = createClient(supabaseUrl, serviceRoleKey);
 
-    if (email) {
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
-      const priceId = lineItems.data[0]?.price?.id;
-      const plan = planForPrice(priceId) || 'starter';
+  try {
+    switch (event.type) {
+      // Payment succeeded: unlock the account.
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const email = session.customer_details?.email || session.customer_email || null;
+        const customerId = typeof session.customer === 'string' ? session.customer : null;
+        const userId = session.client_reference_id || session.metadata?.supabase_user_id || null;
 
-      const admin = createClient(supabaseUrl, serviceRoleKey);
-      // Look up the Supabase user by email, then stamp their metadata with the
-      // new plan so the app's paywall check (meStatus.subscription_status) unlocks.
-      const { data: usersPage, error: listErr } = await admin.auth.admin.listUsers({ perPage: 1000 });
-      if (!listErr) {
-        const user = usersPage.users.find((u) => (u.email || '').toLowerCase() === email.toLowerCase());
-        if (user) {
-          await admin.auth.admin.updateUserById(user.id, {
-            user_metadata: {
-              ...user.user_metadata,
-              plan,
-              subscription_status: 'active',
-              trial_used: true,
-              stripe_customer_id: session.customer,
-            },
-          });
+        const user = await resolveUser(admin, stripe, { userId, customerId, email });
+        if (!user) break;
+
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
+        const plan = planForPrice(lineItems.data[0]?.price?.id) || 'starter';
+
+        await patchMetadata(admin, user, {
+          plan,
+          subscription_status: 'active',
+          trial_used: true,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: typeof session.subscription === 'string' ? session.subscription : null,
+        });
+
+        // Stamp the Supabase user ID onto the Stripe customer so later
+        // lifecycle events can find this account without an email scan.
+        if (customerId) {
+          try {
+            await stripe.customers.update(customerId, { metadata: { supabase_user_id: user.id } });
+          } catch {
+            /* non-fatal */
+          }
         }
+        break;
       }
+
+      // Plan changed, renewed, or moved into/out of a dunning state.
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as Stripe.Subscription;
+        const customerId = typeof sub.customer === 'string' ? sub.customer : null;
+        const user = await resolveUser(admin, stripe, {
+          userId: sub.metadata?.supabase_user_id || null,
+          customerId,
+        });
+        if (!user) break;
+
+        const priceId = sub.items?.data?.[0]?.price?.id;
+        const mappedPlan = planForPrice(priceId);
+
+        await patchMetadata(admin, user, {
+          subscription_status: sub.status,
+          ...(mappedPlan ? { plan: mappedPlan } : {}),
+        });
+        break;
+      }
+
+      // Subscription actually ended: revoke access.
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription;
+        const customerId = typeof sub.customer === 'string' ? sub.customer : null;
+        const user = await resolveUser(admin, stripe, {
+          userId: sub.metadata?.supabase_user_id || null,
+          customerId,
+        });
+        if (!user) break;
+
+        await patchMetadata(admin, user, {
+          plan: null,
+          subscription_status: 'canceled',
+          stripe_subscription_id: null,
+          access_revoked_at: new Date().toISOString(),
+        });
+        break;
+      }
+
+      // Card declined. Record it, but leave access alone: Stripe retries for
+      // days, and kicking someone out over a temporarily expired card is worse
+      // than a short grace period. Final cancellation is handled above.
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : null;
+        const user = await resolveUser(admin, stripe, {
+          customerId,
+          email: (invoice as any).customer_email || null,
+        });
+        if (!user) break;
+
+        await patchMetadata(admin, user, {
+          subscription_status: 'past_due',
+          last_payment_failed_at: new Date().toISOString(),
+        });
+        break;
+      }
+
+      default:
+        break;
     }
+  } catch (err: any) {
+    // Return 500 so Stripe retries rather than silently dropping the event.
+    res.status(500).json({ error: err?.message || 'Webhook handler failed' });
+    return;
   }
 
   res.status(200).json({ received: true });
