@@ -6,7 +6,6 @@
 import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
-import { GalleryGrid } from './components/GalleryGrid';
 import { AppProcessSection } from './components/AppProcessSection';
 import { HusbandsTestimonialsSection } from './components/HusbandsTestimonialsSection';
 import { ItinerariesSection } from './components/ItinerariesSection';
@@ -87,7 +86,6 @@ export default function App() {
               onOpenInquire={() => setIsInquireOpen(true)}
             />
             <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
-            <GalleryGrid onSelectPhoto={handleOpenLightboxByPhoto} />
             <HusbandsTestimonialsSection />
             <PricingSection onOpenInquire={() => setIsInquireOpen(true)} />
           </>
