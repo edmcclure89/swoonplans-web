@@ -82,6 +82,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
           setItinerary(pending.itinerary);
           setScreen('output');
           clearPendingPlan();
+          markTrialUsed(ms, vip);
           setChecking(false);
           return;
         }
@@ -110,6 +111,32 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
+  // Fire-and-forget: email the finished plan to the address we have. Non-blocking
+  // and non-fatal so a mail hiccup never interrupts the funnel. (Item 1)
+  function emailItinerary(toEmail: string | null | undefined, plan: any, who: string) {
+    if (!toEmail || !plan) return;
+    fetch('/api/send-itinerary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: toEmail, dateName: who || '', itinerary: plan }),
+    }).catch(() => {});
+  }
+
+  // Mark the free plan as spent so the next inquiry hits the paywall. Only for
+  // signed-in, non-entitled, non-VIP users who haven't already used it. (Item 2)
+  async function markTrialUsed(ms: MeStatus | null = meStatus, vip: boolean = isVipFamily) {
+    try {
+      const entitled = ms?.subscription_status === 'active'
+        || ms?.subscription_status === 'trialing'
+        || ms?.subscription_status === 'past_due';
+      if (vip || entitled || ms?.trial_used) return;
+      await supabase.auth.updateUser({ data: { trial_used: true } });
+      setMeStatus((prev) => (prev ? { ...prev, trial_used: true } : prev));
+    } catch {
+      /* non-fatal */
+    }
+  }
+
   async function submitRegistration() {
     if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
     setRegError(''); setRegBusy(true);
@@ -121,7 +148,9 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     });
     setRegBusy(false);
     if (error) { setRegError(error.message || 'Could not send the link. Try again.'); return; }
-    setCheckEmailText(`We sent a sign-in link to ${regEmail}. Click it to continue, no password needed.`);
+    // If a finished plan is waiting (the gate, not a plain sign-up), email it now.
+    if (itinerary) emailItinerary(regEmail, itinerary, answers['dateName'] || dateName || cleanName);
+    setCheckEmailText(`We sent a sign-in link and the full plan to ${regEmail}. Click the link to continue, no password needed.`);
     setScreen('checkEmail');
   }
 
@@ -220,6 +249,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
       saveProfiles(profiles);
 
       if (hasSession) {
+        emailItinerary(meStatus?.email, plan, name);
+        markTrialUsed();
         setScreen('output');
       } else {
         // They've done the work and the plan exists. Now, and only now, ask
