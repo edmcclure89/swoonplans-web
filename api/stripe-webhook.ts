@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { sendEmail, emailShell } from './_email';
 
 export const config = { api: { bodyParser: false } };
 
@@ -152,6 +153,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await stripe.customers.update(customerId, { metadata: { supabase_user_id: user.id } });
           } catch {
             /* non-fatal */
+          }
+        }
+
+        // Welcome email. Sent once per account; non-fatal if it fails so a mail
+        // hiccup never blocks the unlock above.
+        if (user.email && !user.user_metadata?.welcome_sent_at) {
+          const first = (user.user_metadata?.name || '').split(' ')[0] || '';
+          const hi = first ? `Welcome, ${first}.` : 'Welcome.';
+          const inner = `
+            <h1 style="font-size:24px;font-weight:normal;font-style:italic;color:#1A1816;margin:0 0 6px">${hi}</h1>
+            <p style="font-family:Arial,sans-serif;font-size:13px;color:#6E675F;line-height:1.6;margin:0 0 20px">You're in. Your ${plan} plan is active. Curated venues, exact addresses, and one-tap reservations, ready whenever you are.</p>
+            <a href="https://www.makeherswoon.com" style="display:inline-block;background:#D5C29F;color:#1A1816;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:4px;letter-spacing:1px">PLAN HER NEXT NIGHT</a>
+            <p style="font-family:Arial,sans-serif;font-size:12px;color:#8C8377;line-height:1.6;margin-top:24px">Cancel anytime. Questions? Just reply to this email.</p>`;
+          const wr = await sendEmail({ to: user.email, subject: 'Welcome to Swoon Plans', html: emailShell(inner) });
+          if (wr.ok) {
+            await patchMetadata(admin, user, { welcome_sent_at: new Date().toISOString() });
           }
         }
         break;
