@@ -4,9 +4,6 @@ interface ThreeStepSectionProps {
   onOpenInquire: () => void;
 }
 
-// Type is set in HTML rather than baked into the artwork: it stays crisp at any
-// size, is editable without regenerating images, and keeps every panel's text
-// block the same height so the three read as one row.
 const STEPS = [
   {
     n: '1',
@@ -62,12 +59,11 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
         </div>
 
         <div>
-          <h2 className="font-serif italic font-light text-3xl sm:text-4xl text-[#1A1816] leading-[1.2]">
-            Three taps. That is the whole job.
+          <h2 className="font-serif italic font-light text-4xl sm:text-5xl text-[#1A1816] leading-[1.15]">
+            Curated spots. Instant reservations. Zero sweat.
           </h2>
           <p className="text-sm sm:text-base text-[#6E675F] font-sans font-light mt-4 leading-relaxed">
-            No guesswork. Curated venues, one-tap reservations, and a plan she'll
-            think you spent all week on. You master the romance, we handle the rest.
+            She thinks you planned it all week. Her group chat is green with envy.
           </p>
           <button
             onClick={onOpenInquire}
@@ -75,7 +71,7 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
           >
             Start now
           </button>
-          <p className="text-xs text-[#8C8377] font-sans mt-3">First plan free. No card required.</p>
+          <p className="text-xs text-[#8C8377] font-sans mt-3">First plan free.</p>
         </div>
 
       </div>
