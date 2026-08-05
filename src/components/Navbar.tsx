@@ -70,10 +70,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('stories')}
             className="group cursor-pointer inline-block text-center"
           >
-            <span className="block text-xl sm:text-2xl md:text-3xl font-serif tracking-[0.2em] font-medium text-[#1A1816] group-hover:opacity-80 transition-opacity">
-              Swoon Plans
-            </span>
-            <span className="block text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-[#1A1816] mt-0.5">
+            <img
+              src="/images/swoonplans-logo.png"
+              alt="Swoon Plans"
+              className="h-6 sm:h-7 md:h-8 w-auto mx-auto group-hover:opacity-80 transition-opacity"
+            />
+            <span className="block text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-[#1A1816] mt-1">
               Your Date Planning Concierge
             </span>
           </button>
