@@ -160,5 +160,64 @@ export const METROS: Record<string, Metro> = {
     { name:"Rise Nº 1", type:"dinner", address:"5360 W Lovers Ln #220, Dallas, TX 75209", phone:"(214) 366-9900", linkText:"OpenTable", linkUrl:"https://www.opentable.com", vibe:"Cozy French soufflé bistro", pace:"chill", budget:"$$" },
     { name:"Bisous Bisous Patisserie", type:"dessert", address:"3700 McKinney Ave #124, Dallas, TX 75204", phone:"(214) 216-1200", linkText:"Website", linkUrl:"https://bisousbisouspatisserie.com/", vibe:"Delicate French patisserie", pace:"chill", budget:"$$" },
     { name:"Afternoon Tea at The Adolphus", type:"dessert", address:"1321 Commerce St, Dallas, TX 75202", phone:"(214) 742-8200", linkText:"Website", linkUrl:"https://www.theadolphus.com/", vibe:"Historic grand-hotel high tea", pace:"chill", budget:"$$$" }
+  ]},
+  "charlotte": { name:"Charlotte, NC", state:"NC", venues:[
+    { name:"Sophia's Lounge", type:"drinks", address:"127 N Tryon St Suite D, Charlotte, NC 28202", phone:"(704) 228-1111", linkText:"Website", linkUrl:"https://www.theiveyshotel.com/dining/sophias-lounge", vibe:"Regal upscale cocktail lounge inside a boutique hotel", pace:"chill", budget:"$$$$" },
+    { name:"Merchant & Trade", type:"drinks", address:"303 S Church St, Charlotte, NC 28202", phone:"(704) 445-2550", linkText:"Website", linkUrl:"https://www.merchantandtrade.com/", vibe:"Swanky rooftop lounge with uptown skyline views", pace:"high", budget:"$$$" },
+    { name:"The Fig Tree Restaurant", type:"dinner", address:"1601 E 7th St, Charlotte, NC 28204", phone:"(704) 332-3322", linkText:"OpenTable", linkUrl:"https://www.opentable.com", vibe:"Romantic fine dining in a historic 1913 bungalow", pace:"chill", budget:"$$$$" },
+    { name:"Supperland", type:"dinner", address:"1212 The Plaza, Charlotte, NC 28205", phone:"(704) 817-7514", linkText:"Website", linkUrl:"https://supper.land/", vibe:"Southern steakhouse in a stunning converted church", pace:"high", budget:"$$$" },
+    { name:"Crave Dessert Bar", type:"dessert", address:"500 W 5th St Ste 120, Charlotte, NC 28202", phone:"(704) 335-0588", linkText:"Website", linkUrl:"https://www.cravedessertbar.com/", vibe:"Upscale dessert lounge with signature cocktails", pace:"high", budget:"$$" }
+  ]},
+  "raleigh-durham": { name:"Raleigh-Durham, NC", state:"NC", venues:[
+    { name:"Second Empire", type:"dinner", address:"330 Hillsborough St, Raleigh, NC 27603", phone:"(919) 829-3663", linkText:"Website", linkUrl:"https://www.second-empire.com/", vibe:"Elegant fine dining in a restored 1879 mansion", pace:"chill", budget:"$$$$" },
+    { name:"Death & Taxes", type:"dinner", address:"105 W Hargett St, Raleigh, NC 27601", phone:"(984) 242-0218", linkText:"Website", linkUrl:"https://ac-restaurants.com/death-taxes/", vibe:"Wood-fired Southern fare from a James Beard chef", pace:"high", budget:"$$$" },
+    { name:"Kingfisher", type:"drinks", address:"321 E Chapel Hill St, Durham, NC 27701", phone:"(919) 908-9429", linkText:"Website", linkUrl:"https://www.kingfisherdurham.com/", vibe:"Ground-to-glass cocktails in an artful basement", pace:"chill", budget:"$$" },
+    { name:"Videri Chocolate Factory", type:"dessert", address:"327 W Davie St Ste 100, Raleigh, NC 27601", phone:"(919) 755-5053", linkText:"Website", linkUrl:"https://viderichocolatefactory.com/", vibe:"Bean-to-bar chocolate factory with a cozy coffee lounge", pace:"chill", budget:"$$" }
+  ]},
+  "nashville": { name:"Nashville, TN", state:"TN", venues:[
+    { name:"Husk", type:"dinner", address:"37 Rutledge St, Nashville, TN 37210", phone:"(615) 256-6565", linkText:"Website", linkUrl:"https://husknashville.com/", vibe:"Modern Southern cooking in a historic Rutledge Hill mansion", pace:"chill", budget:"$$$" },
+    { name:"City House", type:"dinner", address:"1222 4th Ave N, Nashville, TN 37208", phone:"(615) 736-5838", linkText:"Website", linkUrl:"https://cityhousenashville.com/", vibe:"Buzzy Italian pizza and pasta in Germantown", pace:"high", budget:"$$$" },
+    { name:"The Fox Bar & Cocktail Club", type:"drinks", address:"2905B Gallatin Pike, Nashville, TN 37216", phone:"(615) 678-6541", linkText:"Website", linkUrl:"https://www.thefoxnashville.com/", vibe:"Art deco speakeasy with an inventive cocktail program", pace:"chill", budget:"$$$" },
+    { name:"The Bang Candy Company", type:"dessert", address:"1300 Clinton St Ste 127, Nashville, TN 37203", phone:"(615) 953-1065", linkText:"Website", linkUrl:"https://bangcandycompany.com/", vibe:"Whimsical marshmallow and confection shop", pace:"chill", budget:"$" }
+  ]},
+  "philadelphia": { name:"Philadelphia, PA", state:"PA", venues:[
+    { name:"Friday Saturday Sunday", type:"dinner", address:"261 S 21st St, Philadelphia, PA 19103", phone:"(215) 546-4232", linkText:"Website", linkUrl:"https://www.fridaysaturdaysunday.com/", vibe:"Michelin-starred tasting menu in a checkerboard-floored townhouse", pace:"chill", budget:"$$$$" },
+    { name:"Lovers Bar", type:"drinks", address:"261 S 21st St, Philadelphia, PA 19103", phone:"(215) 546-4232", linkText:"Website", linkUrl:"https://www.fridaysaturdaysunday.com/", vibe:"Fourteen-seat cocktail counter below the dining room", pace:"high", budget:"$$$" },
+    { name:"Amada", type:"dinner", address:"217 Chestnut St, Philadelphia, PA 19106", phone:"(215) 625-2450", linkText:"Website", linkUrl:"https://www.amadarestaurant.com/", vibe:"Lively Andalusian tapas and sangria in Old City", pace:"high", budget:"$$$" },
+    { name:"Termini Bros Bakery", type:"dessert", address:"1523 S 8th St, Philadelphia, PA 19147", phone:"(215) 334-1816", linkText:"Website", linkUrl:"https://termini.com/", vibe:"Century-old Italian bakery famous for cannoli", pace:"chill", budget:"$$" }
+  ]},
+  "houston": { name:"Houston, TX", state:"TX", venues:[
+    { name:"Etoile Cuisine et Bar", type:"dinner", address:"1101 Uptown Park Blvd Ste 11, Houston, TX 77056", phone:"(832) 668-5808", linkText:"Website", linkUrl:"https://etoilecuisine.com/", vibe:"French farmhouse dining in Uptown Park", pace:"chill", budget:"$$$" },
+    { name:"BCN Taste & Tradition", type:"dinner", address:"4210 Roseland St, Houston, TX 77006", phone:"(832) 834-3411", linkText:"Website", linkUrl:"https://www.bcnhouston.com/", vibe:"Michelin-starred Spanish cuisine in a 1920s bungalow", pace:"chill", budget:"$$$$" },
+    { name:"Anvil Bar & Refuge", type:"drinks", address:"1424 Westheimer Rd, Houston, TX 77006", phone:"(713) 523-1622", linkText:"OpenTable", linkUrl:"https://www.opentable.com", vibe:"The bar that launched Houston's classic cocktail scene", pace:"high", budget:"$$" },
+    { name:"Common Bond Bistro & Bakery", type:"dessert", address:"1706 Westheimer Rd, Houston, TX 77098", phone:"(713) 529-3535", linkText:"Website", linkUrl:"https://www.commonbondcafe.com/", vibe:"Beloved bakery-cafe with kouign-amann and custom cakes", pace:"chill", budget:"$$" }
+  ]},
+  "phoenix": { name:"Phoenix, AZ", state:"AZ", venues:[
+    { name:"Cafe Monarch", type:"dinner", address:"6939 E 1st Ave, Scottsdale, AZ 85251", phone:"(480) 970-7682", linkText:"Website", linkUrl:"https://www.cafemonarch.com/", vibe:"Award-winning prix fixe fine dining in Old Town Scottsdale", pace:"chill", budget:"$$$$" },
+    { name:"Bitter & Twisted Cocktail Parlour", type:"drinks", address:"1 W Jefferson St, Phoenix, AZ 85003", phone:"(602) 340-1924", linkText:"Website", linkUrl:"https://bitterandtwistedaz.com/", vibe:"Award-winning cocktails in the historic Luhrs Building", pace:"high", budget:"$$" },
+    { name:"Churn", type:"dessert", address:"5223 N Central Ave, Phoenix, AZ 85012", phone:"(602) 279-8024", linkText:"Website", linkUrl:"https://www.churnaz.com/", vibe:"Retro ice cream shop with vintage candy and toys", pace:"chill", budget:"$" }
+  ]},
+  "seattle": { name:"Seattle, WA", state:"WA", venues:[
+    { name:"Canon", type:"drinks", address:"928 12th Ave, Seattle, WA 98122", phone:"", linkText:"Website", linkUrl:"https://www.canonseattle.com/", vibe:"World's largest whiskey and spirits collection in a cozy den", pace:"chill", budget:"$$$" },
+    { name:"The Pink Door", type:"dinner", address:"1919 Post Alley, Seattle, WA 98101", phone:"(206) 443-3241", linkText:"Website", linkUrl:"http://thepinkdoor.net/", vibe:"No-sign Italian cult classic with cabaret and Elliott Bay views", pace:"high", budget:"$$$" },
+    { name:"Molly Moon's Homemade Ice Cream", type:"dessert", address:"917 E Pine St, Seattle, WA 98122", phone:"(206) 708-7947", linkText:"Website", linkUrl:"https://www.mollymoon.com/", vibe:"Beloved local ice cream scoop shop on Capitol Hill", pace:"high", budget:"$" }
+  ]},
+  "tampa": { name:"Tampa, FL", state:"FL", venues:[
+    { name:"Bern's Steak House", type:"dinner", address:"1208 S Howard Ave, Tampa, FL 33606", phone:"(813) 251-2421", linkText:"Website", linkUrl:"https://bernssteakhouse.com/", vibe:"Legendary steakhouse with one of the world's largest wine cellars", pace:"chill", budget:"$$$$" },
+    { name:"Harry Waugh Dessert Room", type:"dessert", address:"1208 S Howard Ave, Tampa, FL 33606", phone:"(813) 251-2421", linkText:"Website", linkUrl:"https://bernssteakhouse.com/", vibe:"Bern's famous upstairs dessert room and cordial bar", pace:"chill", budget:"$$$" },
+    { name:"Ulele", type:"dinner", address:"1810 N Highland Ave, Tampa, FL 33602", phone:"(813) 999-4952", linkText:"Website", linkUrl:"https://ulele.com/", vibe:"Native-inspired riverfront dining with an on-site brewery", pace:"high", budget:"$$$" },
+    { name:"M.Bird", type:"drinks", address:"1903 Market St, Tampa, FL 33602", phone:"(813) 578-0506", linkText:"Website", linkUrl:"https://www.mbirdtampa.com/", vibe:"Deco-inspired rooftop lounge above Armature Works", pace:"high", budget:"$$$" }
+  ]},
+  "minneapolis": { name:"Minneapolis-St. Paul, MN", state:"MN", venues:[
+    { name:"Spoon and Stable", type:"dinner", address:"211 N 1st St, Minneapolis, MN 55401", phone:"(612) 224-9850", linkText:"Website", linkUrl:"https://www.spoonandstable.com/", vibe:"James Beard chef Gavin Kaysen's flagship in a former horse stable", pace:"chill", budget:"$$$$" },
+    { name:"Hai Hai", type:"dinner", address:"2121 University Ave NE, Minneapolis, MN 55418", phone:"(612) 223-8640", linkText:"Website", linkUrl:"https://www.haihaimpls.com/", vibe:"James Beard-winning Southeast Asian street food", pace:"high", budget:"$$" },
+    { name:"Flora Room", type:"drinks", address:"200 N 1st St, Minneapolis, MN 55401", phone:"(612) 489-6174", linkText:"Website", linkUrl:"https://www.floraroommpls.com/", vibe:"Upscale North Loop cocktail den with an otherworldly interior", pace:"chill", budget:"$$$" },
+    { name:"Cafe Latte", type:"dessert", address:"850 Grand Ave, St. Paul, MN 55105", phone:"(651) 224-5687", linkText:"Website", linkUrl:"https://www.cafelatte.com/", vibe:"Grand Avenue institution famous for its turtle cake", pace:"chill", budget:"$$" }
+  ]},
+  "denver": { name:"Denver, CO", state:"CO", venues:[
+    { name:"El Five", type:"dinner", address:"2930 Umatilla St Unit 500, Denver, CO 80211", phone:"(303) 524-9193", linkText:"Website", linkUrl:"https://ediblebeats.com/restaurants/el-five/", vibe:"Mediterranean small plates five floors above LoHi with skyline views", pace:"high", budget:"$$$" },
+    { name:"Barolo Grill", type:"dinner", address:"3030 E 6th Ave, Denver, CO 80206", phone:"(303) 393-1040", linkText:"Website", linkUrl:"https://www.barologrilldenver.com/", vibe:"Northern Italian classic with an award-winning wine cellar", pace:"chill", budget:"$$$$" },
+    { name:"Williams & Graham", type:"drinks", address:"3160 Tejon St, Denver, CO 80211", phone:"(303) 997-8886", linkText:"Website", linkUrl:"https://williamsandgraham.com/", vibe:"Prohibition-style speakeasy behind a hidden bookshop door", pace:"chill", budget:"$$$" },
+    { name:"Little Man Ice Cream", type:"dessert", address:"2620 16th St, Denver, CO 80211", phone:"(303) 455-3811", linkText:"Website", linkUrl:"https://www.littlemanicecream.com/", vibe:"Iconic ice cream stand shaped like a giant milk can", pace:"high", budget:"$" }
   ]}
 };
