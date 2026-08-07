@@ -14,6 +14,7 @@ import { ForWomenSection } from './components/ForWomenSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
+import { NudgeModal } from './components/NudgeModal';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -25,6 +26,7 @@ export default function App() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -190,6 +192,22 @@ export default function App() {
       <TermsModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
+      />
+
+      {/* Floating Nudge Trigger */}
+      {!isNudgeOpen && (
+        <button
+          onClick={() => setIsNudgeOpen(true)}
+          className="fixed bottom-6 right-6 z-40 px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] rounded-full uppercase tracking-[0.2em] font-sans text-xs font-bold shadow-2xl cursor-pointer transition-colors"
+        >
+          Make Him Plan
+        </button>
+      )}
+
+      {/* Floating Nudge Modal */}
+      <NudgeModal
+        isOpen={isNudgeOpen}
+        onClose={() => setIsNudgeOpen(false)}
       />
     </div>
   );
