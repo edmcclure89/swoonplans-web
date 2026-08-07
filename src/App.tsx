@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { AppProcessSection } from './components/AppProcessSection';
@@ -28,6 +28,43 @@ export default function App() {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  // Tracks whether the nudge modal has ever been opened this render-session
+  // (manually or automatically), so the timer never reopens it.
+  const nudgeOpenedRef = useRef(false);
+
+  // Mark the nudge as "seen" whenever it opens by any means, and persist it for
+  // the browser session so it only auto-opens once. Storage access is guarded
+  // so blocked/private-mode storage can't crash the page.
+  useEffect(() => {
+    if (!isNudgeOpen) return;
+    nudgeOpenedRef.current = true;
+    try {
+      sessionStorage.setItem('swoon_nudge_seen', '1');
+    } catch {
+      // ignore storage failures (private browsing, blocked storage, etc.)
+    }
+  }, [isNudgeOpen]);
+
+  // Auto-open the nudge modal 5s after load, once per session, unless the user
+  // already opened it manually first.
+  useEffect(() => {
+    let alreadySeen = false;
+    try {
+      alreadySeen = sessionStorage.getItem('swoon_nudge_seen') === '1';
+    } catch {
+      alreadySeen = false;
+    }
+    if (alreadySeen) return;
+
+    const t = setTimeout(() => {
+      if (!nudgeOpenedRef.current) {
+        setIsNudgeOpen(true);
+      }
+    }, 5000);
+
+    return () => clearTimeout(t);
+  }, []);
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
 
