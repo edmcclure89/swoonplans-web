@@ -46,8 +46,9 @@ export default function App() {
     }
   }, [isNudgeOpen]);
 
-  // Auto-open the nudge modal 5s after load, once per session, unless the user
-  // already opened it manually first.
+  // Intent-based auto-open: exit-intent on desktop, scroll-depth on mobile,
+  // with a 45s safety net. Once per session, and never if the user already
+  // opened it manually.
   useEffect(() => {
     let alreadySeen = false;
     try {
@@ -57,13 +58,50 @@ export default function App() {
     }
     if (alreadySeen) return;
 
-    const t = setTimeout(() => {
-      if (!nudgeOpenedRef.current) {
-        setIsNudgeOpen(true);
-      }
-    }, 5000);
+    // Guard so we only fire once and never after a manual open.
+    let fired = false;
+    const trigger = () => {
+      if (fired || nudgeOpenedRef.current) return;
+      fired = true;
+      setIsNudgeOpen(true);
+    };
 
-    return () => clearTimeout(t);
+    const isCoarse =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(pointer: coarse)').matches;
+
+    // Safety net: open after 45s if nothing else has triggered.
+    const safetyTimer = setTimeout(trigger, 45000);
+
+    let rafId = 0;
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const depth =
+          (window.scrollY + window.innerHeight) /
+          document.documentElement.scrollHeight;
+        if (depth >= 0.4) trigger();
+      });
+    };
+
+    const onMouseOut = (e: MouseEvent) => {
+      // Cursor left toward the top of the viewport (tab bar / close button).
+      if (!e.relatedTarget && e.clientY <= 0) trigger();
+    };
+
+    if (isCoarse) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    } else {
+      document.addEventListener('mouseout', onMouseOut);
+    }
+
+    return () => {
+      clearTimeout(safetyTimer);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseout', onMouseOut);
+    };
   }, []);
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
