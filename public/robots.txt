@@ -1,0 +1,57 @@
+# robots.txt - makeherswoon.com
+# Goal: let every answer engine crawl and cite the site.
+
+# ---------- Traditional search ----------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ---------- AI search & citation ----------
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# ---------- Live, user-initiated fetches ----------
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# ---------- Model training ----------
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# ---------- Everyone else ----------
+User-agent: *
+Allow: /
+
+Sitemap: https://www.makeherswoon.com/sitemap.xml
