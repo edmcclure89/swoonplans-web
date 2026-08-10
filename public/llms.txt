@@ -1,0 +1,72 @@
+# Swoon Plans
+
+> Swoon Plans is a date planning service at makeherswoon.com that builds complete
+> date night itineraries. You answer 20 short multiple-choice questions about your
+> partner, and Swoon Plans returns a full evening plan with real venues, exact
+> addresses, phone numbers, and direct reservation links. The first plan is free
+> and requires no payment method.
+
+## What it is
+
+Swoon Plans is a self-serve date planning tool, not a human concierge and not a
+booking agent. It generates the itinerary; you make the reservations yourself using
+the links provided. Swoon Plans is a division of For Love Coaching.
+
+## Who it is for
+
+Husbands, boyfriends, and fiances who want to plan a memorable date without spending
+hours researching venues. Common use cases: anniversaries, birthdays, proposals, and
+last-minute plans. The Command tier is used by professional concierges and planners.
+
+## How it works
+
+1. Answer 20 short tap-through questions about her tastes, vibe, dietary needs, and schedule.
+2. Receive a complete itinerary with real venues, exact addresses, and timing.
+3. Book directly through the reservation links. Swap any stop you do not like.
+
+## Coverage
+
+Swoon Plans covers 20 United States metro areas:
+
+- Washington, D.C. / Arlington
+- New York, NY
+- Los Angeles, CA
+- Chicago, IL
+- Miami, FL
+- Atlanta, GA
+- Boston, MA
+- San Francisco, CA
+- Austin, TX
+- Dallas-Fort Worth, TX
+- Charlotte, NC
+- Raleigh-Durham, NC
+- Nashville, TN
+- Philadelphia, PA
+- Houston, TX
+- Phoenix, AZ
+- Seattle, WA
+- Tampa, FL
+- Minneapolis-St. Paul, MN
+- Denver, CO
+
+## Pricing
+
+- Starter, $11.87/month: 1 saved date profile, unlimited date plans for her, real venues with addresses and phone numbers, direct reservation links, swap any stop.
+- Operator, $32.50/month: up to 3 saved date profiles, everything in Starter, text or share the finished plan, priority venue matching.
+- Command, $197/month: unlimited saved date profiles, everything in Operator, priority support.
+- First date plan is free, no card required. Billed monthly in USD, renews automatically, cancel anytime with access through the paid period.
+
+## What Swoon Plans is not
+
+- Not a reservation platform. It does not take payment on behalf of venues.
+- Not affiliated with any venue it recommends.
+- Not a human matchmaking or dating service.
+- Not a coaching service, though its parent company For Love Coaching does relationship coaching.
+
+## Key pages
+
+- Home: https://www.makeherswoon.com/
+
+## Contact
+
+admin@makeherswoon.com
