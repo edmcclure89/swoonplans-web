@@ -1,5 +1,6 @@
 import React from 'react';
 import { Camera, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { socialLinks } from '../data/socialLinks';
 
 interface NavbarProps {
   activeTab: string;
@@ -82,7 +83,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right Navigation */}
-        <div className="hidden lg:flex items-center justify-end gap-4 sm:gap-8 text-xs font-medium uppercase tracking-[0.2em] font-sans">
+        <div className="hidden lg:flex items-center justify-end gap-4 sm:gap-6 text-xs font-medium uppercase tracking-[0.2em] font-sans">
+          <div className="flex items-center gap-3.5 border-r border-[#E8E2D9] pr-4 xl:pr-6">
+            {socialLinks.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-[#6E675F] hover:text-[#1A1816] transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            ))}
+          </div>
           <button
             onClick={onOpenInquire}
             className="px-5 py-2.5 bg-[#1A1816] text-[#FAF8F5] hover:bg-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer shadow-sm border border-[#D5C29F]/30"
@@ -122,6 +137,20 @@ export const Navbar: React.FC<NavbarProps> = ({
         >
           For Women
         </button>
+        <div className="flex items-center gap-3 pl-1 ml-1 border-l border-[#E8E2D9] shrink-0">
+          {socialLinks.map(({ label, href, Icon }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className="text-[#6E675F] hover:text-[#1A1816] transition-colors"
+            >
+              <Icon className="w-4 h-4" />
+            </a>
+          ))}
+        </div>
       </div>
     </header>
   );
