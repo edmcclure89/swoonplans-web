@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { AppProcessSection } from './components/AppProcessSection';
@@ -14,6 +14,7 @@ import { ForWomenSection } from './components/ForWomenSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
+import { NudgeModal } from './components/NudgeModal';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -26,7 +27,83 @@ export default function App() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  // Tracks whether the nudge modal has ever been opened this render-session
+  // (manually or automatically), so the timer never reopens it.
+  const nudgeOpenedRef = useRef(false);
+
+  // Mark the nudge as "seen" whenever it opens by any means, and persist it for
+  // the browser session so it only auto-opens once. Storage access is guarded
+  // so blocked/private-mode storage can't crash the page.
+  useEffect(() => {
+    if (!isNudgeOpen) return;
+    nudgeOpenedRef.current = true;
+    try {
+      sessionStorage.setItem('swoon_nudge_seen', '1');
+    } catch {
+      // ignore storage failures (private browsing, blocked storage, etc.)
+    }
+  }, [isNudgeOpen]);
+
+  // Intent-based auto-open: exit-intent on desktop, scroll-depth on mobile,
+  // with a 45s safety net. Once per session, and never if the user already
+  // opened it manually.
+  useEffect(() => {
+    let alreadySeen = false;
+    try {
+      alreadySeen = sessionStorage.getItem('swoon_nudge_seen') === '1';
+    } catch {
+      alreadySeen = false;
+    }
+    if (alreadySeen) return;
+
+    // Guard so we only fire once and never after a manual open.
+    let fired = false;
+    const trigger = () => {
+      if (fired || nudgeOpenedRef.current) return;
+      fired = true;
+      setIsNudgeOpen(true);
+    };
+
+    const isCoarse =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(pointer: coarse)').matches;
+
+    // Safety net: open after 45s if nothing else has triggered.
+    const safetyTimer = setTimeout(trigger, 45000);
+
+    let rafId = 0;
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const depth =
+          (window.scrollY + window.innerHeight) /
+          document.documentElement.scrollHeight;
+        if (depth >= 0.4) trigger();
+      });
+    };
+
+    const onMouseOut = (e: MouseEvent) => {
+      // Cursor left toward the top of the viewport (tab bar / close button).
+      if (!e.relatedTarget && e.clientY <= 0) trigger();
+    };
+
+    if (isCoarse) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    } else {
+      document.addEventListener('mouseout', onMouseOut);
+    }
+
+    return () => {
+      clearTimeout(safetyTimer);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseout', onMouseOut);
+    };
+  }, []);
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
 
@@ -196,6 +273,22 @@ export default function App() {
       <TermsModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
+      />
+
+      {/* Floating Nudge Trigger */}
+      {!isNudgeOpen && (
+        <button
+          onClick={() => setIsNudgeOpen(true)}
+          className="fixed bottom-6 right-6 z-40 px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] rounded-full uppercase tracking-[0.2em] font-sans text-xs font-bold shadow-2xl cursor-pointer transition-colors"
+        >
+          Make Him Plan
+        </button>
+      )}
+
+      {/* Floating Nudge Modal */}
+      <NudgeModal
+        isOpen={isNudgeOpen}
+        onClose={() => setIsNudgeOpen(false)}
       />
     </div>
   );
