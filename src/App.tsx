@@ -18,7 +18,16 @@ import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
-import { Instagram, Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
+import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
+import { FaInstagram, FaTiktok, FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
+
+const socialLinks = [
+  { label: 'Instagram', href: 'https://www.instagram.com/swoon_plans/', Icon: FaInstagram },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@4lovecoach_4', Icon: FaTiktok },
+  { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61592905060139', Icon: FaFacebookF },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/137294183/', Icon: FaLinkedinIn },
+  { label: 'YouTube', href: 'https://www.youtube.com/@SwoonPlans', Icon: FaYoutube },
+] as const;
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('stories');
@@ -128,15 +137,20 @@ export default function App() {
 
           {/* Socials & Actions */}
           <div className="flex items-center gap-8 text-[10px] uppercase tracking-[0.3em] font-sans text-white/70">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#D5C29F] transition-colors flex items-center gap-1.5"
-            >
-              <Instagram className="w-3.5 h-3.5" />
-              <span>INSTAGRAM</span>
-            </a>
+            <div className="flex items-center gap-5">
+              {socialLinks.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="text-white/70 hover:text-[#D5C29F] transition-colors"
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
             <button
               onClick={() => setIsInquireOpen(true)}
               className="hover:text-[#D5C29F] transition-colors flex items-center gap-1.5 cursor-pointer font-bold text-[#D5C29F]"
