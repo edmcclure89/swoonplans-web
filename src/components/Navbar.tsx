@@ -1,11 +1,12 @@
 import React from 'react';
-import { Camera, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Camera, Volume2, VolumeX, Sparkles, Zap } from 'lucide-react';
 import { socialLinks } from '../data/socialLinks';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenInquire: () => void;
+  onOpenAccess: () => void;
   isMuted: boolean;
   toggleAudio: () => void;
 }
@@ -14,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onOpenInquire,
+  onOpenAccess,
   isMuted,
   toggleAudio,
 }) => {
@@ -98,6 +100,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               </a>
             ))}
           </div>
+          <button
+            onClick={onOpenAccess}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[#1A1816] hover:text-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer border border-[#D5C29F] hover:bg-[#D5C29F]/20"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            INSTANT ACCESS
+          </button>
           <button
             onClick={onOpenInquire}
             className="px-5 py-2.5 bg-[#1A1816] text-[#FAF8F5] hover:bg-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer shadow-sm border border-[#D5C29F]/30"

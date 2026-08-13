@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HERO_SLIDES } from '../data/portfolio';
-import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, ArrowRight, Loader2, Zap } from 'lucide-react';
+import { startFoundersCheckout } from '../lib/checkout';
 
 interface HeroSectionProps {
   onOpenLightbox?: (photo: any) => void;
@@ -9,6 +10,19 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [foundersLoading, setFoundersLoading] = useState(false);
+  const [foundersError, setFoundersError] = useState('');
+
+  const handleInstantAccess = async () => {
+    setFoundersError('');
+    setFoundersLoading(true);
+    const result = await startFoundersCheckout();
+    if (!result.ok) {
+      setFoundersError(result.error || "Couldn't start checkout. Try again in a moment.");
+      setFoundersLoading(false);
+    }
+    // On success the browser is redirecting to Stripe; keep the button busy.
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -47,15 +61,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
           <p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90">
             {slide.subheadline}
           </p>
-          <button
-            onClick={onOpenInquire}
-            className="inline-flex items-center gap-2 mt-4 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
-            aria-label="Start planning her date now"
-          >
-            <Sparkles className="w-4 h-4" />
-            Start Her Date Plan
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
+            <button
+              onClick={onOpenInquire}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
+              aria-label="Start planning her date now"
+            >
+              <Sparkles className="w-4 h-4" />
+              Start Her Date Plan
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleInstantAccess}
+              disabled={foundersLoading}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-transparent hover:bg-white/10 disabled:opacity-60 text-white font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm border border-white/50 hover:border-white transition-all cursor-pointer hover:scale-[1.02]"
+              aria-label="Get instant access with the Founders Pass"
+            >
+              {foundersLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+              Instant Access
+            </button>
+          </div>
+          {foundersError && (
+            <p role="alert" className="text-xs text-[#F0C9C0] font-sans tracking-wide">
+              {foundersError}
+            </p>
+          )}
         </div>
 
         <div className="absolute bottom-6 right-6 z-10 flex items-center gap-3">
