@@ -51,7 +51,7 @@ export const HusbandsTestimonialsSection: React.FC = () => {
             <span>WORDS FROM GRATEFUL MEN & HUSBANDS</span>
           </p>
           <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic text-balance">
-            Exclusivity is intentional. Active cohorts are strictly capped by ZIP code to prevent venue crowding.
+            Exclusivity is intentional. Member access is limited by ZIP code so our venues never feel crowded.
           </h2>
         </div>
 
