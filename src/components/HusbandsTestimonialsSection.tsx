@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Quote, Heart, CheckCircle, Award } from 'lucide-react';
+import { Star, Quote, Heart, CheckCircle } from 'lucide-react';
 
 export const HusbandsTestimonialsSection: React.FC = () => {
   const testimonials = [
@@ -50,12 +50,9 @@ export const HusbandsTestimonialsSection: React.FC = () => {
             <Heart className="w-3.5 h-3.5 text-[#D5C29F] fill-[#D5C29F]" />
             <span>WORDS FROM GRATEFUL MEN & HUSBANDS</span>
           </p>
-          <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic">
-            "The Ultimate Cheat Code for Romance"
+          <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic text-balance">
+            Exclusivity is intentional. Active cohorts are strictly capped by ZIP code to prevent venue crowding.
           </h2>
-          <p className="text-xs sm:text-sm text-[#6E675F] font-sans font-light leading-relaxed">
-            Read how husbands, fiances, and boyfriends effortless turned ordinary evenings into unforgettable core memories.
-          </p>
         </div>
 
         {/* Testimonials Grid */}
@@ -104,24 +101,6 @@ export const HusbandsTestimonialsSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Men's Satisfaction Callout Banner */}
-        <div className="bg-[#1A1816] text-[#FAF8F5] p-8 rounded sm:rounded-lg flex flex-col md:flex-row items-center justify-between gap-6 border border-[#38332E]">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-2 text-[#D5C29F]">
-              <Award className="w-4 h-4" />
-              <span className="text-[10px] uppercase tracking-[0.3em] font-sans font-semibold">
-                HERO STATUS GUARANTEED
-              </span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-serif italic font-light">
-              Ready to give her a date night she'll talk about for years?
-            </h3>
-            <p className="text-xs text-white/60 font-sans font-light">
-              Join the men who rely on Swoon Plans for stress-free romantic perfection.
-            </p>
-          </div>
-
-        </div>
       </div>
     </section>
   );

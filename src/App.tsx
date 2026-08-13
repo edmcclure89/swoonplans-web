@@ -15,10 +15,13 @@ import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
 import { NudgeModal } from './components/NudgeModal';
+import { AccessModal } from './components/AccessModal';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
+import { PRICE_IDS } from './data/personality';
+import { supabase } from './lib/supabase';
 import { Instagram, Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 
 export default function App() {
@@ -27,11 +30,50 @@ export default function App() {
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isNudgeOpen, setIsNudgeOpen] = useState(false);
+  const [isAccessOpen, setIsAccessOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   // Tracks whether the nudge modal has ever been opened this render-session
   // (manually or automatically), so the timer never reopens it.
   const nudgeOpenedRef = useRef(false);
+
+  // Live mirrors of open state so the timers/listeners can read the current
+  // value without re-subscribing. Used to guarantee the two auto-modals are
+  // never open at the same time.
+  const isNudgeOpenRef = useRef(false);
+  const isAccessOpenRef = useRef(false);
+  useEffect(() => { isNudgeOpenRef.current = isNudgeOpen; }, [isNudgeOpen]);
+  useEffect(() => { isAccessOpenRef.current = isAccessOpen; }, [isAccessOpen]);
+
+  // Instant Access -> Operator plan Stripe checkout. Mirrors the checkout flow
+  // used inside the concierge pricing screen. Purely a payments redirect; if it
+  // can't start, we fall back to opening the registration modal. No SMS/backend
+  // messaging is involved anywhere here.
+  const handleInstantAccess = async () => {
+    try {
+      let userId: string | undefined;
+      try {
+        const { data } = await supabase.auth.getUser();
+        userId = data?.user?.id;
+      } catch {
+        userId = undefined;
+      }
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: PRICE_IDS.operator, userId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      // Couldn't start checkout: send them to the registration page instead.
+      setIsInquireOpen(true);
+    } catch {
+      setIsInquireOpen(true);
+    }
+  };
 
   // Mark the nudge as "seen" whenever it opens by any means, and persist it for
   // the browser session so it only auto-opens once. Storage access is guarded
@@ -58,10 +100,11 @@ export default function App() {
     }
     if (alreadySeen) return;
 
-    // Guard so we only fire once and never after a manual open.
+    // Guard so we only fire once and never after a manual open. Also suppressed
+    // while the AccessModal is open so the two auto-modals never stack.
     let fired = false;
     const trigger = () => {
-      if (fired || nudgeOpenedRef.current) return;
+      if (fired || nudgeOpenedRef.current || isAccessOpenRef.current) return;
       fired = true;
       setIsNudgeOpen(true);
     };
@@ -102,6 +145,30 @@ export default function App() {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('mouseout', onMouseOut);
     };
+  }, []);
+
+  // Auto-open the AccessModal 6s after load, once per session. If the nudge is
+  // already open when the timer fires we skip it, so the two never stack.
+  useEffect(() => {
+    let alreadySeen = false;
+    try {
+      alreadySeen = sessionStorage.getItem('swoon_access_seen') === '1';
+    } catch {
+      alreadySeen = false;
+    }
+    if (alreadySeen) return;
+
+    const t = setTimeout(() => {
+      if (isNudgeOpenRef.current) return;
+      try {
+        sessionStorage.setItem('swoon_access_seen', '1');
+      } catch {
+        // ignore storage failures (private browsing, blocked storage, etc.)
+      }
+      setIsAccessOpen(true);
+    }, 6000);
+
+    return () => clearTimeout(t);
   }, []);
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -161,6 +228,7 @@ export default function App() {
             <HeroSection
               onOpenLightbox={handleOpenLightboxByPhoto}
               onOpenInquire={() => setIsInquireOpen(true)}
+              onInstantAccess={handleInstantAccess}
             />
             <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
             <HusbandsTestimonialsSection />
@@ -269,8 +337,8 @@ export default function App() {
         onClose={() => setIsTermsOpen(false)}
       />
 
-      {/* Floating Nudge Trigger */}
-      {!isNudgeOpen && (
+      {/* Floating Nudge Trigger — hidden while either auto-modal is open */}
+      {!isNudgeOpen && !isAccessOpen && (
         <button
           onClick={() => setIsNudgeOpen(true)}
           className="fixed bottom-6 right-6 z-40 px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] rounded-full uppercase tracking-[0.2em] font-sans text-xs font-bold shadow-2xl cursor-pointer transition-colors"
@@ -283,6 +351,20 @@ export default function App() {
       <NudgeModal
         isOpen={isNudgeOpen}
         onClose={() => setIsNudgeOpen(false)}
+      />
+
+      {/* Timed Access Modal */}
+      <AccessModal
+        isOpen={isAccessOpen}
+        onClose={() => setIsAccessOpen(false)}
+        onRequestAccess={() => {
+          setIsAccessOpen(false);
+          setIsInquireOpen(true);
+        }}
+        onInstantAccess={() => {
+          setIsAccessOpen(false);
+          handleInstantAccess();
+        }}
       />
     </div>
   );

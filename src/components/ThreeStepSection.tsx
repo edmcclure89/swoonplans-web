@@ -60,18 +60,14 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
 
         <div>
           <h2 className="font-serif italic font-light text-4xl sm:text-5xl text-[#1A1816] leading-[1.15]">
-            Curated spots. Instant reservations. Zero sweat.
+            Exclusive venues. Instant reservations. Feel cherished.
           </h2>
-          <p className="text-sm sm:text-base text-[#6E675F] font-sans font-light mt-4 leading-relaxed">
-            She thinks you planned it all week. Her group chat is green with envy.
-          </p>
           <button
             onClick={onOpenInquire}
             className="mt-7 inline-flex items-center gap-2 px-8 py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs uppercase tracking-[0.25em] font-sans rounded-sm transition-all cursor-pointer shadow-lg shadow-[#D5C29F]/20"
           >
             Start now
           </button>
-          <p className="text-xs text-[#8C8377] font-sans mt-3">First plan free.</p>
         </div>
 
       </div>

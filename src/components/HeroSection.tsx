@@ -5,9 +5,10 @@ import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
 interface HeroSectionProps {
   onOpenLightbox?: (photo: any) => void;
   onOpenInquire: () => void;
+  onInstantAccess: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInstantAccess }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -40,22 +41,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
           </div>
         ))}
 
-        <div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 z-10 max-w-2xl text-left space-y-3">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
-            "{slide.headline}"
+        {/* Primary headline — overlays every slide, top center */}
+        <div className="absolute top-8 sm:top-12 inset-x-0 z-10 px-6 flex justify-center">
+          <h1 className="max-w-3xl text-center text-3xl sm:text-5xl md:text-6xl text-white font-light leading-[1.1] font-serif italic drop-shadow-xl tracking-tight text-balance">
+            {'Ladies, You\u2019re With Our Algorithm'}
           </h1>
-          <p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90">
-            {slide.subheadline}
+        </div>
+
+        <div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 right-6 sm:right-10 z-10 max-w-2xl text-left space-y-3">
+          <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
+            "{slide.headline}"
+          </h2>
+          <p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90 text-pretty">
+            Dates customized to you and your preferences. He answers 15 questions about you, your likes, selects a budget and our algorithm delivers your bespoke date plan, with addresses and even direct links to reservations.
           </p>
-          <button
-            onClick={onOpenInquire}
-            className="inline-flex items-center gap-2 mt-4 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
-            aria-label="Start planning her date now"
-          >
-            <Sparkles className="w-4 h-4" />
-            Start Her Date Plan
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <button
+              onClick={onOpenInquire}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
+              aria-label="Pre-register now"
+            >
+              <Sparkles className="w-4 h-4" />
+              Pre-Register Now
+            </button>
+            <button
+              onClick={onInstantAccess}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] border border-[#D5C29F] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
+              aria-label="Get instant access"
+            >
+              Instant Access
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         <div className="absolute bottom-6 right-6 z-10 flex items-center gap-3">
