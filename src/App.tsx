@@ -13,6 +13,9 @@ import { BlogSection } from './components/BlogSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
+import { AccessModal } from './components/AccessModal';
+import { NudgeModal } from './components/NudgeModal';
+import { WelcomePage } from './components/WelcomePage';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -25,7 +28,17 @@ export default function App() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isAccessOpen, setIsAccessOpen] = useState(false);
+  const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
+  // SPA renders the confirmation screen for that path instead of the funnel.
+  const isWelcomeRoute =
+    typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/welcome';
+  if (isWelcomeRoute) {
+    return <WelcomePage />;
+  }
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
 
@@ -73,6 +86,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenInquire={() => setIsInquireOpen(true)}
+        onOpenAccess={() => setIsAccessOpen(true)}
         isMuted={!isAudioPlaying}
         toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
       />
@@ -192,6 +206,22 @@ export default function App() {
       <TermsModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
+      />
+
+      {/* Founders Pass instant-access entry point */}
+      <AccessModal
+        isOpen={isAccessOpen}
+        onClose={() => setIsAccessOpen(false)}
+        onRemindLater={() => {
+          setIsAccessOpen(false);
+          setIsNudgeOpen(true);
+        }}
+      />
+
+      {/* "Remind me later" nudge with sms: handoff */}
+      <NudgeModal
+        isOpen={isNudgeOpen}
+        onClose={() => setIsNudgeOpen(false)}
       />
     </div>
   );
