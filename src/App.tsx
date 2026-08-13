@@ -20,7 +20,6 @@ import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
-import { PRICE_IDS } from './data/personality';
 import { supabase } from './lib/supabase';
 import { Instagram, Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 
@@ -45,10 +44,22 @@ export default function App() {
   useEffect(() => { isNudgeOpenRef.current = isNudgeOpen; }, [isNudgeOpen]);
   useEffect(() => { isAccessOpenRef.current = isAccessOpen; }, [isAccessOpen]);
 
-  // Instant Access -> Operator plan Stripe checkout. Mirrors the checkout flow
-  // used inside the concierge pricing screen. Purely a payments redirect; if it
-  // can't start, we fall back to opening the registration modal. No SMS/backend
-  // messaging is involved anywhere here.
+  // Send the visitor to the pre-registration page, preserving any inbound
+  // ?ref= referral code so attribution survives the click from the homepage.
+  const goToRegister = () => {
+    let ref: string | null = null;
+    try {
+      ref = new URLSearchParams(window.location.search).get('ref');
+    } catch {
+      ref = null;
+    }
+    window.location.href = ref ? `/register?ref=${encodeURIComponent(ref)}` : '/register';
+  };
+
+  // Instant Access -> Founders Pass Stripe checkout (3-month upfront, one-time
+  // 'payment' mode, resolved server-side to PRICE_ID_FOUNDERS). Purely a
+  // payments redirect; if it can't start, we send them to pre-register instead.
+  // No SMS/backend messaging is involved anywhere here.
   const handleInstantAccess = async () => {
     try {
       let userId: string | undefined;
@@ -61,17 +72,17 @@ export default function App() {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: PRICE_IDS.operator, userId }),
+        body: JSON.stringify({ plan: 'founders', userId }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         window.location.href = data.url;
         return;
       }
-      // Couldn't start checkout: send them to the registration page instead.
-      setIsInquireOpen(true);
+      // Couldn't start checkout: send them to the pre-registration page instead.
+      goToRegister();
     } catch {
-      setIsInquireOpen(true);
+      goToRegister();
     }
   };
 
@@ -229,7 +240,7 @@ export default function App() {
           <>
             <HeroSection
               onOpenLightbox={handleOpenLightboxByPhoto}
-              onOpenInquire={() => setIsInquireOpen(true)}
+              onPreRegister={goToRegister}
               onInstantAccess={handleInstantAccess}
             />
             <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
@@ -361,7 +372,7 @@ export default function App() {
         onClose={() => setIsAccessOpen(false)}
         onRequestAccess={() => {
           setIsAccessOpen(false);
-          setIsInquireOpen(true);
+          goToRegister();
         }}
         onInstantAccess={() => {
           setIsAccessOpen(false);

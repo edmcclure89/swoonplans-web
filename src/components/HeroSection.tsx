@@ -4,11 +4,11 @@ import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
 
 interface HeroSectionProps {
   onOpenLightbox?: (photo: any) => void;
-  onOpenInquire: () => void;
+  onPreRegister: () => void;
   onInstantAccess: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInstantAccess }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onPreRegister, onInstantAccess }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInsta
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
-              onClick={onOpenInquire}
+              onClick={onPreRegister}
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
               aria-label="Pre-register now"
             >
