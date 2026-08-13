@@ -10,7 +10,6 @@ import { AppProcessSection } from './components/AppProcessSection';
 import { HusbandsTestimonialsSection } from './components/HusbandsTestimonialsSection';
 import { ItinerariesSection } from './components/ItinerariesSection';
 import { BlogSection } from './components/BlogSection';
-import { ForWomenSection } from './components/ForWomenSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
@@ -107,10 +106,7 @@ export default function App() {
         )}
 
         {activeTab === 'for-women' && (
-          <>
-            <ForWomenSection onOpenInquire={() => setIsInquireOpen(true)} />
-            <AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
-          </>
+          <AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
         )}
       </main>
 
