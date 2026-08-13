@@ -5,39 +5,39 @@ export const HusbandsTestimonialsSection: React.FC = () => {
   const testimonials = [
     {
       id: 1,
-      quote: "Her girlfriend group text is full of jealous BFFs now. Swoon Plans found a rooftop spot I never would have thought to look for, with the reservation link ready to go and exact timing laid out.",
-      author: "Marcus T.",
-      title: "Husband (Married 5 Years)",
+      quote: "He planned a rooftop dinner, a cocktail bar I had never heard of, and dessert on the walk home. I sent one photo to my girlfriends and my phone did not stop buzzing for an hour. They all want to know who planned it. He did. Sort of.",
+      author: "Alexis R.",
+      title: "Together 3 Years",
       location: "Skyline Rooftop Rendezvous",
       rating: 5,
-      highlight: "Group Text Legend"
+      highlight: "The Group Chat Is Jealous"
     },
     {
       id: 2,
-      quote: "I used Swoon Plans for my proposal night. It gave me the perfect private spot with a direct booking link, so I could focus on the moment instead of scrambling to find somewhere special.",
-      author: "David Chen",
-      title: "Newly Engaged",
-      location: "Private Ocean Cove Proposal",
+      quote: "It is not about the money. It is that he thought about what I actually like. Three stops, all of them mine, reservations already made. I cried a little in the car. Twelve years together and he still surprises me.",
+      author: "Danielle M.",
+      title: "Married 12 Years",
+      location: "Candlelit Garden Patio Date",
       rating: 5,
-      highlight: "Perfect Proposal"
+      highlight: "I Feel So Loved"
     },
     {
       id: 3,
-      quote: "As a busy executive, I rarely have 10 hours to research and plan extravagant date nights. This app is a complete cheat code for men. 2 minutes on my phone and I earned major hero points for months.",
-      author: "Carlos Martinez",
+      quote: "I love my wife. I am just terrible at this. SwoonPlans handed me real venues, exact addresses, and the booking links, and I looked like I had been planning for weeks. She has told the story four times.",
+      author: "Carlos M.",
       title: "Husband & Father of 2",
       location: "Hilltop Sunset Wine Date",
       rating: 5,
-      highlight: "Zero Stress Planning"
+      highlight: "Thank You For The Assist"
     },
     {
       id: 4,
-      quote: "She hasn't stopped showing the photos to her sisters and coworkers. The spot Swoon Plans found had the exact candlelit patio vibe she loves. Best investment I've ever made in our relationship.",
-      author: "Jamal Washington",
+      quote: "She deserves to be spoiled and I never knew where to start. Now I do. Two minutes on my phone and I gave her the night she had been describing to me for years without me realizing it.",
+      author: "Jamal W.",
       title: "Grateful Husband",
-      location: "Candlelit Garden Patio Date",
+      location: "Private Ocean Cove Dinner",
       rating: 5,
-      highlight: "Unforgettable Memories"
+      highlight: "Finally Able To Spoil Her"
     }
   ];
 
@@ -48,11 +48,8 @@ export const HusbandsTestimonialsSection: React.FC = () => {
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <p className="text-[10px] uppercase tracking-[0.4em] font-sans text-[#8C8377] flex items-center justify-center gap-2">
             <Heart className="w-3.5 h-3.5 text-[#D5C29F] fill-[#D5C29F]" />
-            <span>WORDS FROM GRATEFUL MEN & HUSBANDS</span>
+            <span>Happy Customers</span>
           </p>
-          <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic text-balance">
-            Exclusivity is intentional. Member access is limited by ZIP code so our venues never feel crowded.
-          </h2>
         </div>
 
         {/* Testimonials Grid */}

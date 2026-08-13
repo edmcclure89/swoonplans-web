@@ -12,7 +12,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
-  onOpenInquire,
   isMuted,
   toggleAudio,
 }) => {
@@ -81,15 +80,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
 
-        {/* Right Navigation */}
-        <div className="hidden lg:flex items-center justify-end gap-4 sm:gap-8 text-xs font-medium uppercase tracking-[0.2em] font-sans">
-          <button
-            onClick={onOpenInquire}
-            className="px-5 py-2.5 bg-[#1A1816] text-[#FAF8F5] hover:bg-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer shadow-sm border border-[#D5C29F]/30"
-          >
-            FIRST PLAN FREE
-          </button>
-        </div>
+        {/* Right column placeholder — keeps the centered logo balanced in the 3-column grid */}
+        <div className="hidden lg:block" aria-hidden="true" />
       </div>
 
       {/* Mobile Nav Tabs */}

@@ -147,8 +147,9 @@ export default function App() {
     };
   }, []);
 
-  // Auto-open the AccessModal 6s after load, once per session. If the nudge is
-  // already open when the timer fires we skip it, so the two never stack.
+  // Auto-open the AccessModal 6s after load, once per session. AccessModal
+  // always takes priority: if the nudge happened to open first, close it so the
+  // two never stack and AccessModal still shows.
   useEffect(() => {
     let alreadySeen = false;
     try {
@@ -159,12 +160,13 @@ export default function App() {
     if (alreadySeen) return;
 
     const t = setTimeout(() => {
-      if (isNudgeOpenRef.current) return;
       try {
         sessionStorage.setItem('swoon_access_seen', '1');
       } catch {
         // ignore storage failures (private browsing, blocked storage, etc.)
       }
+      // Yield the screen to AccessModal, closing the nudge if it beat us here.
+      if (isNudgeOpenRef.current) setIsNudgeOpen(false);
       setIsAccessOpen(true);
     }, 6000);
 

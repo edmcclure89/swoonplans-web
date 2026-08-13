@@ -42,7 +42,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInsta
         {/* Primary headline — overlays every slide, top center */}
         <div className="absolute top-8 sm:top-12 inset-x-0 z-10 px-6 flex justify-center">
           <h1 className="max-w-3xl text-center text-3xl sm:text-5xl md:text-6xl text-white font-light leading-[1.1] font-serif italic drop-shadow-xl tracking-tight text-balance">
-            {'Ladies, You\u2019re With Our Algorithm'}
+            {'Ladies, You\u2019re Worth Our Algorithm'}
           </h1>
         </div>
 
