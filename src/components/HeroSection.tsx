@@ -63,15 +63,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
             Dates customized to you and your preferences. He answers 15 questions about you, your likes, selects a budget and our algorithm delivers your bespoke date plan, with addresses and even direct links to reservations.
           </p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
-            <button
-              onClick={onOpenInquire}
+            <a
+              href="/register"
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
-              aria-label="Start planning her date now"
+              aria-label="Pre-register for Swoon Plans"
             >
               <Sparkles className="w-4 h-4" />
               Pre-Register Now
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </a>
             <button
               onClick={handleInstantAccess}
               disabled={foundersLoading}
