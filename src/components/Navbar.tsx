@@ -86,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Navigation */}
         <div className="hidden lg:flex items-center justify-end gap-4 sm:gap-6 text-xs font-medium uppercase tracking-[0.2em] font-sans">
-          <div className="flex items-center gap-3.5 border-r border-[#E8E2D9] pr-4 xl:pr-6">
+          <div className="flex items-center gap-3.5">
             {socialLinks.map(({ label, href, Icon }) => (
               <a
                 key={label}
@@ -106,12 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Zap className="w-3.5 h-3.5" />
             INSTANT ACCESS
-          </button>
-          <button
-            onClick={onOpenInquire}
-            className="px-5 py-2.5 bg-[#1A1816] text-[#FAF8F5] hover:bg-[#38332E] transition-all duration-300 text-xs tracking-[0.2em] font-bold cursor-pointer shadow-sm border border-[#D5C29F]/30"
-          >
-            FIRST PLAN FREE
           </button>
         </div>
       </div>
