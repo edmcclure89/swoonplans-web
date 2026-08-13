@@ -16,6 +16,7 @@ import { TermsModal } from './components/TermsModal';
 import { AccessModal } from './components/AccessModal';
 import { NudgeModal } from './components/NudgeModal';
 import { WelcomePage } from './components/WelcomePage';
+import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -32,12 +33,45 @@ export default function App() {
   const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
+  // Auto-open the Founders Pass access modal 6s after load, once per
+  // session. Skipped entirely if the visitor already opened Access or the
+  // Nudge modal manually before the timer fires.
+  React.useEffect(() => {
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('swoon_access_seen') === '1';
+    } catch {
+      seen = false;
+    }
+    if (seen) return;
+
+    const timer = setTimeout(() => {
+      setIsAccessOpen((current) => {
+        if (current) return current;
+        try {
+          sessionStorage.setItem('swoon_access_seen', '1');
+        } catch {
+          /* ignore */
+        }
+        return true;
+      });
+    }, 6000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
   // SPA renders the confirmation screen for that path instead of the funnel.
   const isWelcomeRoute =
     typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/welcome';
   if (isWelcomeRoute) {
     return <WelcomePage />;
+  }
+
+  const isRegisterRoute =
+    typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/register';
+  if (isRegisterRoute) {
+    return <RegisterPage />;
   }
 
   const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -86,7 +120,14 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenInquire={() => setIsInquireOpen(true)}
-        onOpenAccess={() => setIsAccessOpen(true)}
+        onOpenAccess={() => {
+          try {
+            sessionStorage.setItem('swoon_access_seen', '1');
+          } catch {
+            /* ignore */
+          }
+          setIsAccessOpen(true);
+        }}
         isMuted={!isAudioPlaying}
         toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
       />
