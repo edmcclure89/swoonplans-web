@@ -31,8 +31,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const slide = HERO_SLIDES[currentIndex];
-
   return (
     <section className="relative w-full px-4 sm:px-8 pt-4 pb-6 flex flex-col justify-between">
       <div className="relative h-[72vh] sm:h-[80vh] rounded-sm overflow-hidden group bg-[#1A1816] border border-[#E8E2D9] shadow-sm flex items-center justify-center">
@@ -54,12 +52,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
           </div>
         ))}
 
-        <div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 z-10 max-w-2xl text-left space-y-3">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
-            "{slide.headline}"
+        <div className="absolute inset-x-0 top-10 sm:top-16 z-10 px-6 text-center">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
+            Ladies, You&rsquo;re Worth Our Algorithm
           </h1>
+        </div>
+
+        <div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 z-10 max-w-2xl text-left space-y-3">
           <p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90">
-            {slide.subheadline}
+            Dates customized to you and your preferences. He answers 15 questions about you, your likes, selects a budget and our algorithm delivers your bespoke date plan, with addresses and even direct links to reservations.
           </p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
             <button
@@ -68,7 +69,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
               aria-label="Start planning her date now"
             >
               <Sparkles className="w-4 h-4" />
-              Start Her Date Plan
+              Pre-Register Now
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
