@@ -27,8 +27,6 @@ export interface StoryItem {
 export const HERO_SLIDES = [
   {
     id: 'hero-1',
-    headline: "Her customized date. Instantly.",
-    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
     title: 'Skyline Terrace Rendezvous',
     location: 'Rooftop Garden Lounge',
     date: 'GOLDEN HOUR',
@@ -36,8 +34,6 @@ export const HERO_SLIDES = [
   },
   {
     id: 'hero-2',
-    headline: "Her perfect night. Planned in 60 seconds.",
-    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
     title: 'Sunset Beach Experience',
     location: 'Coastal Sunset Cove',
     date: 'TWILIGHT',
@@ -45,8 +41,6 @@ export const HERO_SLIDES = [
   },
   {
     id: 'hero-3',
-    headline: 'Real venues. Real reservations. No guesswork.',
-    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
     title: 'Sunset Waterfront Walk',
     location: 'Harbor Promenade',
     date: 'GOLDEN HOUR',
@@ -54,8 +48,6 @@ export const HERO_SLIDES = [
   },
   {
     id: 'hero-4',
-    headline: 'She deserves magic. You just tap three times.',
-    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
     title: 'Candlelit Patio Evening',
     location: 'Private Estate Garden',
     date: 'EVENING',

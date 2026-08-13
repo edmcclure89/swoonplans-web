@@ -18,8 +18,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInsta
     return () => clearInterval(timer);
   }, []);
 
-  const slide = HERO_SLIDES[currentIndex];
-
   return (
     <section className="relative w-full px-4 sm:px-8 pt-4 pb-6 flex flex-col justify-between">
       <div className="relative h-[72vh] sm:h-[80vh] rounded-sm overflow-hidden group bg-[#1A1816] border border-[#E8E2D9] shadow-sm flex items-center justify-center">
@@ -49,9 +47,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onInsta
         </div>
 
         <div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 right-6 sm:right-10 z-10 max-w-2xl text-left space-y-3">
-          <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
-            "{slide.headline}"
-          </h2>
           <p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90 text-pretty">
             Dates customized to you and your preferences. He answers 15 questions about you, your likes, selects a budget and our algorithm delivers your bespoke date plan, with addresses and even direct links to reservations.
           </p>
