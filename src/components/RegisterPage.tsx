@@ -62,22 +62,24 @@ export const RegisterPage: React.FC = () => {
     setError('');
     setSubmitting(true);
     try {
-      const { data, error: insertError } = await supabase
-        .from('waitlist')
-        .insert({
-          first_name: firstName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          zip: zip.trim() || null,
-          referred_by: referredBy || null,
-        })
-        .select('id, referral_code')
-        .single();
+      // Insert-and-return via a SECURITY DEFINER RPC rather than a direct
+      // table insert. The waitlist table has no SELECT grant for anon (so
+      // the public can't scrape names/emails/phones); the function returns
+      // just the new row's id and referral_code.
+      const { data, error: rpcError } = await supabase.rpc('submit_waitlist_application', {
+        p_first_name: firstName.trim(),
+        p_email: email.trim(),
+        p_phone: phone.trim(),
+        p_zip: zip.trim(),
+        p_referred_by: referredBy || '',
+      });
 
-      if (insertError) throw insertError;
+      if (rpcError) throw rpcError;
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!row) throw new Error('No response from server.');
 
-      setReferralCode(data.referral_code);
-      setWaitlistId(data.id);
+      setReferralCode(row.referral_code);
+      setWaitlistId(row.id);
       setStep('confirmed');
     } catch (err: any) {
       setError(err?.message || "Couldn't submit your application. Please try again.");
