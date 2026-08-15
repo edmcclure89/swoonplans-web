@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { AppProcessSection } from './components/AppProcessSection';
@@ -29,6 +29,16 @@ export default function App() {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
+  // Magic-link / gate emails redirect here with ?app=1 so returning users
+  // land back inside the concierge modal instead of a bare homepage.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('app') === '1') {
+      setIsInquireOpen(true);
+    }
+  }, []);
+
   // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
   // SPA renders the confirmation screen for that path instead of the funnel.
   const isWelcomeRoute =
@@ -50,7 +60,6 @@ export default function App() {
     if (idx !== -1) {
       setSelectedPhotoIndex(idx);
     } else {
-      // If temporary photo, create virtual index or view directly
       setSelectedPhotoIndex(0);
     }
   };
@@ -129,7 +138,6 @@ export default function App() {
       {/* Minimal Footer */}
       <footer className="bg-[#1A1816] text-[#FAF8F5] py-16 px-6 sm:px-12 border-t border-[#38332E] mt-20 relative z-20">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          {/* Logo & Tagline */}
           <div className="text-center md:text-left space-y-1">
             <h3 className="text-2xl sm:text-3xl font-serif tracking-[0.2em] italic font-light">
               SWOON PLANS
@@ -139,7 +147,6 @@ export default function App() {
             </p>
           </div>
 
-          {/* Socials & Actions */}
           <div className="flex items-center gap-8 text-[10px] uppercase tracking-[0.3em] font-sans text-white/70">
             <div className="flex items-center gap-5">
               {socialLinks.map(({ label, href, Icon }) => (
