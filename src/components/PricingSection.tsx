@@ -138,8 +138,8 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenInquire })
                 ))}
               </ul>
 
-              <a
-                href="/register"
+              <button
+                onClick={onOpenInquire}
                 className={`mt-8 w-full flex items-center justify-center gap-2 px-6 py-4 font-bold text-xs uppercase tracking-[0.25em] font-sans rounded-sm transition-all cursor-pointer ${
                   plan.featured
                     ? 'bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816]'
@@ -148,7 +148,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenInquire })
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Start Free
-              </a>
+              </button>
             </div>
           ))}
         </div>
