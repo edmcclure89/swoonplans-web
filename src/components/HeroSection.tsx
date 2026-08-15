@@ -55,7 +55,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
               aria-label="Start planning her date now"
             >
               <Sparkles className="w-4 h-4" />
-              Pre-Register Now
+              Start Now
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
