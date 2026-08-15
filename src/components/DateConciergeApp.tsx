@@ -250,15 +250,13 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
       setAnswers({ ...answers, [step.id]: next });
     } else {
       setAnswers({ ...answers, [step.id]: key });
-      // Single-choice questions advance on their own. Making someone tap an
-      // answer and then tap "Next" 15 times in a row is 15 needless taps.
-      // Searchable steps (like the city list) stay manual so the user can
-      // confirm they picked the right one.
-      if (!step.searchable) {
-        setTimeout(() => {
-          setStepIndex((i) => (i < steps.length - 1 ? i + 1 : i));
-        }, 260);
-      }
+      // Single-choice questions always advance on their own, including the
+      // searchable city step. That step has the longest option list on the
+      // page, so requiring a manual "Next" click meant scrolling back up
+      // past dozens of results to find a button that was easy to miss.
+      setTimeout(() => {
+        setStepIndex((i) => (i < steps.length - 1 ? i + 1 : i));
+      }, 260);
     }
   }
 
