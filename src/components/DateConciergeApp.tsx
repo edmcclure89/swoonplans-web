@@ -27,6 +27,19 @@ function clearPendingPlan() {
   try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
 }
 
+// Anonymous free-trial marker. The free-plan gate creates the account
+// server-side (see submitRegistration) rather than through a magic-link
+// sign-in, so there is no client-side Supabase session to hang trial_used
+// off of until the person actually returns and signs in. This local flag
+// enforces "first plan free" in the meantime.
+const TRIAL_KEY = 'swoon_trial_used';
+function markLocalTrialUsed() {
+  try { localStorage.setItem(TRIAL_KEY, '1'); } catch { /* ignore */ }
+}
+function hasLocalTrialUsed(): boolean {
+  try { return localStorage.getItem(TRIAL_KEY) === '1'; } catch { return false; }
+}
+
 const GOLD = '#D5C29F';
 const INK = '#1A1816';
 const CARD = '#262320';
@@ -89,8 +102,10 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
         route(ms, vip, true);
       } else {
         // No account yet: let them straight into the quiz. We ask for an email
-        // at the end, once they've actually seen what they're getting.
-        setScreen('welcome');
+        // at the end, once they've actually seen what they're getting. If
+        // they've already spent their free plan anonymously, send them to
+        // pricing instead of letting them re-run the quiz for another one.
+        setScreen(hasLocalTrialUsed() ? 'pricing' : 'welcome');
       }
       setChecking(false);
     })();
@@ -142,15 +157,54 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     setRegError(''); setRegBusy(true);
     const vip = hasFamPass(regName);
     const cleanName = vip ? stripFamPass(regName) : regName;
+
+    if (itinerary) {
+      // Free-plan gate: one email only, the itinerary itself. The account is
+      // created server-side (see /api/send-itinerary), so there is no
+      // magic-link round trip, no second email, and no dead-end redirect
+      // back to the bare homepage.
+      const who = answers['dateName'] || dateName || cleanName;
+      try {
+        const res = await fetch('/api/send-itinerary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: regEmail,
+            dateName: who,
+            itinerary,
+            createAccount: true,
+            name: cleanName,
+            isVipFamily: vip,
+          }),
+        });
+        if (!res.ok) {
+          setRegBusy(false);
+          setRegError('Could not send your plan. Try again.');
+          return;
+        }
+      } catch {
+        setRegBusy(false);
+        setRegError('Could not reach the server. Try again.');
+        return;
+      }
+      setRegBusy(false);
+      if (!vip) markLocalTrialUsed();
+      clearPendingPlan();
+      setScreen('output');
+      return;
+    }
+
+    // No plan yet, this is a plain account creation (reached via the sign-in
+    // page's "Create an account" link before ever touching the quiz). There
+    // is nothing else to send them, so this path still needs the magic-link
+    // email, redirected back into the app instead of the bare homepage.
     const { error } = await supabase.auth.signInWithOtp({
       email: regEmail,
-      options: { data: { name: cleanName, is_vip_family: vip }, emailRedirectTo: window.location.origin + '/' },
+      options: { data: { name: cleanName, is_vip_family: vip }, emailRedirectTo: window.location.origin + '/?app=1' },
     });
     setRegBusy(false);
     if (error) { setRegError(error.message || 'Could not send the link. Try again.'); return; }
-    // If a finished plan is waiting (the gate, not a plain sign-up), email it now.
-    if (itinerary) emailItinerary(regEmail, itinerary, answers['dateName'] || dateName || cleanName);
-    setCheckEmailText(`We sent a sign-in link and the full plan to ${regEmail}. Click the link to continue, no password needed.`);
+    setCheckEmailText(`We sent a sign-in link to ${regEmail}. Click the link to continue, no password needed.`);
     setScreen('checkEmail');
   }
 
@@ -159,7 +213,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     setSigninError('');
     const { error } = await supabase.auth.signInWithOtp({
       email: signinEmail,
-      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + '/' },
+      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + '/?app=1' },
     });
     if (error) {
       const msg = (error.message || '').toLowerCase();
@@ -252,6 +306,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
         emailItinerary(meStatus?.email, plan, name);
         markTrialUsed();
         setScreen('output');
+      } else if (hasLocalTrialUsed()) {
+        setScreen('pricing');
       } else {
         // They've done the work and the plan exists. Now, and only now, ask
         // for an email. Stash everything so the inbox round trip is lossless.
@@ -538,7 +594,7 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
                             the text readable in the DOM and in view-source, so the
                             locked rows get a length-matched placeholder instead. */}
                         <span className="blur-[3px] select-none truncate" aria-label="Locked venue">
-                          {'\u2022'.repeat(Math.min(18, Math.max(8, (v.name || '').length || 12)))}
+                          {'•'.repeat(Math.min(18, Math.max(8, (v.name || '').length || 12)))}
                         </span>
                       </span>
                     )}
