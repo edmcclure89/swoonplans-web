@@ -4,6 +4,7 @@
   ],
   "rewrites": [
     { "source": "/welcome", "destination": "/" },
-    { "source": "/register", "destination": "/" }
+    { "source": "/register", "destination": "/" },
+    { "source": "/blog/:slug", "destination": "/" }
   ]
 }
