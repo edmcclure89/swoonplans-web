@@ -13,8 +13,6 @@ import { BlogSection } from './components/BlogSection';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
-import { AccessModal } from './components/AccessModal';
-import { NudgeModal } from './components/NudgeModal';
 import { WelcomePage } from './components/WelcomePage';
 import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
@@ -29,36 +27,7 @@ export default function App() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
-  const [isAccessOpen, setIsAccessOpen] = useState(false);
-  const [isNudgeOpen, setIsNudgeOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-
-  // Auto-open the Founders Pass access modal 6s after load, once per
-  // session. Skipped entirely if the visitor already opened Access or the
-  // Nudge modal manually before the timer fires.
-  React.useEffect(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem('swoon_access_seen') === '1';
-    } catch {
-      seen = false;
-    }
-    if (seen) return;
-
-    const timer = setTimeout(() => {
-      setIsAccessOpen((current) => {
-        if (current) return current;
-        try {
-          sessionStorage.setItem('swoon_access_seen', '1');
-        } catch {
-          /* ignore */
-        }
-        return true;
-      });
-    }, 6000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
   // SPA renders the confirmation screen for that path instead of the funnel.
@@ -120,14 +89,6 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenInquire={() => setIsInquireOpen(true)}
-        onOpenAccess={() => {
-          try {
-            sessionStorage.setItem('swoon_access_seen', '1');
-          } catch {
-            /* ignore */
-          }
-          setIsAccessOpen(true);
-        }}
         isMuted={!isAudioPlaying}
         toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
       />
@@ -247,22 +208,6 @@ export default function App() {
       <TermsModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
-      />
-
-      {/* Founders Pass instant-access entry point */}
-      <AccessModal
-        isOpen={isAccessOpen}
-        onClose={() => setIsAccessOpen(false)}
-        onRemindLater={() => {
-          setIsAccessOpen(false);
-          setIsNudgeOpen(true);
-        }}
-      />
-
-      {/* "Remind me later" nudge with sms: handoff */}
-      <NudgeModal
-        isOpen={isNudgeOpen}
-        onClose={() => setIsNudgeOpen(false)}
       />
     </div>
   );
