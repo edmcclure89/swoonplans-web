@@ -13,7 +13,7 @@ type Screen = 'register' | 'signin' | 'checkEmail' | 'welcome' | 'quiz' | 'loadi
 
 // --- In-progress work persistence -------------------------------------------
 // The magic-link sign-in bounces the user out to their inbox and back, which
-// used to wipe 15 answers. We stash the finished plan so returning users land
+// used to wipe 20 answers. We stash the finished plan so returning users land
 // straight on their result instead of starting over.
 const PENDING_KEY = 'swoon_pending_plan';
 
@@ -87,7 +87,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
         setIsVipFamily(vip);
 
         // Came back from the email link with a finished plan waiting? Show it.
-        // Making them redo 15 questions after signing in was the single worst
+        // Making them redo 20 questions after signing in was the single worst
         // drop-off point in the funnel.
         if (pending && pending.itinerary) {
           setAnswers(pending.answers || {});
@@ -327,8 +327,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
   const personalityTotal = steps.filter((s) => s.phase === 'personality').length;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1A1816]/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-[#1A1816] border border-[#38332E] rounded shadow-2xl text-[#FAF8F5] max-h-[92vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#1A1816]/40 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E8E2D9] rounded shadow-2xl text-[#1A1816] max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-5 right-5 p-2 text-[#A89B88] hover:text-[#FAF8F5] transition-colors cursor-pointer z-10"
@@ -416,19 +416,19 @@ function RegisterScreen({ name, setName, email, setEmail, error, busy, onSubmit,
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">SWOON PLANS · FIRST PLAN FREE</span>
-      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-white mt-2">Let's Get You Set Up</h2>
+      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Let's Get You Set Up</h2>
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">No password needed. We'll email you a link, then your first plan is free.</p>
       <div className="mt-6 space-y-3">
         <input
           type="text" placeholder="Full Name (optional)" value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         <input
           type="email" placeholder="Email Address" value={email}
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
       </div>
       {error && <p className="text-xs text-red-400 mt-2 font-sans">{error}</p>}
@@ -451,13 +451,13 @@ function SignInScreen({ email, setEmail, error, onSubmit, onSwitchToRegister }: 
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">WELCOME BACK</span>
-      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-white mt-2">Sign In</h2>
+      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Sign In</h2>
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">Enter your email and we'll send you a secure sign-in link.</p>
       <div className="mt-6">
         <input
           type="email" placeholder="Email Address" value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
       </div>
       {error && <p className="text-xs text-red-400 mt-2 font-sans">{error}</p>}
@@ -479,9 +479,9 @@ function CheckEmailScreen({ text, onBack }: any) {
   return (
     <div className="text-center py-8">
       <Sparkles className="w-10 h-10 text-[#D5C29F] mx-auto mb-4" />
-      <h3 className="text-2xl font-serif italic text-white">Check Your Email</h3>
+      <h3 className="text-2xl font-serif italic text-[#1A1816]">Check Your Email</h3>
       <p className="text-sm text-[#A89B88] font-sans mt-2 max-w-sm mx-auto font-light">{text}</p>
-      <button onClick={onBack} className="mt-6 text-xs text-[#6E675F] hover:text-white font-sans">Didn't get it? Try again</button>
+      <button onClick={onBack} className="mt-6 text-xs text-[#6E675F] hover:text-[#1A1816] font-sans">Didn't get it? Try again</button>
     </div>
   );
 }
@@ -501,17 +501,17 @@ function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">WELCOME</span>
-      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-white mt-2">Who Are We Planning For?</h2>
-      <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">Answer 15 quick questions about her and get a custom date plan in under a minute.</p>
+      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Who Are We Planning For?</h2>
+      <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">Answer 20 quick questions about her and get a custom date plan in under a minute.</p>
 
       {names.length > 0 && (
         <div className="mt-6">
           <label className="text-[11px] uppercase tracking-[0.25em] font-sans font-bold text-[#A89B88]">Saved Profiles</label>
           <div className="mt-3 space-y-2">
             {names.map((n) => (
-              <div key={n} className="flex items-center justify-between p-4 rounded border border-[#38332E] bg-[#262320] hover:border-[#D5C29F]/40 transition-colors">
+              <div key={n} className="flex items-center justify-between p-4 rounded border border-[#E8E2D9] bg-white hover:border-[#D5C29F]/40 transition-colors">
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-base font-semibold text-white truncate">{n}</span>
+                  <span className="text-base font-semibold text-[#1A1816] truncate">{n}</span>
                   <span className="text-[10px] font-bold text-[#1A1816] bg-[#D5C29F] px-2 py-0.5 rounded tracking-widest shrink-0">{profiles[n].code}</span>
                 </div>
                 <button
@@ -527,12 +527,12 @@ function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
         </div>
       )}
 
-      <div className="mt-8 pt-8 border-t border-[#38332E]">
+      <div className="mt-8 pt-8 border-t border-[#E8E2D9]">
         <div className="flex items-baseline justify-between mb-3">
-          <label htmlFor="new-date-name" className="text-base font-semibold text-white font-sans">
+          <label htmlFor="new-date-name" className="text-base font-semibold text-[#1A1816] font-sans">
             {names.length > 0 ? 'Plan for Someone New' : 'Get Started'}
           </label>
-          <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F]">Step 1 of 15</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F]">Step 1 of 20</span>
         </div>
         <input
           id="new-date-name"
@@ -540,7 +540,7 @@ function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
           onChange={(e) => setDateName(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && hasName) onStart(); }}
           autoFocus
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-4 text-base text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-4 text-base text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         <button
           onClick={onStart}
@@ -567,7 +567,7 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">Plan Ready</span>
-      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-white mt-2">
+      <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">
         {her}'s Night Is Mapped
       </h2>
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">
@@ -579,12 +579,12 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
           {stops.map((s: any, i: number) => {
             const v = s.venue || {};
             return (
-              <div key={i} className="flex items-center gap-3 p-4 rounded border border-[#38332E] bg-[#262320]">
+              <div key={i} className="flex items-center gap-3 p-4 rounded border border-[#E8E2D9] bg-white">
                 <span className="text-[10px] font-bold text-[#1A1816] bg-[#D5C29F] w-6 h-6 flex items-center justify-center rounded-full shrink-0">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-semibold text-white truncate">
+                  <div className="text-sm font-semibold text-[#1A1816] truncate">
                     {i === 0 ? (v.name || 'First stop') : (
                       <span className="inline-flex items-center gap-1.5 text-[#6E675F] max-w-full">
                         <Lock className="w-3 h-3 shrink-0" />
@@ -607,8 +607,8 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
         </div>
       )}
 
-      <div className="mt-6 pt-6 border-t border-[#38332E]">
-        <label htmlFor="gate-email" className="text-sm font-semibold text-white font-sans">
+      <div className="mt-6 pt-6 border-t border-[#E8E2D9]">
+        <label htmlFor="gate-email" className="text-sm font-semibold text-[#1A1816] font-sans">
           Where should we send it?
         </label>
         <input
@@ -617,12 +617,12 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
           autoFocus
-          className="w-full mt-2 bg-[#262320] border border-[#38332E] rounded px-4 py-4 text-base text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full mt-2 bg-white border border-[#E8E2D9] rounded px-4 py-4 text-base text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         <input
           type="text" placeholder="Your first name (optional)" value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full mt-2 bg-[#262320] border border-[#38332E] rounded px-4 py-3 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full mt-2 bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         {error && <p className="text-xs text-red-400 mt-2 font-sans">{error}</p>}
         <button
@@ -665,7 +665,7 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">
         {isIntake ? 'Setting the Scene' : 'Getting to Know Her'}
       </span>
-      <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-white mt-2">{step.title}</h2>
+      <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-[#1A1816] mt-2">{step.title}</h2>
       {step.subtitle && <p className="text-sm text-[#A89B88] font-sans mt-1.5 font-light">{step.subtitle}</p>}
 
       <div className="mt-6 mb-6">
@@ -691,7 +691,7 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
           placeholder={step.searchPlaceholder || 'Search…'}
           value={citySearch}
           onChange={(e) => setCitySearch(e.target.value)}
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3 mb-4 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 mb-4 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
       )}
 
@@ -701,7 +701,7 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
           placeholder={step.placeholder || ''}
           value={answers[step.id] || ''}
           onChange={(e) => onTextChange(e.target.value)}
-          className="w-full bg-[#262320] border border-[#38332E] rounded px-4 py-3.5 text-sm text-white placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3.5 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
       ) : (
         <div className={`grid gap-3 max-h-[45vh] overflow-y-auto pr-1 ${step.cols >= 3 ? 'grid-cols-2 sm:grid-cols-3' : step.cols >= 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
@@ -714,11 +714,11 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
                 key={opt.key}
                 onClick={() => onSelect(opt.key)}
                 className={`text-left p-4 rounded border transition-all cursor-pointer ${
-                  isSelected ? 'border-[#D5C29F] bg-[#D5C29F]/10' : 'border-[#38332E] bg-[#262320] hover:border-[#D5C29F]/50'
+                  isSelected ? 'border-[#D5C29F] bg-[#D5C29F]/10' : 'border-[#E8E2D9] bg-white hover:border-[#D5C29F]/50'
                 }`}
               >
                 {opt.emoji && <div className="text-2xl mb-1">{opt.emoji}</div>}
-                <div className="text-sm font-semibold text-white font-sans">{opt.label}</div>
+                <div className="text-sm font-semibold text-[#1A1816] font-sans">{opt.label}</div>
                 {opt.desc && <div className="text-xs text-[#A89B88] mt-0.5 font-sans">{opt.desc}</div>}
               </button>
             );
@@ -726,11 +726,11 @@ function QuizScreen({ step, stepIndex, intakeTotal, personalityTotal, answers, c
         </div>
       )}
 
-      <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#38332E]">
+      <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#E8E2D9]">
         <button
           onClick={onPrev}
           disabled={!canGoPrev}
-          className={`flex items-center gap-1.5 text-sm font-sans ${canGoPrev ? 'text-[#A89B88] hover:text-white' : 'text-[#38332E] cursor-default'}`}
+          className={`flex items-center gap-1.5 text-sm font-sans ${canGoPrev ? 'text-[#A89B88] hover:text-[#1A1816]' : 'text-[#38332E] cursor-default'}`}
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
@@ -751,7 +751,7 @@ function LoadingScreen() {
   return (
     <div className="py-20 text-center">
       <Loader2 className="w-12 h-12 text-[#D5C29F] animate-spin mx-auto mb-6" />
-      <h2 className="text-xl font-serif italic text-white">Scoring her personality...</h2>
+      <h2 className="text-xl font-serif italic text-[#1A1816]">Scoring her personality...</h2>
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light">Matching your budget, the occasion, and her profile to a real plan.</p>
     </div>
   );
@@ -789,10 +789,10 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
 
   return (
     <div>
-      <div className="flex items-start justify-between pb-6 border-b border-[#38332E] gap-4">
+      <div className="flex items-start justify-between pb-6 border-b border-[#E8E2D9] gap-4">
         <div>
           <span className="text-xs font-semibold tracking-widest text-[#8FB89E] bg-[#8FB89E]/10 px-2.5 py-1 rounded-full font-sans">Plan Ready</span>
-          <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-white mt-2">Her Date Blueprint</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-[#1A1816] mt-2">Her Date Blueprint</h2>
         </div>
         <button onClick={onSwitchDate} className="text-xs font-semibold text-[#A89B88] hover:text-white bg-[#262320] hover:bg-[#38332E] px-3.5 py-2.5 rounded-full transition font-sans shrink-0">
           Switch Date
@@ -803,7 +803,7 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
         {itinerary.stops.map((stop, i) => {
           const res = venueReservation(stop.venue);
           return (
-            <div key={i} className="p-4 rounded border border-[#38332E] bg-[#262320]">
+            <div key={i} className="p-4 rounded border border-[#E8E2D9] bg-white">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="text-xs font-bold text-[#8C8377] uppercase tracking-wider font-sans">{stop.label}</span>
                 <div className="flex items-center gap-2">
@@ -813,7 +813,7 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
                   </button>
                 </div>
               </div>
-              <h3 className="text-base font-bold text-white mt-1.5 font-serif italic">{stop.venue.name}</h3>
+              <h3 className="text-base font-bold text-[#1A1816] mt-1.5 font-serif italic">{stop.venue.name}</h3>
               <p className="text-sm text-[#A89B88] mt-0.5 font-sans font-light">{stop.venue.vibe}</p>
               <div className="mt-3 space-y-1.5 text-xs text-[#8C8377] font-sans">
                 <div className="flex items-center gap-1.5"><MapPin className="w-3 h-3" /> {stop.venue.address}</div>
@@ -832,7 +832,7 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
       </div>
 
       {canText && (
-        <div className="mt-6 pt-6 border-t border-[#38332E]">
+        <div className="mt-6 pt-6 border-t border-[#E8E2D9]">
           {isMobile ? (
             <a
               href={smsHref}
@@ -905,15 +905,15 @@ function PricingScreen({ onClose, email }: { onClose: () => void; email?: string
   return (
     <div className="text-center py-4">
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">Choose Your Plan</span>
-      <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-white mt-2">You've Used Your Free Plan</h2>
+      <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-[#1A1816] mt-2">You've Used Your Free Plan</h2>
       <p className="text-sm text-[#A89B88] font-sans mt-2 font-light max-w-sm mx-auto">Upgrade to keep planning unforgettable dates. Every plan includes our full profiling engine and real venue data.</p>
 
       {error && <p className="text-xs text-red-400 mt-4 font-sans">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
         {plans.map((plan) => (
-          <div key={plan.key} className="p-5 rounded border border-[#38332E] bg-[#262320] text-left flex flex-col">
-            <span className="text-sm font-bold text-white font-sans">{plan.name}</span>
+          <div key={plan.key} className="p-5 rounded border border-[#E8E2D9] bg-white text-left flex flex-col">
+            <span className="text-sm font-bold text-[#1A1816] font-sans">{plan.name}</span>
             <span className="text-xl font-serif italic text-[#D5C29F] mt-1">{plan.price}</span>
             <span className="text-xs text-[#8C8377] font-sans mt-1 flex-1">{plan.blurb}</span>
             <button
@@ -927,7 +927,7 @@ function PricingScreen({ onClose, email }: { onClose: () => void; email?: string
         ))}
       </div>
 
-      <button onClick={onClose} className="mt-6 text-xs text-[#6E675F] hover:text-white font-sans">
+      <button onClick={onClose} className="mt-6 text-xs text-[#6E675F] hover:text-[#1A1816] font-sans">
         Maybe later
       </button>
     </div>
