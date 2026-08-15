@@ -10,6 +10,7 @@ import { AppProcessSection } from './components/AppProcessSection';
 import { HusbandsTestimonialsSection } from './components/HusbandsTestimonialsSection';
 import { ItinerariesSection } from './components/ItinerariesSection';
 import { BlogSection } from './components/BlogSection';
+import { BlogPostPage } from './components/BlogPostPage';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
 import { TermsModal } from './components/TermsModal';
@@ -23,7 +24,13 @@ import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('stories');
+  // Deep-link into the Journal tab, e.g. a "More From the Journal" link
+  // from a standalone article pointing back at /?tab=blog.
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'stories';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab') === 'blog' ? 'blog' : 'stories';
+  });
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
@@ -38,6 +45,15 @@ export default function App() {
       setIsInquireOpen(true);
     }
   }, []);
+
+  // Standalone article pages. Routed at /blog/:slug (see vercel.json
+  // rewrite) so every post has its own real, shareable URL instead of
+  // living inside a modal.
+  const blogSlugMatch =
+    typeof window !== 'undefined' ? window.location.pathname.match(/^\/blog\/([^/]+)\/?$/) : null;
+  if (blogSlugMatch) {
+    return <BlogPostPage slug={blogSlugMatch[1]} />;
+  }
 
   // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
   // SPA renders the confirmation screen for that path instead of the funnel.
