@@ -118,7 +118,7 @@ export const ItinerariesSection: React.FC<ItinerariesSectionProps> = ({ onOpenIn
           Bespoke Date Plans
         </h2>
         <p className="text-xs sm:text-sm text-[#6E675F] font-sans font-light leading-relaxed">
-          Answer 15 short questions to receive a custom date plan like these—complete with her name, price levels, exact venue addresses, phone numbers, and direct reservation links.
+          Answer 20 short questions to receive a custom date plan like these—complete with her name, price levels, exact venue addresses, phone numbers, and direct reservation links.
         </p>
       </div>
 
