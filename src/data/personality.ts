@@ -1,5 +1,5 @@
 // Ported directly from the live makeherswoon.com production data:
-// the 15-question personality quiz, intake steps, mood picker, and type profiles.
+// the 20-question personality quiz, intake steps, mood picker, and type profiles.
 import { METROS } from './metros';
 
 export interface QuizOption {
