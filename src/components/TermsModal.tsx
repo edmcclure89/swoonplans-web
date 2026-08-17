@@ -48,7 +48,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               2. Custom Preference Questionnaire & Accuracy
             </h3>
             <p>
-              To deliver custom-tailored date experiences suited specifically to your partner’s tastes, clients answer a 15-question preference assessment. Our matching algorithm generates itineraries based on submitted preferences. Client information remains strictly confidential and is never sold or shared.
+              To deliver custom-tailored date experiences suited specifically to your partner’s tastes, clients answer a 20-question preference assessment. Our matching algorithm generates itineraries based on submitted preferences. Client information remains strictly confidential and is never sold or shared.
             </p>
           </div>
 
