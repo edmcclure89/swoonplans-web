@@ -23,7 +23,15 @@ import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
 
-export default function App() {
+interface AppProps {
+// Only set during build-time SSR (see src/entry-server.tsx). Lets the
+// per-post prerender script render the correct route (e.g. a specific
+// /blog/:slug) without a real window.location to read from. Always
+// undefined in the browser, where window.location is used instead.
+ssrPath?: string;
+}
+
+export default function App({ ssrPath }: AppProps = {}) {
 // Deep-link into the Journal tab, e.g. a "More From the Journal" link
 // from a standalone article pointing back at /?tab=blog.
 const [activeTab, setActiveTab] = useState<string>(() => {
@@ -49,8 +57,8 @@ setIsInquireOpen(true);
 // Standalone article pages. Routed at /blog/:slug (see vercel.json
 // rewrite) so every post has its own real, shareable URL instead of
 // living inside a modal.
-const blogSlugMatch =
-typeof window !== 'undefined' ? window.location.pathname.match(/^\/blog\/([^/]+)\/?$/) : null;
+const ssrOrBrowserPath = ssrPath ?? (typeof window !== 'undefined' ? window.location.pathname : null);
+const blogSlugMatch = ssrOrBrowserPath ? ssrOrBrowserPath.match(/^\/blog\/([^/]+)\/?$/) : null;
 if (blogSlugMatch) {
 return <BlogPostPage slug={blogSlugMatch[1]} />;
 }
@@ -205,7 +213,7 @@ className="text-[#B89860] hover:underline cursor-pointer font-bold tracking-wide
 TERMS & PRIVACY
 </button>
 </div>
-<span>NEW YORK • LOS ANGELES • MIAMI • NATIONWIDE</span>
+<span>WASHINGTON DC • NEW YORK • LOS ANGELES • NATIONWIDE</span>
 </div>
 </footer>
 
