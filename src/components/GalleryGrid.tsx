@@ -33,7 +33,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ onSelectPhoto, filterC
             Curated Date Night Plans
           </h2>
           <p className="text-xs text-[#6E675F] font-sans mt-2 max-w-xl font-light leading-relaxed">
-            Answer 15 short questions to receive a custom-tailored date itinerary with exact venue addresses, direct reservation links, conversation starters, and insider parking & seating tips.
+            Answer 20 short questions to receive a custom-tailored date itinerary with exact venue addresses, direct reservation links, conversation starters, and insider parking & seating tips.
           </p>
         </div>
 
