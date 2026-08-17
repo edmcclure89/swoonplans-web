@@ -243,7 +243,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
           <div className="mt-12 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#EFEDEB]/60 rounded p-6">
             <div>
               <p className="text-sm font-serif italic text-[#1A1816]">Ready for a curated date plan?</p>
-              <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">Answer 15 short questions today.</p>
+              <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">Answer 20 short questions today.</p>
             </div>
             <button
               onClick={() => setIsInquireOpen(true)}
