@@ -1,5 +1,10 @@
 {
   "crons": [
     { "path": "/api/nudge", "schedule": "0 15 * * *" }
+  ],
+  "rewrites": [
+    { "source": "/welcome", "destination": "/" },
+    { "source": "/register", "destination": "/" },
+    { "source": "/blog/:slug", "destination": "/" }
   ]
 }
