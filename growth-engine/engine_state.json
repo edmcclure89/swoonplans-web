@@ -1,0 +1,50 @@
+{
+  "campaign": "SwoonPlans $0 growth sprint",
+  "goal": "100 registered users",
+  "deadline_utc": "2026-08-21T16:00:00Z",
+  "operating_mode": "human-reviewed daily cycle. The engine drafts and tracks; nothing publishes without explicit go-ahead at the daily review.",
+  "review_time_local": "7:00 AM ET daily",
+  "buffer": {
+    "organization_id": "6a83a796ed2918dea599a0a0",
+    "channels": {
+      "facebook": "6a83a801ccaf649a67c76d1e",
+      "instagram": "6a84d80eccaf649a67d07968",
+      "youtube": "6a83a90eccaf649a67c77141 (connected but unused — needs video assets, none exist yet)"
+    }
+  },
+  "asset_library": [
+    {"file": "steal-this-text-1-spontaneous.png", "style": "steal-this-text-carousel", "status": "used_live", "used_at": "2026-08-19T14:00:00Z"},
+    {"file": "steal-this-text-2-romantic.png", "style": "steal-this-text-carousel", "status": "used_live", "used_at": "2026-08-18T23:15:00Z"},
+    {"file": "steal-this-text-3-playful.png", "style": "steal-this-text-carousel", "status": "drafted", "note": "ready, unused"},
+    {"file": "steal-this-text-4-makeup.png", "style": "steal-this-text-carousel", "status": "drafted", "note": "ready, unused"},
+    {"file": "full-battery-for-you.png", "style": "existing-photo-asset", "status": "drafted", "note": "ready, unused"},
+    {"file": "three-steps-explainer.png", "style": "existing-photo-asset", "status": "drafted", "note": "ready, unused; caption has stale '15 tabs' phrasing worth a copy pass"},
+    {"file": "stop-guessing.png", "style": "pil-generated-text-graphic", "status": "used_live", "used_at": "2026-08-20T14:00:00Z"},
+    {"file": "you-had-one-job.png", "style": "pil-generated-text-graphic", "status": "used_live", "used_at": "2026-08-18T23:15:00Z"},
+    {"file": "ad-you-had-one-job.png", "style": "canva-bold-blue-photo-ad", "status": "used_live", "used_at": "2026-08-20T22:00:00Z"},
+    {"file": "ad-stop-guessing.png", "style": "canva-bold-blue-photo-ad", "status": "available", "note": "never drafted — fresh inventory"},
+    {"file": "ad-bar-is-on-the-floor.png", "style": "canva-bold-blue-photo-ad", "status": "drafted", "note": "just drafted for tomorrow's proposed cycle"},
+    {"file": "ad-looks-like-you-tried.png", "style": "canva-bold-blue-photo-ad", "status": "available", "note": "never drafted — fresh inventory"},
+    {"file": "bernbach-1-black-couple.png", "style": "bernbach-minimalist", "status": "used_live", "used_at": "2026-08-19T22:00:00Z"},
+    {"file": "bernbach-2-asian-couple.png", "style": "bernbach-minimalist", "status": "drafted", "note": "ready, unused"},
+    {"file": "bernbach-3-latino-couple.png", "style": "bernbach-minimalist", "status": "used_live", "used_at": "2026-08-21T13:00:00Z"},
+    {"file": "bernbach-4-southasian-couple.png", "style": "bernbach-minimalist", "status": "drafted", "note": "ready, unused"},
+    {"file": "strategy1-founding-100.png", "style": "strategy-example-founding-scarcity", "status": "review_pending", "note": "NOT deployed to production yet. Copy claims 'after 100, everyone else pays' — needs a real founders-perk decision (build it for real, or soften the claim) before this can be drafted or scheduled. See pending_decisions."},
+    {"file": "strategy3-receipt-is-the-ad.png", "style": "strategy-example-real-screenshot", "status": "review_pending", "note": "NOT deployed to production yet. Uses real product screenshot (step-2.jpg) as the hero — has a minor stray-text artifact at the top edge that should be trimmed before use."}
+  ],
+  "live_schedule": [
+    {"due_at_utc": "2026-08-18T23:15:00Z", "style": "steal-this-text-carousel", "file": "steal-this-text-2-romantic.png"},
+    {"due_at_utc": "2026-08-18T23:15:00Z", "style": "pil-generated-text-graphic", "file": "you-had-one-job.png"},
+    {"due_at_utc": "2026-08-19T14:00:00Z", "style": "steal-this-text-carousel", "file": "steal-this-text-1-spontaneous.png"},
+    {"due_at_utc": "2026-08-19T22:00:00Z", "style": "bernbach-minimalist", "file": "bernbach-1-black-couple.png"},
+    {"due_at_utc": "2026-08-20T14:00:00Z", "style": "pil-generated-text-graphic", "file": "stop-guessing.png"},
+    {"due_at_utc": "2026-08-20T22:00:00Z", "style": "canva-bold-blue-photo-ad", "file": "ad-you-had-one-job.png"},
+    {"due_at_utc": "2026-08-21T13:00:00Z", "style": "bernbach-minimalist", "file": "bernbach-3-latino-couple.png"}
+  ],
+  "pending_decisions": [
+    "strategy1-founding-100: is the '100 founding members, free forever, then everyone pays' claim going to be real? If yes, needs a product/eng decision to actually flag the first 100 accounts. If no, soften the copy before it's used anywhere.",
+    "YouTube channel connected but idle — no video assets exist. Flag if video content becomes available."
+  ],
+  "cycles": [],
+  "last_updated_utc": "2026-08-20T22:30:00Z"
+}
