@@ -13,7 +13,8 @@ import { BlogSection } from './components/BlogSection';
 import { BlogPostPage } from './components/BlogPostPage';
 import { ImageLightbox } from './components/ImageLightbox';
 import { DateConciergeApp } from './components/DateConciergeApp';
-import { TermsModal } from './components/TermsModal';
+import { TermsPage } from './components/TermsPage';
+import { PrivacyPage } from './components/PrivacyPage';
 import { WelcomePage } from './components/WelcomePage';
 import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
@@ -41,7 +42,6 @@ return params.get('tab') === 'blog' ? 'blog' : 'stories';
 });
 const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 const [isInquireOpen, setIsInquireOpen] = useState(false);
-const [isTermsOpen, setIsTermsOpen] = useState(false);
 const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
 // Magic-link / gate emails redirect here with ?app=1 so returning users
@@ -75,6 +75,21 @@ const isRegisterRoute =
 typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/register';
 if (isRegisterRoute) {
 return <RegisterPage />;
+}
+
+// Standalone legal pages, routed at /terms and /privacy (see vercel.json
+// rewrite) so they have real, shareable, crawlable URLs instead of living
+// in a modal.
+const isTermsRoute =
+typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/terms';
+if (isTermsRoute) {
+return <TermsPage />;
+}
+
+const isPrivacyRoute =
+typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/privacy';
+if (isPrivacyRoute) {
+return <PrivacyPage />;
 }
 
 const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -206,12 +221,14 @@ title="Return to top"
 <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between text-[9px] uppercase tracking-[0.25em] font-sans text-[#8C8377] gap-4">
 <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
 <span>© {new Date().getFullYear()} SWOON PLANS CONCIERGE • A DIVISION OF FOR LOVE COACHING. ALL RIGHTS RESERVED.</span>
-<button
-onClick={() => setIsTermsOpen(true)}
-className="text-[#B89860] hover:underline cursor-pointer font-bold tracking-widest ml-1"
->
-TERMS & PRIVACY
-</button>
+<span className="flex items-center gap-3 ml-1">
+<a href="/terms" className="text-[#B89860] hover:underline cursor-pointer font-bold tracking-widest">
+TERMS
+</a>
+<a href="/privacy" className="text-[#B89860] hover:underline cursor-pointer font-bold tracking-widest">
+PRIVACY
+</a>
+</span>
 </div>
 <span>WASHINGTON DC • NEW YORK • LOS ANGELES • NATIONWIDE</span>
 </div>
@@ -233,12 +250,6 @@ setIsInquireOpen(true);
 <DateConciergeApp
 isOpen={isInquireOpen}
 onClose={() => setIsInquireOpen(false)}
-/>
-
-{/* Terms & Privacy Modal */}
-<TermsModal
-isOpen={isTermsOpen}
-onClose={() => setIsTermsOpen(false)}
 />
 </div>
 );
