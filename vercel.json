@@ -5,6 +5,8 @@
   "rewrites": [
     { "source": "/welcome", "destination": "/" },
     { "source": "/register", "destination": "/" },
-    { "source": "/blog/:slug", "destination": "/" }
+    { "source": "/blog/:slug", "destination": "/" },
+    { "source": "/terms", "destination": "/" },
+    { "source": "/privacy", "destination": "/" }
   ]
 }
