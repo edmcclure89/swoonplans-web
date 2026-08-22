@@ -20,7 +20,6 @@ import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
-import { DualEntryHero } from './components/DualEntryHero';
 import { SwoonTypeFlow, readScoresFromQuery } from './components/SwoonTypeFlow';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
@@ -167,13 +166,10 @@ toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
 <main className="flex-1">
 {activeTab === 'stories' && (
 <>
-<DualEntryHero
-onChooseSwoonType={() => setIsSwoonTypeOpen(true)}
-onChoosePlanDate={() => setIsInquireOpen(true)}
-/>
 <HeroSection
 onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
+onOpenSwoonType={() => setIsSwoonTypeOpen(true)}
 />
 <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
 <HusbandsTestimonialsSection />
