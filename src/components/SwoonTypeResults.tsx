@@ -5,11 +5,13 @@ import { SwoonScores, getTypeName, buildCheatSheet, SOLO_CATEGORIES } from '../d
 interface SwoonTypeResultsProps {
   scores: SwoonScores;
   onRetake: () => void;
+  onTrackChange?: (track: 'partnered' | 'solo') => void;
+  onShare?: () => void;
 }
 
 type Track = 'partnered' | 'solo';
 
-export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRetake }) => {
+export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRetake, onTrackChange, onShare }) => {
   const [track, setTrack] = useState<Track>('partnered');
   const [shareCopied, setShareCopied] = useState(false);
 
@@ -23,7 +25,13 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
 
   const shareMessage = `I just found out my Swoon Type is "${typeName}." Here's how to date me: ${shareUrl}`;
 
+  const changeTrack = (next: Track) => {
+    setTrack(next);
+    onTrackChange?.(next);
+  };
+
   const handleSendToHim = async () => {
+    onShare?.();
     if (navigator.share) {
       try {
         await navigator.share({ title: 'My Swoon Type', text: shareMessage, url: shareUrl });
@@ -69,13 +77,13 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
         {/* Track toggle */}
         <div className="inline-flex rounded-full border border-[#E8E2D9] p-1 mb-12 font-sans text-sm">
           <button
-            onClick={() => setTrack('partnered')}
+            onClick={() => changeTrack('partnered')}
             className={`px-5 py-2 rounded-full transition-colors ${track === 'partnered' ? 'bg-[#1A1816] text-[#FAF8F5]' : 'text-[#8C8377]'}`}
           >
             Partnered & Seen
           </button>
           <button
-            onClick={() => setTrack('solo')}
+            onClick={() => changeTrack('solo')}
             className={`px-5 py-2 rounded-full transition-colors ${track === 'solo' ? 'bg-[#1A1816] text-[#FAF8F5]' : 'text-[#8C8377]'}`}
           >
             Solo & Thriving
