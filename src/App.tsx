@@ -195,9 +195,6 @@ onOpenInquire={() => setIsInquireOpen(true)}
 </>
 )}
 
-{activeTab === 'for-women' && (
-<AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
-)}
 </main>
 
 {/* Minimal Footer */}
