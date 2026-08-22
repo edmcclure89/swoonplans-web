@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { HERO_SLIDES } from '../data/portfolio';
-import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroSectionProps {
 onOpenLightbox?: (photo: any) => void;
 onOpenInquire: () => void;
+onOpenSwoonType: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onOpenSwoonType }) => {
 const [currentIndex, setCurrentIndex] = useState(0);
 
 useEffect(() => {
@@ -19,7 +20,7 @@ return () => clearInterval(timer);
 
 return (
 <section className="relative w-full px-4 sm:px-8 pt-4 pb-6 flex flex-col justify-between">
-<div className="relative h-[72vh] sm:h-[80vh] rounded-sm overflow-hidden group bg-[#1A1816] border border-[#E8E2D9] shadow-sm flex items-center justify-center">
+<div className="relative min-h-[72vh] sm:min-h-[80vh] rounded-sm overflow-hidden group bg-[#1A1816] border border-[#E8E2D9] shadow-sm flex items-center justify-center">
 {HERO_SLIDES.map((s, idx) => (
 <div
 key={s.id}
@@ -33,30 +34,52 @@ src={s.image}
 alt={s.title}
 className="w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05]"
 />
-<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/40" />
+<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/50" />
 <div className="absolute inset-0 bg-grain pointer-events-none" />
 </div>
 ))}
 
-<div className="absolute inset-x-0 top-10 sm:top-16 z-10 px-6 text-center">
-<h1 className="text-3xl sm:text-5xl md:text-6xl text-white font-light leading-tight font-serif italic drop-shadow-lg tracking-tight">
-The Date Planning Algorithm Built For Her
+{/* Dual-entry overlay content */}
+<div className="relative z-10 w-full px-6 sm:px-10 py-16 sm:py-20 text-center">
+<span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#E2D5C3] font-bold">
+Swoon Plans
+</span>
+<h1 className="text-3xl sm:text-5xl font-serif italic font-light text-white mt-4 mb-6 max-w-3xl mx-auto leading-tight drop-shadow-lg">
+Every great date starts with being understood.
 </h1>
-</div>
-
-<div className="absolute bottom-8 sm:bottom-10 left-6 sm:left-10 z-10 max-w-2xl text-left space-y-3">
-<p className="text-xs sm:text-base text-[#E2D5C3] font-serif italic tracking-wide font-light opacity-90">
-Answer 20 targeted questions about her. Our algorithm builds a custom date plan with real venues, addresses, and reservation links. No searching, no guesswork.
+<p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-10 sm:mb-12">
+Choose your path. Both take under two minutes.
 </p>
-<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
+
+<div className="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto text-left">
+<button
+onClick={onOpenSwoonType}
+className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#D5C29F] rounded-2xl p-6 sm:p-8 transition-colors"
+>
+<span className="text-[10px] uppercase tracking-widest font-sans text-[#D5C29F] font-bold">
+For Her
+</span>
+<h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
+I want to be taken out
+</h2>
+<p className="font-sans text-sm text-[#E2D5C3]">
+Discover your Swoon Type. A quick, beautiful quiz that tells him exactly how to date you.
+</p>
+</button>
+
 <button
 onClick={onOpenInquire}
-className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#D5C29F] hover:bg-[#E5D2AF] text-[#1A1816] font-bold text-xs sm:text-sm uppercase tracking-[0.25em] font-sans rounded-sm transition-all shadow-2xl shadow-black/40 cursor-pointer hover:scale-[1.02]"
-aria-label="Start planning her date now"
+className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#D5C29F] rounded-2xl p-6 sm:p-8 transition-colors"
 >
-<Sparkles className="w-4 h-4" />
-Start Now
-<ArrowRight className="w-4 h-4" />
+<span className="text-[10px] uppercase tracking-widest font-sans text-[#D5C29F] font-bold">
+For Him (Or Anyone Planning)
+</span>
+<h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
+I want to plan a custom date
+</h2>
+<p className="font-sans text-sm text-[#E2D5C3]">
+Answer 20 quick questions, get a full itinerary with real venues and reservation links.
+</p>
 </button>
 </div>
 </div>
