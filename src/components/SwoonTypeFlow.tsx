@@ -2,10 +2,26 @@ import React, { useState } from 'react';
 import { SwoonTypeQuiz } from './SwoonTypeQuiz';
 import { SwoonTypeResults } from './SwoonTypeResults';
 import { scoreAnswers, SwoonScores, Vibe, Pace, Energy } from '../data/swoonType';
+import { supabase } from '../lib/supabase';
 
 interface SwoonTypeFlowProps {
   onClose: () => void;
   initialScores?: SwoonScores | null;
+}
+
+// Fire-and-forget analytics logging. Never blocks the UI and never surfaces
+// errors to the user; a failed log shouldn't interrupt someone's quiz.
+function logSwoonEvent(eventType: string, scores: SwoonScores | null, track?: string) {
+  supabase
+    .rpc('log_swoon_event', {
+      p_event_type: eventType,
+      p_vibe: scores?.vibe ?? null,
+      p_pace: scores?.pace ?? null,
+      p_energy: scores?.energy ?? null,
+      p_track: track ?? null,
+    })
+    .then(() => {})
+    .catch(() => {});
 }
 
 export const SwoonTypeFlow: React.FC<SwoonTypeFlowProps> = ({ onClose, initialScores = null }) => {
@@ -15,12 +31,23 @@ export const SwoonTypeFlow: React.FC<SwoonTypeFlowProps> = ({ onClose, initialSc
     return (
       <SwoonTypeQuiz
         onClose={onClose}
-        onComplete={(answers) => setScores(scoreAnswers(answers))}
+        onComplete={(answers) => {
+          const computed = scoreAnswers(answers);
+          logSwoonEvent('quiz_completed', computed);
+          setScores(computed);
+        }}
       />
     );
   }
 
-  return <SwoonTypeResults scores={scores} onRetake={() => setScores(null)} />;
+  return (
+    <SwoonTypeResults
+      scores={scores}
+      onRetake={() => setScores(null)}
+      onTrackChange={(track) => logSwoonEvent('track_viewed', scores, track)}
+      onShare={() => logSwoonEvent('share_clicked', scoreq)}
+    />
+  );
 };
 
 // Reads ?v=&p=&e= from the URL so a shared results link opens straight to
