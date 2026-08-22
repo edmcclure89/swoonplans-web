@@ -80,11 +80,11 @@ return;
 }
 
 // ---------------------------------------------------------------------------
-// Solo Swoon Type unlock: a one-time payment, mapped server-side to
-// PRICE_ID_SOLO_UNLOCK so the client can never spoof the price (mirrors the
-// Founders Pass pattern above). success/cancel both return to the buyer's
-// own results page (returnPath, e.g. /swoon-type?v=...&p=...&e=...) so they
-// land back where they were; ?unlocked=1 is appended on success only.
+// Solo Swoon Type unlock: a recurring subscription, mapped server-side to
+// PRICE_ID_SOLO_UNLOCK so the client can never spoof the price. success/cancel
+// both return to the buyer's own results page (returnPath, e.g.
+// /swoon-type?v=...&p=...&e=...) so they land back where they were;
+// ?unlocked=1 is appended on success only.
 // ---------------------------------------------------------------------------
 if (plan === 'solo_unlock') {
 const soloPriceId = process.env.PRICE_ID_SOLO_UNLOCK;
@@ -109,12 +109,12 @@ const metadata: Record<string, string> = { plan: 'solo_unlock' };
 if (supabaseUserId) metadata.supabase_user_id = supabaseUserId;
 
 const session = await stripe.checkout.sessions.create({
-mode: 'payment',
+mode: 'subscription',
 line_items: [{ price: soloPriceId, quantity: 1 }],
 customer_email: customerEmail,
 client_reference_id: supabaseUserId,
 metadata,
-payment_intent_data: { metadata },
+subscription_data: { metadata },
 success_url: successUrl.toString(),
 cancel_url: returnUrl.toString(),
 });
