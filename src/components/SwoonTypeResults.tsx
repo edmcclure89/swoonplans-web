@@ -12,9 +12,38 @@ interface SwoonTypeResultsProps {
 
 type Track = 'partnered' | 'solo';
 
+// Web Share API is only reliable on mobile, where it opens the native share
+// sheet (Messages, Mail, etc). On desktop Chrome/Edge it exists but often
+// does nothing visible depending on what's configured on the OS, so we only
+// attempt it on touch/mobile devices and go straight to clipboard elsewhere.
+function isMobileDevice(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+// Legacy fallback that works even when the async Clipboard API is blocked
+// (missing permission, insecure context edge cases, older browsers).
+function legacyCopy(text: string): boolean {
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(textarea);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRetake, onTrackChange, onShare }) => {
   const [track, setTrack] = useState<Track>('partnered');
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareFallback, setShareFallback] = useState<string | null>(null);
   const [unlockLoading, setUnlockLoading] = useState(false);
   const [unlockError, setUnlockError] = useState<string | null>(null);
 
@@ -38,21 +67,37 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
 
   const handleSendToHim = async () => {
     onShare?.();
-    if (navigator.share) {
+    setShareFallback(null);
+
+    if (isMobileDevice() && navigator.share) {
       try {
         await navigator.share({ title: 'My Swoon Type', text: shareMessage, url: shareUrl });
         return;
       } catch {
-        // fall through to clipboard
+        // User cancelled or share failed; fall through to clipboard below.
       }
     }
-    try {
-      await navigator.clipboard.writeText(shareMessage);
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareMessage);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2500);
+        return;
+      } catch {
+        // fall through to legacy copy
+      }
+    }
+
+    if (legacyCopy(shareMessage)) {
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2500);
-    } catch {
-      // no-op, clipboard may be unavailable
+      return;
     }
+
+    // Last resort: nothing copied automatically, show the message in a
+    // visible, selectable box so the person can copy it by hand.
+    setShareFallback(shareMessage);
   };
 
   const handleUnlock = async () => {
@@ -141,6 +186,18 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
               <Send className="w-4 h-4" />
               {shareCopied ? 'Copied, go paste it to him' : 'Send to Him'}
             </button>
+
+            {shareFallback && (
+              <div className="font-sans text-xs text-[#38332E] bg-white border border-[#E8E2D9] rounded-xl p-4">
+                <p className="text-[#8C8377] mb-2">Couldn't copy automatically. Select and copy this manually:</p>
+                <input
+                  readOnly
+                  value={shareFallback}
+                  onFocus={(e) => e.currentTarget.select()}
+                  className="w-full text-xs p-2 border border-[#E8E2D9] rounded-md bg-[#FAF8F5]"
+                />
+              </div>
+            )}
 
             <p className="font-sans text-xs text-[#8C8377] text-center">
               He'll see your type and this cheat sheet. Full custom date itineraries unlock when he does.
