@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Lock, ArrowLeft } from 'lucide-react';
 import { SwoonScores, getTypeName, buildCheatSheet, SOLO_CATEGORIES } from '../data/swoonType';
+import { startSoloUnlockCheckout } from '../lib/checkout';
 
 interface SwoonTypeResultsProps {
   scores: SwoonScores;
@@ -14,10 +15,15 @@ type Track = 'partnered' | 'solo';
 export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRetake, onTrackChange, onShare }) => {
   const [track, setTrack] = useState<Track>('partnered');
   const [shareCopied, setShareCopied] = useState(false);
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const [unlockError, setUnlockError] = useState<string | null>(null);
 
   const typeName = getTypeName(scores);
   const cheatSheet = buildCheatSheet(scores);
   const soloCategory = SOLO_CATEGORIES[scores.energy];
+
+  const isUnlocked =
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('unlocked') === '1';
 
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/swoon-type?v=${scores.vibe}&p=${scores.pace}&e=${scores.energy}`
@@ -47,6 +53,21 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
     } catch {
       // no-op, clipboard may be unavailable
     }
+  };
+
+  const handleUnlock = async () => {
+    setUnlockError(null);
+    setUnlockLoading(true);
+    const returnPath = typeof window !== 'undefined'
+      ? window.location.pathname + window.location.search
+      : '/swoon-type';
+    const result = await startSoloUnlockCheckout(returnPath);
+    if (!result.ok) {
+      setUnlockError(result.error || "Couldn't start checkout. Try again in a moment.");
+      setUnlockLoading(false);
+    }
+    // On success the page navigates away to Stripe Checkout, so no need to
+    // reset loading state here.
   };
 
   return (
@@ -131,23 +152,31 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
               <h2 className="font-serif italic text-2xl mb-2">{soloCategory.title}</h2>
               <p className="font-sans text-[#38332E] leading-relaxed mb-6">{soloCategory.blurb}</p>
 
-              <div className="relative rounded-xl border border-dashed border-[#D5C29F] p-6 text-center">
-                <Lock className="w-5 h-5 mx-auto mb-3 text-[#B89860]" />
-                <p className="font-sans text-sm text-[#8C8377] mb-4">
-                  Curated solo itineraries for your type unlock here.
-                </p>
-                <button
-                  disabled
-                  className="font-sans text-xs font-bold uppercase tracking-widest bg-[#1A1816]/10 text-[#8C8377] px-6 py-3 rounded-full cursor-not-allowed"
-                  title="Checkout opens soon"
-                >
-                  Unlock &middot; Coming Soon
-                </button>
-              </div>
+              {isUnlocked ? (
+                <div className="rounded-xl border border-[#D5C29F] bg-[#FAF6EE] p-6 text-center">
+                  <p className="font-sans text-sm text-[#38332E]">
+                    You're unlocked. Your curated solo itineraries are being finalized and will be emailed to you shortly.
+                  </p>
+                </div>
+              ) : (
+                <div className="relative rounded-xl border border-dashed border-[#D5C29F] p-6 text-center">
+                  <Lock className="w-5 h-5 mx-auto mb-3 text-[#B89860]" />
+                  <p className="font-sans text-sm text-[#8C8377] mb-4">
+                    Curated solo itineraries for your type unlock here.
+                  </p>
+                  <button
+                    onClick={handleUnlock}
+                    disabled={unlockLoading}
+                    className="font-sans text-xs font-bold uppercase tracking-widest bg-[#B89860] hover:bg-[#a3865298] text-[#1A1816] px-6 py-3 rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {unlockLoading ? 'Loading checkout...' : 'Unlock Solo Itineraries'}
+                  </button>
+                  {unlockError && (
+                    <p className="font-sans text-xs text-red-600 mt-3">{unlockError}</p>
+                  )}
+                </div>
+              )}
             </div>
-            <p className="font-sans text-xs text-[#8C8377] text-center">
-              Solo unlock pricing and checkout are being finalized. Check back shortly.
-            </p>
           </div>
         )}
       </main>
