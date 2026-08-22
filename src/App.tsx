@@ -1,7 +1,7 @@
 /**
-* @license
-* SPDX-License-Identifier: Apache-2.0
-*/
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
@@ -20,6 +20,8 @@ import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
+import { DualEntryHero } from './components/DualEntryHero';
+import { SwoonTypeFlow, readScoresFromQuery } from './components/SwoonTypeFlow';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
@@ -43,6 +45,7 @@ return params.get('tab') === 'blog' ? 'blog' : 'stories';
 const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 const [isInquireOpen, setIsInquireOpen] = useState(false);
 const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+const [isSwoonTypeOpen, setIsSwoonTypeOpen] = useState(false);
 
 // Magic-link / gate emails redirect here with ?app=1 so returning users
 // land back inside the concierge modal instead of a bare homepage.
@@ -92,6 +95,21 @@ if (isPrivacyRoute) {
 return <PrivacyPage />;
 }
 
+// Swoon Type quiz + results, routed at /swoon-type (see vercel.json
+// rewrite). A shared results link carries ?v=&p=&e= so it opens straight
+// to results instead of the quiz. Also reachable from the homepage dual
+// entry without a full navigation, via isSwoonTypeOpen below.
+const isSwoonTypeRoute =
+typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/swoon-type';
+if (isSwoonTypeRoute) {
+return (
+<SwoonTypeFlow
+onClose={() => { window.location.href = '/'; }}
+initialScores={readScoresFromQuery()}
+/>
+);
+}
+
 const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
 
 const handleOpenLightboxByPhoto = (photo: PhotoItem) => {
@@ -119,6 +137,10 @@ const scrollToTop = () => {
 window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+if (isSwoonTypeOpen) {
+return <SwoonTypeFlow onClose={() => setIsSwoonTypeOpen(false)} />;
+}
+
 return (
 <div className="min-h-screen bg-[#FAF8F5] text-[#1A1816] font-serif selection:bg-[#E2D5C3] selection:text-[#1A1816] relative flex flex-col">
 {/* Audio Engine */}
@@ -145,6 +167,10 @@ toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
 <main className="flex-1">
 {activeTab === 'stories' && (
 <>
+<DualEntryHero
+onChooseSwoonType={() => setIsSwoonTypeOpen(true)}
+onChoosePlanDate={() => setIsInquireOpen(true)}
+/>
 <HeroSection
 onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
