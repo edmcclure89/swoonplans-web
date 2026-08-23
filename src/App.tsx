@@ -21,6 +21,7 @@ import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SwoonTypeFlow, readScoresFromQuery } from './components/SwoonTypeFlow';
+import { SelfCareConciergeApp } from './components/SelfCareConciergeApp';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
@@ -45,6 +46,7 @@ const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null
 const [isInquireOpen, setIsInquireOpen] = useState(false);
 const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 const [isSwoonTypeOpen, setIsSwoonTypeOpen] = useState(false);
+const [isSelfCareOpen, setIsSelfCareOpen] = useState(false);
 
 // Magic-link / gate emails redirect here with ?app=1 so returning users
 // land back inside the concierge modal instead of a bare homepage.
@@ -53,6 +55,9 @@ if (typeof window === 'undefined') return;
 const params = new URLSearchParams(window.location.search);
 if (params.get('app') === '1') {
 setIsInquireOpen(true);
+}
+if (params.get('selfcare') === '1') {
+setIsSelfCareOpen(true);
 }
 }, []);
 
@@ -170,6 +175,7 @@ toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
 onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
 onOpenSwoonType={() => setIsSwoonTypeOpen(true)}
+onOpenSelfCare={() => setIsSelfCareOpen(true)}
 />
 <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
 <HusbandsTestimonialsSection />
@@ -269,6 +275,12 @@ setIsInquireOpen(true);
 <DateConciergeApp
 isOpen={isInquireOpen}
 onClose={() => setIsInquireOpen(false)}
+/>
+
+{/* Self Care Dates concierge */}
+<SelfCareConciergeApp
+isOpen={isSelfCareOpen}
+onClose={() => setIsSelfCareOpen(false)}
 />
 </div>
 );
