@@ -127,6 +127,43 @@ return;
 }
 
 // ---------------------------------------------------------------------------
+// Self Care Dates unlimited unlock: a recurring subscription, mapped
+// server-side to PRICE_ID_SELF_CARE so the client can never spoof the price.
+// ---------------------------------------------------------------------------
+if (plan === 'self_care_monthly') {
+const selfCarePriceId = process.env.PRICE_ID_SELF_CARE;
+if (!selfCarePriceId) {
+console.error(
+'[create-checkout-session] PRICE_ID_SELF_CARE is not set. Refusing to start Self Care checkout; ' +
+'will not fall back to another price.'
+);
+res.status(500).json({ error: 'Self Care Unlimited is not available right now. Please try again later.' });
+return;
+}
+
+try {
+const metadata: Record<string, string> = { plan: 'self_care_monthly' };
+if (supabaseUserId) metadata.supabase_user_id = supabaseUserId;
+
+const session = await stripe.checkout.sessions.create({
+mode: 'subscription',
+line_items: [{ price: selfCarePriceId, quantity: 1 }],
+customer_email: customerEmail,
+client_reference_id: supabaseUserId,
+metadata,
+subscription_data: { metadata },
+success_url: `${origin}/?checkout=success`,
+cancel_url: `${origin}/?checkout=cancelled`,
+});
+
+res.status(200).json({ url: session.url });
+} catch (err: any) {
+res.status(500).json({ error: err?.message || 'Could not create checkout session.' });
+}
+return;
+}
+
+// ---------------------------------------------------------------------------
 // Existing subscription plans (starter / operator / command). Unchanged: the
 // client sends the price ID directly and we open a subscription checkout.
 // ---------------------------------------------------------------------------
