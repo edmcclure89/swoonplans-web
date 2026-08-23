@@ -6,9 +6,10 @@ interface HeroSectionProps {
 onOpenLightbox?: (photo: any) => void;
 onOpenInquire: () => void;
 onOpenSwoonType: () => void;
+onOpenSelfCare: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onOpenSwoonType }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onOpenSwoonType, onOpenSelfCare }) => {
 const [currentIndex, setCurrentIndex] = useState(0);
 
 useEffect(() => {
@@ -53,17 +54,17 @@ Choose your path. Both take under two minutes.
 
 <div className="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto text-left">
 <button
-onClick={onOpenSwoonType}
-className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#D5C29F] rounded-2xl p-6 sm:p-8 transition-colors"
+onClick={onOpenSelfCare}
+className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#E08B6F] rounded-2xl p-6 sm:p-8 transition-colors"
 >
-<span className="text-[10px] uppercase tracking-widest font-sans text-[#D5C29F] font-bold">
-For Her
+<span className="text-[10px] uppercase tracking-widest font-sans text-[#E08B6F] font-bold">
+For Her, Solo
 </span>
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
-I want to be taken out
+Self Care Dates
 </h2>
 <p className="font-sans text-sm text-[#E2D5C3]">
-Discover your Swoon Type. A quick, beautiful quiz that tells him exactly how to date you.
+Plan your own solo day or night out, built around your vibe and your budget. First 3 plans free.
 </p>
 </button>
 
@@ -72,13 +73,13 @@ onClick={onOpenInquire}
 className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#D5C29F] rounded-2xl p-6 sm:p-8 transition-colors"
 >
 <span className="text-[10px] uppercase tracking-widest font-sans text-[#D5C29F] font-bold">
-For Him (Or Anyone Planning)
+For Him
 </span>
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
-I want to plan a custom date
+Swoon Her
 </h2>
 <p className="font-sans text-sm text-[#E2D5C3]">
-Answer 20 quick questions, get a full itinerary with real venues and reservation links.
+Answer a few quick questions about her, get a full itinerary with real venues and reservation links.
 </p>
 </button>
 </div>
