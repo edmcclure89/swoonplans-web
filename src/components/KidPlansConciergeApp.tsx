@@ -110,7 +110,7 @@ export const KidPlansConciergeApp: React.FC<KidPlansConciergeAppProps> = ({ isOp
             className="text-[11px] uppercase tracking-[0.3em] font-sans font-black px-3 py-1 rounded-full"
             style={{ background: SUN, color: INK }}
           >
-            Kid Plans &middot; Ages Newborn–18
+            Kid Plan &middot; Ages 0–18
           </span>
         </div>
 
