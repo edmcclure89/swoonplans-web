@@ -136,3 +136,40 @@ return { ok: true };
 return { ok: false, error: "Couldn't reach checkout. Check your connection and try again." };
 }
 }
+
+// Swoon Plans Kids unlimited unlock: a recurring subscription (monthly or
+// annual), mapped server-side to PRICE_ID_KID_PLANS_MONTHLY /
+// PRICE_ID_KID_PLANS_ANNUAL so the client can never spoof the price (mirrors
+// the Self Care pattern above).
+export async function startKidPlansCheckout(
+  interval: 'monthly' | 'annual'
+): Promise<{ ok: boolean; error?: string }> {
+try {
+let userId: string | undefined;
+let email: string | undefined;
+try {
+const { data } = await supabase.auth.getUser();
+userId = data?.user?.id;
+email = data?.user?.email || undefined;
+} catch {
+userId = undefined;
+email = undefined;
+}
+
+const plan = interval === 'annual' ? 'kid_plans_annual' : 'kid_plans_monthly';
+
+const res = await fetch('/api/create-checkout-session', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ plan, email, userId }),
+});
+const data = await res.json().catch(() => ({}));
+if (!res.ok || !data.url) {
+return { ok: false, error: data.error || "Couldn't start checkout. Try again in a moment." };
+}
+window.location.href = data.url;
+return { ok: true };
+} catch {
+return { ok: false, error: "Couldn't reach checkout. Check your connection and try again." };
+}
+}
