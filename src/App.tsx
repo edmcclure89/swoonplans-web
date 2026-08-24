@@ -22,6 +22,7 @@ import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SwoonTypeFlow, readScoresFromQuery } from './components/SwoonTypeFlow';
 import { SelfCareConciergeApp } from './components/SelfCareConciergeApp';
+import { KidPlansConciergeApp } from './components/KidPlansConciergeApp';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
 import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
@@ -47,6 +48,7 @@ const [isInquireOpen, setIsInquireOpen] = useState(false);
 const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 const [isSwoonTypeOpen, setIsSwoonTypeOpen] = useState(false);
 const [isSelfCareOpen, setIsSelfCareOpen] = useState(false);
+const [isKidPlansOpen, setIsKidPlansOpen] = useState(false);
 
 // Magic-link / gate emails redirect here with ?app=1 so returning users
 // land back inside the concierge modal instead of a bare homepage.
@@ -58,6 +60,9 @@ setIsInquireOpen(true);
 }
 if (params.get('selfcare') === '1') {
 setIsSelfCareOpen(true);
+}
+if (params.get('kidplans') === '1') {
+setIsKidPlansOpen(true);
 }
 }, []);
 
@@ -112,6 +117,15 @@ onClose={() => { window.location.href = '/'; }}
 initialScores={readScoresFromQuery()}
 />
 );
+}
+
+// Kid Plans quiz, routed at /kid-plans (see vercel.json rewrite) so it has
+// a real, shareable URL. Also reachable from the homepage dual entry
+// without a full navigation, via isKidPlansOpen below.
+const isKidPlansRoute =
+typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/kid-plans';
+if (isKidPlansRoute) {
+return <KidPlansConciergeApp isOpen={true} onClose={() => { window.location.href = '/'; }} />;
 }
 
 const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -176,6 +190,7 @@ onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
 onOpenSwoonType={() => setIsSwoonTypeOpen(true)}
 onOpenSelfCare={() => setIsSelfCareOpen(true)}
+onOpenKidPlans={() => setIsKidPlansOpen(true)}
 />
 <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
 <HusbandsTestimonialsSection />
@@ -281,6 +296,12 @@ onClose={() => setIsInquireOpen(false)}
 <SelfCareConciergeApp
 isOpen={isSelfCareOpen}
 onClose={() => setIsSelfCareOpen(false)}
+/>
+
+{/* Kid Plans concierge */}
+<KidPlansConciergeApp
+isOpen={isKidPlansOpen}
+onClose={() => setIsKidPlansOpen(false)}
 />
 </div>
 );
