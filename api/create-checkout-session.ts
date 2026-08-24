@@ -127,7 +127,7 @@ return;
 }
 
 // ---------------------------------------------------------------------------
-// Self Care Dates unlimited unlock: a recurring subscription, mapped
+// Self Care unlimited unlock: a recurring subscription, mapped
 // server-side to PRICE_ID_SELF_CARE so the client can never spoof the price.
 // ---------------------------------------------------------------------------
 if (plan === 'self_care_monthly') {
