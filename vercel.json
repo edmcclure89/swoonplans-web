@@ -1,13 +1,38 @@
 {
   "crons": [
-    { "path": "/api/nudge", "schedule": "0 15 * * *" }
+    {
+      "path": "/api/nudge",
+      "schedule": "0 15 * * *"
+    }
   ],
   "rewrites": [
-    { "source": "/welcome", "destination": "/" },
-    { "source": "/register", "destination": "/" },
-    { "source": "/blog/:slug", "destination": "/" },
-    { "source": "/terms", "destination": "/" },
-    { "source": "/privacy", "destination": "/" },
-    { "source": "/swoon-type", "destination": "/" }
+    {
+      "source": "/welcome",
+      "destination": "/"
+    },
+    {
+      "source": "/register",
+      "destination": "/"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/"
+    },
+    {
+      "source": "/terms",
+      "destination": "/"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/"
+    },
+    {
+      "source": "/swoon-type",
+      "destination": "/"
+    },
+    {
+      "source": "/kid-plans",
+      "destination": "/"
+    }
   ]
 }
