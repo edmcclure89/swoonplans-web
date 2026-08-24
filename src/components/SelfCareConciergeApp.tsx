@@ -197,7 +197,7 @@ export const SelfCareConciergeApp: React.FC<SelfCareConciergeAppProps> = ({ isOp
           ) : screen === 'register' ? (
             <div>
               <span className="text-[10px] uppercase tracking-[0.35em] font-sans font-bold" style={{ color: CORAL }}>
-                Self Care Dates &middot; First 3 Free
+                Self Care &middot; First 3 Free
               </span>
               <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Let's Get You Set Up</h2>
               <p className="text-sm text-[#6E675F] font-sans mt-2 font-light">
@@ -240,7 +240,7 @@ export const SelfCareConciergeApp: React.FC<SelfCareConciergeAppProps> = ({ isOp
           ) : screen === 'quiz' ? (
             <div>
               <span className="text-[10px] uppercase tracking-[0.35em] font-sans font-bold" style={{ color: CORAL }}>
-                Self Care Dates
+                Self Care
               </span>
               <h2 className="text-2xl sm:text-3xl font-serif italic font-light text-[#1A1816] mt-2">{question.title}</h2>
 
