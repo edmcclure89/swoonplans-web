@@ -164,6 +164,48 @@ return;
 }
 
 // ---------------------------------------------------------------------------
+// Swoon Plans Kids unlimited unlock: a recurring subscription (monthly or
+// annual), mapped server-side to PRICE_ID_KID_PLANS_MONTHLY /
+// PRICE_ID_KID_PLANS_ANNUAL so the client can never spoof the price (mirrors
+// the Self Care pattern above).
+// ---------------------------------------------------------------------------
+if (plan === 'kid_plans_monthly' || plan === 'kid_plans_annual') {
+const isAnnual = plan === 'kid_plans_annual';
+const kidPlansPriceId = isAnnual
+? process.env.PRICE_ID_KID_PLANS_ANNUAL
+: process.env.PRICE_ID_KID_PLANS_MONTHLY;
+if (!kidPlansPriceId) {
+console.error(
+`[create-checkout-session] ${isAnnual ? 'PRICE_ID_KID_PLANS_ANNUAL' : 'PRICE_ID_KID_PLANS_MONTHLY'} is not set. ` +
+'Refusing to start Kid Plans checkout; will not fall back to another price.'
+);
+res.status(500).json({ error: 'Kid Plans is not available right now. Please try again later.' });
+return;
+}
+
+try {
+const metadata: Record<string, string> = { plan };
+if (supabaseUserId) metadata.supabase_user_id = supabaseUserId;
+
+const session = await stripe.checkout.sessions.create({
+mode: 'subscription',
+line_items: [{ price: kidPlansPriceId, quantity: 1 }],
+customer_email: customerEmail,
+client_reference_id: supabaseUserId,
+metadata,
+subscription_data: { metadata },
+success_url: `${origin}/?checkout=success`,
+cancel_url: `${origin}/?checkout=cancelled`,
+});
+
+res.status(200).json({ url: session.url });
+} catch (err: any) {
+res.status(500).json({ error: err?.message || 'Could not create checkout session.' });
+}
+return;
+}
+
+// ---------------------------------------------------------------------------
 // Existing subscription plans (starter / operator / command). Unchanged: the
 // client sends the price ID directly and we open a subscription checkout.
 // ---------------------------------------------------------------------------
