@@ -56,6 +56,10 @@ function planForPrice(priceId: string | null | undefined): string | null {
   if (priceId === process.env.PRICE_ID_STARTER) return 'starter';
   if (priceId === process.env.PRICE_ID_OPERATOR) return 'operator';
   if (priceId === process.env.PRICE_ID_COMMAND) return 'command';
+  if (priceId === process.env.PRICE_ID_SELF_CARE) return 'self_care_monthly';
+  if (priceId === process.env.PRICE_ID_SOLO_UNLOCK) return 'solo_unlock';
+  if (priceId === process.env.PRICE_ID_KID_PLANS_MONTHLY) return 'kid_plans_monthly';
+  if (priceId === process.env.PRICE_ID_KID_PLANS_ANNUAL) return 'kid_plans_annual';
   return null;
 }
 
