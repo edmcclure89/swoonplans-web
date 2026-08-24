@@ -89,10 +89,10 @@ onClick={onOpenKidPlans}
 className="group bg-[#5FD068]/10 hover:bg-[#5FD068]/20 backdrop-blur-md border border-[#5FD068]/25 hover:border-[#5FD068] rounded-2xl p-6 sm:p-8 transition-colors"
 >
 <span className="text-[10px] uppercase tracking-widest font-sans text-[#5FD068] font-bold">
-For Their Kids &middot; Newborn&ndash;18
+For Their Kids &middot; 0&ndash;18
 </span>
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
-Kid Plans
+Kid Plan
 </h2>
 <p className="font-sans text-sm text-[#E2D5C3]">
 12 quick questions about their personality, not just their age, so the plan sounds like you actually get them.
