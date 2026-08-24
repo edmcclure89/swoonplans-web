@@ -61,7 +61,7 @@ className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-wh
 For Her, Solo
 </span>
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
-Self Care Dates
+Self Care
 </h2>
 <p className="font-sans text-sm text-[#E2D5C3]">
 Plan your own solo day or night out, built around your vibe and your budget. First 3 plans free.
