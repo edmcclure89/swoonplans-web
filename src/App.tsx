@@ -277,7 +277,7 @@ isOpen={isInquireOpen}
 onClose={() => setIsInquireOpen(false)}
 />
 
-{/* Self Care Dates concierge */}
+{/* Self Care concierge */}
 <SelfCareConciergeApp
 isOpen={isSelfCareOpen}
 onClose={() => setIsSelfCareOpen(false)}
