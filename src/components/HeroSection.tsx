@@ -7,9 +7,10 @@ onOpenLightbox?: (photo: any) => void;
 onOpenInquire: () => void;
 onOpenSwoonType: () => void;
 onOpenSelfCare: () => void;
+onOpenKidPlans: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onOpenSwoonType, onOpenSelfCare }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenInquire, onOpenSwoonType, onOpenSelfCare, onOpenKidPlans }) => {
 const [currentIndex, setCurrentIndex] = useState(0);
 
 useEffect(() => {
@@ -49,10 +50,10 @@ Swoon Plans
 Every great date starts with being understood.
 </h1>
 <p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-10 sm:mb-12">
-Choose your path. Both take under two minutes.
+Choose your path. All three take under two minutes.
 </p>
 
-<div className="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto text-left">
+<div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto text-left">
 <button
 onClick={onOpenSelfCare}
 className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#E08B6F] rounded-2xl p-6 sm:p-8 transition-colors"
@@ -80,6 +81,21 @@ Swoon Her
 </h2>
 <p className="font-sans text-sm text-[#E2D5C3]">
 Answer a few quick questions about her, get a full itinerary with real venues and reservation links.
+</p>
+</button>
+
+<button
+onClick={onOpenKidPlans}
+className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 hover:border-[#4EC9F5] rounded-2xl p-6 sm:p-8 transition-colors"
+>
+<span className="text-[10px] uppercase tracking-widest font-sans text-[#4EC9F5] font-bold">
+For Their Kids &middot; Newborn&ndash;18
+</span>
+<h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
+Kid Plans
+</h2>
+<p className="font-sans text-sm text-[#E2D5C3]">
+12 quick questions about their personality, not just their age, so the plan sounds like you actually get them.
 </p>
 </button>
 </div>
