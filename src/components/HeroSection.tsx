@@ -86,8 +86,47 @@ Answer a few quick questions about her, get a full itinerary with real venues an
 
 <button
 onClick={onOpenKidPlans}
-className="group bg-[#5FD068]/10 hover:bg-[#5FD068]/20 backdrop-blur-md border border-[#5FD068]/25 hover:border-[#5FD068] rounded-2xl p-6 sm:p-8 transition-colors"
+className="group relative bg-[#5FD068]/10 hover:bg-[#5FD068]/20 backdrop-blur-md border border-[#5FD068]/25 hover:border-[#5FD068] rounded-2xl p-6 sm:p-8 transition-colors"
 >
+<svg
+viewBox="0 0 100 100"
+className="absolute -top-5 -right-5 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-lg pointer-events-none rotate-[8deg]"
+aria-hidden="true"
+>
+<polygon
+points="50.0,0.0 57.8,21.0 75.0,6.7 71.2,28.8 93.3,25.0 79.0,42.2 100.0,50.0 79.0,57.8 93.3,75.0 71.2,71.2 75.0,93.3 57.8,79.0 50.0,100.0 42.2,79.0 25.0,93.3 28.8,71.2 6.7,75.0 21.0,57.8 0.0,50.0 21.0,42.2 6.7,25.0 28.8,28.8 25.0,6.7 42.2,21.0"
+fill="#FFC629"
+stroke="#1A1816"
+strokeWidth="2.5"
+strokeLinejoin="round"
+/>
+<text
+x="50"
+y="46"
+textAnchor="middle"
+fontFamily="Arial, sans-serif"
+fontWeight="900"
+fontSize="17"
+fill="#D2232A"
+stroke="#1A1816"
+strokeWidth="0.6"
+>
+ALL
+</text>
+<text
+x="50"
+y="64"
+textAnchor="middle"
+fontFamily="Arial, sans-serif"
+fontWeight="900"
+fontSize="17"
+fill="#D2232A"
+stroke="#1A1816"
+strokeWidth="0.6"
+>
+NEW
+</text>
+</svg>
 <span className="text-[10px] uppercase tracking-widest font-sans text-[#5FD068] font-bold">
 For Their Kids &middot; 0&ndash;18
 </span>
