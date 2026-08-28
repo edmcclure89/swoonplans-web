@@ -20,6 +20,8 @@ setCurrentIndex((prev) => (prev + 1) % HERO_SLIDES.length);
 return () => clearInterval(timer);
 }, []);
 
+const activeSlide = HERO_SLIDES[currentIndex];
+
 return (
 <section className="relative w-full px-4 sm:px-8 pt-4 pb-6 flex flex-col justify-between">
 <div className="relative min-h-[72vh] sm:min-h-[80vh] rounded-sm overflow-hidden group bg-[#1A1816] border border-[#E8E2D9] shadow-sm flex items-center justify-center">
@@ -46,12 +48,25 @@ className="w-full h-full object-cover object-center filter brightness-[0.88] con
 <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#E2D5C3] font-bold">
 Swoon Plans
 </span>
-<h1 className="text-3xl sm:text-5xl font-serif italic font-light text-white mt-4 mb-6 max-w-3xl mx-auto leading-tight drop-shadow-lg">
-Every great date starts with being understood.
+<h1 className="text-3xl sm:text-5xl font-serif italic font-light text-white mt-4 mb-4 max-w-3xl mx-auto leading-tight drop-shadow-lg">
+{activeSlide.headline}
 </h1>
-<p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-10 sm:mb-12">
-Choose your path. All three take under two minutes.
+<p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-6">
+{activeSlide.subheadline}
 </p>
+
+<div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-10 sm:mb-12 text-left">
+<div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-xs">
+<div className="text-[#E08B6F] text-xs mb-1">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<p className="font-sans text-xs text-[#E8E2D9] leading-snug">"Planned an unforgettable anniversary in under two minutes without a single argument."</p>
+<p className="font-sans text-[10px] text-[#B5ADA2] mt-1">&#mdash; Marcus T.</p>
+</div>
+<div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-xs">
+<div className="text-[#E08B6F] text-xs mb-1">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<p className="font-sans text-xs text-[#E8E2D9] leading-snug">"My group chat is officially green with envy after my last weekend date."</p>
+<p className="font-sans text-[10px] text-[#B5ADA2] mt-1">&#mdash; Sarah K.</p>
+</div>
+</div>
 
 <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto text-left">
 <button
@@ -64,9 +79,14 @@ For Her, Solo
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
 Self Care
 </h2>
-<p className="font-sans text-sm text-[#E2D5C3]">
-Plan your own solo day or night out, built around your vibe and your budget. First 3 plans free.
+<p className="font-sans text-sm text-[#E2D5C3] font-bold mb-2">
+Reclaim your time. Reward your soul.
 </p>
+<ul className="font-sans text-xs text-[#E2D5C3] space-y-1 list-disc pl-4">
+<li>Zero mental load required</li>
+<li>Curated to reset, recharge, and spoil yourself</li>
+<li>Built entirely around your exact vibe</li>
+</ul>
 </button>
 
 <button
@@ -79,9 +99,14 @@ For Him
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
 Swoon Her
 </h2>
-<p className="font-sans text-sm text-[#E2D5C3]">
-Answer a few quick questions about her, get a full itinerary with real venues and reservation links.
+<p className="font-sans text-sm text-[#E2D5C3] font-bold mb-2">
+Look like a genius without lifting a finger.
 </p>
+<ul className="font-sans text-xs text-[#E2D5C3] space-y-1 list-disc pl-4">
+<li>Stop the endless scrolling and guessing</li>
+<li>A tailored date night planned in 90 seconds</li>
+<li>Your ultimate competitive advantage</li>
+</ul>
 </button>
 
 <button
@@ -133,9 +158,14 @@ For Their Kids &middot; 0&ndash;18
 <h2 className="font-serif italic text-2xl mt-2 mb-3 text-white">
 Kid Plan
 </h2>
-<p className="font-sans text-sm text-[#E2D5C3]">
-12 quick questions about their personality, not just their age, so the plan sounds like you actually get them.
+<p className="font-sans text-sm text-[#E2D5C3] font-bold mb-2">
+Be the cool parent. Skip the planning panic.
 </p>
+<ul className="font-sans text-xs text-[#E2D5C3] space-y-1 list-disc pl-4">
+<li>Eradicate the chaos of keeping everyone entertained</li>
+<li>Custom family plans, zero guesswork</li>
+<li>Leaves the group chat green with envy</li>
+</ul>
 </button>
 </div>
 </div>
