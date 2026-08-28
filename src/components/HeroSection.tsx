@@ -43,30 +43,21 @@ className="w-full h-full object-cover object-center filter brightness-[0.88] con
 </div>
 ))}
 
-{/* Dual-entry overlay content */}
-<div className="relative z-10 w-full px-6 sm:px-10 py-16 sm:py-20 text-center">
-<span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#E2D5C3] font-bold">
-Swoon Plans
-</span>
-<h1 className="text-3xl sm:text-5xl font-serif italic font-light text-white mt-4 mb-4 max-w-3xl mx-auto leading-tight drop-shadow-lg">
-{activeSlide.headline}
-</h1>
-<p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-6">
-{activeSlide.subheadline}
-</p>
-
-<div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-10 sm:mb-12 text-left">
-<div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-xs">
+{/* Single review badge, top-right corner */}
+<div className="absolute top-6 right-6 z-20 bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-[220px] text-left hidden sm:block">
 <div className="text-[#E08B6F] text-xs mb-1">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
 <p className="font-sans text-xs text-[#E8E2D9] leading-snug">"Planned an unforgettable anniversary in under two minutes without a single argument."</p>
 <p className="font-sans text-[10px] text-[#B5ADA2] mt-1">&#mdash; Marcus T.</p>
 </div>
-<div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-xs">
-<div className="text-[#E08B6F] text-xs mb-1">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<p className="font-sans text-xs text-[#E8E2D9] leading-snug">"My group chat is officially green with envy after my last weekend date."</p>
-<p className="font-sans text-[10px] text-[#B5ADA2] mt-1">&#mdash; Sarah K.</p>
-</div>
-</div>
+
+{/* Dual-entry overlay content */}
+<div className="relative z-10 w-full px-6 sm:px-10 py-16 sm:py-20 text-center">
+<h1 className="text-3xl sm:text-5xl font-serif italic font-light text-white mt-4 mb-4 max-w-3xl mx-auto leading-tight drop-shadow-lg">
+{activeSlide.headline}
+</h1>
+<p className="font-sans text-[#E8E2D9] max-w-xl mx-auto mb-10 sm:mb-12">
+{activeSlide.subheadline}
+</p>
 
 <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto text-left">
 <button
@@ -147,7 +138,7 @@ fontWeight="900"
 fontSize="17"
 fill="#D2232A"
 stroke="#1A1816"
-strokeWidth="0.6"
+sstrokeWidth="0.6"
 >
 NEW
 </text>
@@ -200,5 +191,6 @@ aria-label="Next slide"
 </div>
 
 </section>
-);
-};
+)
+;}
+
