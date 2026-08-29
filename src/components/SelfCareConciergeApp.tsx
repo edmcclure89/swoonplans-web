@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, Sparkles, RefreshCw } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { X, ArrowLeft, MapPin, Phone, Loader2, RefreshCw } from 'lucide-react';
 import { venueReservation, Itinerary, rerollStop } from '../lib/itinerary';
 import { METRO_OPTIONS, BUDGET_OPTIONS, VIBE_OPTIONS, OCCASION_OPTIONS, buildSelfCarePlan } from '../data/selfCare';
 import { startSelfCarePlanCheckout } from '../lib/checkout';
@@ -10,48 +9,41 @@ isOpen: boolean;
 onClose: () => void;
 }
 
-type Screen = 'register' | 'checkEmail' | 'quiz' | 'loading' | 'output' | 'paywall';
+type Screen = 'quiz' | 'loading' | 'output' | 'paywall';
 
 const FREE_PLAN_LIMIT = 3;
 const CORAL = '#E08B6F';
 const UNLIMITED_PROMO_CODE = 'EDFAM2026';
 
 const COUNT_KEY = 'swoon_selfcare_plans_used';
+const UNLIMITED_KEY = 'swoon_selfcare_unlimited';
+
 function getLocalCount(): number {
 try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch { return 0; }
 }
 function setLocalCount(n: number) {
 try { localStorage.setItem(COUNT_KEY, String(n)); } catch { /* ignore */ }
 }
-
-const PENDING_KEY = 'swoon_selfcare_pending_plan';
-function savePendingAnswers(answers: Record<string, string>) {
-try { localStorage.setItem(PENDING_KEY, JSON.stringify(answers)); } catch { /* ignore */ }
+function getLocalUnlimited(): boolean {
+try { return localStorage.getItem(UNLIMITED_KEY) === 'true'; } catch { return false; }
 }
-function loadPendingAnswers(): Record<string, string> | null {
-try { return JSON.parse(localStorage.getItem(PENDING_KEY) || 'null'); } catch { return null; }
-}
-function clearPendingAnswers() {
-try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
+function setLocalUnlimited(v: boolean) {
+try { localStorage.setItem(UNLIMITED_KEY, v ? 'true' : 'false'); } catch { /* ignore */ }
 }
 
 export const SelfCareConciergeApp: React.FC<SelfCareConciergeAppProps> = ({ isOpen, onClose }) => {
-const [screen, setScreen] = useState<Screen>('register');
-const [checking, setChecking] = useState(true);
+const [screen, setScreen] = useState<Screen>('quiz');
 const [plansUsed, setPlansUsed] = useState(0);
 const [unlimitedAccess, setUnlimitedAccess] = useState(false);
-
-const [regName, setRegName] = useState('');
-const [regEmail, setRegEmail] = useState('');
-const [regPromo, setRegPromo] = useState('');
-const [regError, setRegError] = useState('');
-const [regBusy, setRegBusy] = useState(false);
 
 const [answers, setAnswers] = useState<Record<string, string>>({});
 const [stepIndex, setStepIndex] = useState(0);
 const [locationSearch, setLocationSearch] = useState('');
 
 const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+
+const [promoCode, setPromoCode] = useState('');
+const [promoError, setPromoError] = useState('');
 const [unlockError, setUnlockError] = useState<string | null>(null);
 const [unlockLoading, setUnlockLoading] = useState(false);
 
@@ -64,59 +56,18 @@ const QUESTIONS = [
 
 useEffect(() => {
 if (!isOpen) return;
-setChecking(true);
-(async () => {
-const { data } = await supabase.auth.getSession();
-const session = data?.session;
-const pendingAnswers = loadPendingAnswers();
-
-if (session) {
-const { data: userData } = await supabase.auth.getUser();
-const meta = userData?.user?.user_metadata || {};
-const usedCount = typeof meta.self_care_plans_used === 'number' ? meta.self_care_plans_used : getLocalCount();
-const isUnlimited = meta.unlimited_self_care === true;
+const usedCount = getLocalCount();
+const isUnlimited = getLocalUnlimited();
 setPlansUsed(usedCount);
 setUnlimitedAccess(isUnlimited);
-
-if (pendingAnswers) {
-setAnswers(pendingAnswers);
-clearPendingAnswers();
 if (!isUnlimited && usedCount >= FREE_PLAN_LIMIT) {
-setScreen('paywall');
-} else {
-runQuizFinish(pendingAnswers, usedCount);
-}
-} else if (!isUnlimited && usedCount >= FREE_PLAN_LIMIT) {
 setScreen('paywall');
 } else {
 setScreen('quiz');
 }
-} else {
-setScreen('register');
-}
-setChecking(false);
-})();
-// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isOpen]);
 
 if (!isOpen) return null;
-
-async function submitRegistration() {
-if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
-setRegError('');
-setRegBusy(true);
-const isPromoUnlimited = regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
-const { error } = await supabase.auth.signInWithOtp({
-email: regEmail,
-options: {
-data: { name: regName, self_care_plans_used: 0, unlimited_self_care: isPromoUnlimited },
-emailRedirectTo: window.location.origin + '/?selfcare=1',
-},
-});
-setRegBusy(false);
-if (error) { setRegError(error.message || 'Could not send the link. Try again.'); return; }
-setScreen('checkEmail');
-}
 
 function selectAnswer(questionId: string, key: string) {
 const next = { ...answers, [questionId]: key };
@@ -135,17 +86,12 @@ setScreen('loading');
 const metroKey = finalAnswers.location || 'washington-dc';
 const budget = finalAnswers.budget || '$$';
 const vibe = finalAnswers.vibe || 'relaxing';
-setTimeout(async () => {
+setTimeout(() => {
 const plan = buildSelfCarePlan(metroKey, budget, vibe);
 setItinerary(plan);
 const nextCount = currentUsed + 1;
 setPlansUsed(nextCount);
 setLocalCount(nextCount);
-try {
-await supabase.auth.updateUser({ data: { self_care_plans_used: nextCount } });
-} catch {
-// Non-fatal: local count still enforces the limit this session.
-}
 setScreen('output');
 }, 1400);
 }
@@ -166,6 +112,17 @@ setAnswers({});
 setStepIndex(0);
 setItinerary(null);
 setScreen('quiz');
+}
+
+function applyPromoCode() {
+if (promoCode.trim().toUpperCase() === UNLIMITED_PROMO_CODE) {
+setLocalUnlimited(true);
+setUnlimitedAccess(true);
+setPromoError('');
+setScreen('quiz');
+} else {
+setPromoError("That code isn't valid.");
+}
 }
 
 async function handleUnlock() {
@@ -195,61 +152,7 @@ aria-label="Close"
 </button>
 
 <div className="p-6 sm:p-10">
-{checking ? (
-<div className="py-24 flex flex-col items-center gap-4">
-<Loader2 className="w-8 h-8 animate-spin" style={{ color: CORAL }} />
-<p className="text-sm text-[#6E675F] font-sans">Checking your account...</p>
-</div>
-) : screen === 'register' ? (
-<div>
-<span className="text-[10px] uppercase tracking-[0.35em] font-sans font-bold" style={{ color: CORAL }}>
-Self Care &middot; First 3 Free
-</span>
-<h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Let's Get You Set Up</h2>
-<p className="text-sm text-[#6E675F] font-sans mt-2 font-light">
-No password needed. We'll email you a link, then your first 3 self-care plans are on us.
-</p>
-<div className="mt-6 space-y-3">
-<input
-type="text" placeholder="Full Name (optional)" value={regName}
-onChange={(e) => setRegName(e.target.value)}
-className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none transition"
-/>
-<input
-type="email" placeholder="Email Address" value={regEmail}
-onChange={(e) => setRegEmail(e.target.value)}
-onKeyDown={(e) => { if (e.key === 'Enter' && regEmail.includes('@')) submitRegistration(); }}
-className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none transition"
-/>
-<input
-type="text" placeholder="Promo Code (optional)" value={regPromo}
-onChange={(e) => setRegPromo(e.target.value)}
-onKeyDown={(e) => { if (e.key === 'Enter' && regEmail.includes('@')) submitRegistration(); }}
-className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none transition"
-/>
-</div>
-{regError && <p className="text-xs text-red-500 mt-2 font-sans">{regError}</p>}
-<button
-onClick={submitRegistration}
-disabled={regBusy}
-className="w-full mt-6 py-3.5 text-white font-bold text-xs uppercase tracking-[0.2em] font-sans rounded-sm transition-all disabled:opacity-60"
-style={{ backgroundColor: CORAL }}
->
-{regBusy ? 'Sending...' : 'Email Me a Link'}
-</button>
-</div>
-) : screen === 'checkEmail' ? (
-<div className="text-center py-8">
-<Sparkles className="w-10 h-10 mx-auto mb-4" style={{ color: CORAL }} />
-<h3 className="text-2xl font-serif italic text-[#1A1816]">Check Your Email</h3>
-<p className="text-sm text-[#6E675F] font-sans mt-2 max-w-sm mx-auto font-light">
-We sent a sign-in link to {regEmail}. Click it to continue, no password needed.
-</p>
-<button onClick={() => setScreen('register')} className="mt-6 text-xs text-[#6E675F] hover:text-[#1A1816] font-sans">
-Didn't get it? Try again
-</button>
-</div>
-) : screen === 'quiz' ? (
+{screen === 'quiz' ? (
 <div>
 <span className="text-[10px] uppercase tracking-[0.35em] font-sans font-bold" style={{ color: CORAL }}>
 Self Care
@@ -410,6 +313,30 @@ style={{ backgroundColor: CORAL }}
 {unlockLoading ? 'Loading checkout...' : 'Unlock Unlimited'}
 </button>
 {unlockError && <p className="text-xs text-red-500 mt-3 font-sans">{unlockError}</p>}
+</div>
+
+<div className="mt-6 max-w-xs mx-auto text-left">
+<p className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F] font-bold mb-2">
+Have a promo code?
+</p>
+<div className="flex gap-2">
+<input
+type="text"
+placeholder="Enter code"
+value={promoCode}
+onChange={(e) => setPromoCode(e.target.value)}
+onKeyDown={(e) => { if (e.key === 'Enter') applyPromoCode(); }}
+className="flex-1 bg-white border border-[#E8E2D9] rounded px-3 py-2 text-sm text-[#1A1816] focus:outline-none"
+/>
+<button
+onClick={applyPromoCode}
+className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded font-sans"
+style={{ backgroundColor: CORAL, color: '#fff' }}
+>
+Apply
+</button>
+</div>
+{promoError && <p className="text-xs text-red-500 mt-2 font-sans">{promoError}</p>}
 </div>
 
 <button onClick={onClose} className="mt-6 text-xs text-[#6E675F] hover:text-[#1A1816] font-sans">
