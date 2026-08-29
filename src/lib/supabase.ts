@@ -39,14 +39,6 @@ export async function refreshMe(): Promise<{ meStatus: MeStatus | null; isVipFam
   }
 }
 
-const FAM_PASS_RE = /(^|\s)\.fam\b/i;
-export function hasFamPass(name: string): boolean {
-  return FAM_PASS_RE.test(name || '');
-}
-export function stripFamPass(name: string): string {
-  return (name || '').replace(/(^|\s)\.fam\b/gi, ' ').replace(/\s{2,}/g, ' ').trim();
-}
-
 export function maxProfilesForPlan(plan: string | null): number {
   if (plan === 'starter') return 1;
   if (plan === 'operator') return 3;
