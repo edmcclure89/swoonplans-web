@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, ArrowLeft, ArrowRight, MapPin, Phone, Loader2, RefreshCw, CheckCircle2, Sparkles, Lock, MessageSquare } from 'lucide-react';
-import { supabase, refreshMe, MeStatus, hasFamPass, stripFamPass, maxProfilesForPlan, loadProfiles, saveProfiles, SavedProfile } from '../lib/supabase';
+import { supabase, refreshMe, MeStatus, maxProfilesForPlan, loadProfiles, saveProfiles, SavedProfile } from '../lib/supabase';
 import { introSteps, personalityQuestions, holidayStep, dateMoodStep, QuizStep, TYPE_PROFILES, PRICE_IDS } from '../data/personality';
 import { generateItinerary, rerollStop, venueReservation, Itinerary } from '../lib/itinerary';
 
@@ -157,8 +157,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
   async function submitRegistration() {
     if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
     setRegError(''); setRegBusy(true);
-    const vip = hasFamPass(regName) || regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
-    const cleanName = hasFamPass(regName) ? stripFamPass(regName) : regName;
+    const vip = regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
+    const cleanName = regName;
 
     if (itinerary) {
       // Free-plan gate: one email only, the itinerary itself. The account is
