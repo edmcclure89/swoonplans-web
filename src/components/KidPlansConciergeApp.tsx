@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { AGE_BANDS, KID_QUESTIONS, buildKidPlan, KidPlanResult } from '../data/kidPlans';
-import { supabase } from '../lib/supabase';
 import { startKidPlansCheckout } from '../lib/checkout';
 
 interface KidPlansConciergeAppProps {
@@ -9,7 +8,7 @@ isOpen: boolean;
 onClose: () => void;
 }
 
-type Screen = 'register' | 'checkEmail' | 'age' | 'quiz' | 'loading' | 'result' | 'paywall';
+type Screen = 'age' | 'quiz' | 'loading' | 'result' | 'paywall';
 
 const SUN = '#FFC93C';
 const SKY = '#4EC9F5';
@@ -22,79 +21,51 @@ const UNLIMITED_PROMO_CODE = 'EDFAM2026';
 const MONTHLY_PRICE_DISPLAY = '$11.32';
 
 const COUNT_KEY = 'swoon_kidplan_plans_used';
+const UNLIMITED_KEY = 'swoon_kidplan_unlimited';
+
 function getLocalCount(): number {
 try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch { return 0; }
 }
 function setLocalCount(n: number) {
 try { localStorage.setItem(COUNT_KEY, String(n)); } catch { /* ignore */ }
 }
+function getLocalUnlimited(): boolean {
+try { return localStorage.getItem(UNLIMITED_KEY) === 'true'; } catch { return false; }
+}
+function setLocalUnlimited(v: boolean) {
+try { localStorage.setItem(UNLIMITED_KEY, v ? 'true' : 'false'); } catch { /* ignore */ }
+}
 
 export const KidPlansConciergeApp: React.FC<KidPlansConciergeAppProps> = ({ isOpen, onClose }) => {
-const [screen, setScreen] = useState<Screen>('register');
-const [checking, setChecking] = useState(true);
+const [screen, setScreen] = useState<Screen>('age');
 const [plansUsed, setPlansUsed] = useState(0);
 const [unlimitedAccess, setUnlimitedAccess] = useState(false);
-
-const [regName, setRegName] = useState('');
-const [regEmail, setRegEmail] = useState('');
-const [regPromo, setRegPromo] = useState('');
-const [regError, setRegError] = useState('');
-const [regBusy, setRegBusy] = useState(false);
 
 const [ageKey, setAgeKey] = useState<string>('');
 const [answers, setAnswers] = useState<Record<string, string>>({});
 const [stepIndex, setStepIndex] = useState(0);
 const [result, setResult] = useState<KidPlanResult | null>(null);
 
+const [promoCode, setPromoCode] = useState('');
+const [promoError, setPromoError] = useState('');
 const [unlockError, setUnlockError] = useState<string | null>(null);
 const [unlockLoading, setUnlockLoading] = useState(false);
 
 useEffect(() => {
 if (!isOpen) return;
-setChecking(true);
-(async () => {
-const { data } = await supabase.auth.getSession();
-const session = data?.session;
-
-if (session) {
-const { data: userData } = await supabase.auth.getUser();
-const meta = userData?.user?.user_metadata || {};
-const usedCount = typeof meta.kid_plans_used === 'number' ? meta.kid_plans_used : getLocalCount();
-const isUnlimited = meta.unlimited_kid_plans === true;
+const usedCount = getLocalCount();
+const isUnlimited = getLocalUnlimited();
 setPlansUsed(usedCount);
 setUnlimitedAccess(isUnlimited);
-
 if (!isUnlimited && usedCount >= FREE_PLAN_LIMIT) {
 setScreen('paywall');
 } else {
 setScreen('age');
 }
-} else {
-setScreen('register');
-}
-setChecking(false);
-})();
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isOpen]);
 
 if (!isOpen) return null;
-
-async function submitRegistration() {
-if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
-setRegError('');
-setRegBusy(true);
-const isPromoUnlimited = regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
-const { error } = await supabase.auth.signInWithOtp({
-email: regEmail,
-options: {
-data: { name: regName, kid_plans_used: 0, unlimited_kid_plans: isPromoUnlimited },
-emailRedirectTo: window.location.origin + '/?kidplan=1',
-},
-});
-setRegBusy(false);
-if (error) { setRegError(error.message || 'Could not send the link. Try again.'); return; }
-setScreen('checkEmail');
-}
 
 function reset() {
 if (!unlimitedAccess && plansUsed >= FREE_PLAN_LIMIT) {
@@ -132,17 +103,12 @@ finishQuiz(next);
 
 function finishQuiz(finalAnswers: Record<string, string>) {
 setScreen('loading');
-setTimeout(async () => {
+setTimeout(() => {
 const plan = buildKidPlan(ageKey, finalAnswers);
 setResult(plan);
 const nextCount = plansUsed + 1;
 setPlansUsed(nextCount);
 setLocalCount(nextCount);
-try {
-await supabase.auth.updateUser({ data: { kid_plans_used: nextCount } });
-} catch {
-// Non-fatal: local count still enforces the limit this session.
-}
 setScreen('result');
 }, 1200);
 }
@@ -152,6 +118,17 @@ if (screen === 'quiz' && stepIndex > 0) {
 setStepIndex(stepIndex - 1);
 } else if (screen === 'quiz' && stepIndex === 0) {
 setScreen('age');
+}
+}
+
+function applyPromoCode() {
+if (promoCode.trim().toUpperCase() === UNLIMITED_PROMO_CODE) {
+setLocalUnlimited(true);
+setUnlimitedAccess(true);
+setPromoError('');
+setScreen('age');
+} else {
+setPromoError('That code isn\'t valid.');
 }
 }
 
@@ -173,7 +150,7 @@ return (
 <div
 className="absolute inset-0"
 style={{ background: 'linear-gradient(135deg, rgba(78,201,245,0.55), rgba(255,111,145,0.55))' }}
-onClick={screen === 'register' || screen === 'checkEmail' || screen === 'paywall' ? handleClose : handleClose}
+onClick={handleClose}
 />
 <div
 className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-[28px] shadow-2xl"
@@ -208,63 +185,7 @@ Kid Plan &middot; Ages 0–18
 </div>
 
 <div className="px-6 pb-8">
-{checking ? (
-<div className="py-16 flex flex-col items-center justify-center text-center">
-<Loader2 className="animate-spin mb-4" size={32} color={CORAL} />
-<p className="font-sans font-black text-sm" style={{ color: INK }}>Checking your account...</p>
-</div>
-) : screen === 'register' ? (
-<div>
-<h2 className="text-3xl font-sans font-black mt-2 mb-1" style={{ color: INK }}>
-Let's get set up. 🎈
-</h2>
-<p className="text-sm font-sans mb-6" style={{ color: '#5C5A73' }}>
-No password needed. We'll email you a link, then your first 3 Kid Plans are on us.
-</p>
-<div className="space-y-3">
-<input
-type="text" placeholder="Full Name (optional)" value={regName}
-onChange={(e) => setRegName(e.target.value)}
-className="w-full rounded-2xl px-4 py-3 text-sm font-sans focus:outline-none"
-style={{ background: '#F1EFE6', color: INK }}
-/>
-<input
-type="email" placeholder="Email Address" value={regEmail}
-onChange={(e) => setRegEmail(e.target.value)}
-onKeyDown={(e) => { if (e.key === 'Enter' && regEmail.includes('@')) submitRegistration(); }}
-className="w-full rounded-2xl px-4 py-3 text-sm font-sans focus:outline-none"
-style={{ background: '#F1EFE6', color: INK }}
-/>
-<input
-type="text" placeholder="Promo Code (optional)" value={regPromo}
-onChange={(e) => setRegPromo(e.target.value)}
-onKeyDown={(e) => { if (e.key === 'Enter' && regEmail.includes('@')) submitRegistration(); }}
-className="w-full rounded-2xl px-4 py-3 text-sm font-sans focus:outline-none"
-style={{ background: '#F1EFE6', color: INK }}
-/>
-</div>
-{regError && <p className="text-xs mt-2 font-sans" style={{ color: CORAL }}>{regError}</p>}
-<button
-onClick={submitRegistration}
-disabled={regBusy}
-className="w-full mt-6 rounded-full py-3.5 font-sans font-black text-sm disabled:opacity-60"
-style={{ background: GRASS, color: '#fff' }}
->
-{regBusy ? 'Sending...' : 'Email Me a Link'}
-</button>
-</div>
-) : screen === 'checkEmail' ? (
-<div className="text-center py-8">
-<Sparkles className="mx-auto mb-4" size={36} color={CORAL} />
-<h3 className="text-2xl font-sans font-black" style={{ color: INK }}>Check Your Email</h3>
-<p className="text-sm font-sans mt-2 max-w-sm mx-auto" style={{ color: '#5C5A73' }}>
-We sent a sign-in link to {regEmail}. Click it to continue, no password needed.
-</p>
-<button onClick={() => setScreen('register')} className="mt-6 text-xs font-sans" style={{ color: '#5C5A73' }}>
-Didn't get it? Try again
-</button>
-</div>
-) : screen === 'age' ? (
+{screen === 'age' ? (
 <div>
 <h2 className="text-3xl font-sans font-black mt-2 mb-1" style={{ color: INK }}>
 Let's crack the code. 🧠
@@ -451,6 +372,31 @@ style={{ background: GRASS, color: '#fff' }}
 {unlockLoading ? 'Loading checkout...' : 'Unlock Unlimited'}
 </button>
 {unlockError && <p className="text-xs mt-3 font-sans" style={{ color: CORAL }}>{unlockError}</p>}
+</div>
+
+<div className="mt-6 max-w-xs mx-auto text-left">
+<p className="text-xs font-sans font-bold uppercase tracking-widest mb-2" style={{ color: '#5C5A73' }}>
+Have a promo code?
+</p>
+<div className="flex gap-2">
+<input
+type="text"
+placeholder="Enter code"
+value={promoCode}
+onChange={(e) => setPromoCode(e.target.value)}
+onKeyDown={(e) => { if (e.key === 'Enter') applyPromoCode(); }}
+className="flex-1 rounded-xl px-3 py-2 text-sm font-sans focus:outline-none"
+style={{ background: '#F1EFE6', color: INK }}
+/>
+<button
+onClick={applyPromoCode}
+className="rounded-xl px-4 py-2 text-sm font-sans font-black"
+style={{ background: SUN, color: INK }}
+>
+Apply
+</button>
+</div>
+{promoError && <p className="text-xs mt-2 font-sans" style={{ color: CORAL }}>{promoError}</p>}
 </div>
 
 <button onClick={handleClose} className="mt-6 text-xs font-sans" style={{ color: '#5C5A73' }}>
