@@ -33,6 +33,7 @@ function clearPendingPlan() {
 // off of until the person actually returns and signs in. This local flag
 // enforces "first plan free" in the meantime.
 const TRIAL_KEY = 'swoon_trial_used';
+const UNLIMITED_PROMO_CODE = 'EDFAM2026';
 function markLocalTrialUsed() {
   try { localStorage.setItem(TRIAL_KEY, '1'); } catch { /* ignore */ }
 }
@@ -56,6 +57,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
   // Registration / sign-in form state
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
+  const [regPromo, setRegPromo] = useState('');
   const [regError, setRegError] = useState('');
   const [regBusy, setRegBusy] = useState(false);
   const [signinEmail, setSigninEmail] = useState('');
@@ -155,8 +157,8 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
   async function submitRegistration() {
     if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
     setRegError(''); setRegBusy(true);
-    const vip = hasFamPass(regName);
-    const cleanName = vip ? stripFamPass(regName) : regName;
+    const vip = hasFamPass(regName) || regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
+    const cleanName = hasFamPass(regName) ? stripFamPass(regName) : regName;
 
     if (itinerary) {
       // Free-plan gate: one email only, the itinerary itself. The account is
@@ -347,6 +349,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
             <RegisterScreen
               name={regName} setName={setRegName}
               email={regEmail} setEmail={setRegEmail}
+              promo={regPromo} setPromo={setRegPromo}
               error={regError} busy={regBusy}
               onSubmit={submitRegistration}
               onSwitchToSignIn={() => setScreen('signin')}
@@ -388,6 +391,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
               itinerary={itinerary}
               dateName={answers['dateName'] || dateName}
               email={regEmail} setEmail={setRegEmail}
+              promo={regPromo} setPromo={setRegPromo}
               name={regName} setName={setRegName}
               error={regError} busy={regBusy}
               onSubmit={submitRegistration}
@@ -412,7 +416,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
 
 /* ---------- Sub-screens ---------- */
 
-function RegisterScreen({ name, setName, email, setEmail, error, busy, onSubmit, onSwitchToSignIn }: any) {
+function RegisterScreen({ name, setName, email, setEmail, promo, setPromo, error, busy, onSubmit, onSwitchToSignIn }: any) {
   return (
     <div>
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">SWOON PLANS · FIRST PLAN FREE</span>
@@ -427,6 +431,12 @@ function RegisterScreen({ name, setName, email, setEmail, error, busy, onSubmit,
         <input
           type="email" placeholder="Email Address" value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
+          className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+        />
+        <input
+          type="text" placeholder="Promo Code (optional)" value={promo}
+          onChange={(e) => setPromo(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
           className="w-full bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
@@ -561,7 +571,7 @@ function WelcomeScreen({ dateName, setDateName, onStart, maxProfiles }: any) {
   );
 }
 
-function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error, busy, onSubmit, onSwitchToSignIn }: any) {
+function GateScreen({ itinerary, dateName, email, setEmail, name, setName, promo, setPromo, error, busy, onSubmit, onSwitchToSignIn }: any) {
   const stops = (itinerary && itinerary.stops) || [];
   const her = (dateName || 'Her').trim();
   return (
@@ -622,6 +632,12 @@ function GateScreen({ itinerary, dateName, email, setEmail, name, setName, error
         <input
           type="text" placeholder="Your first name (optional)" value={name}
           onChange={(e) => setName(e.target.value)}
+          className="w-full mt-2 bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
+        />
+        <input
+          type="text" placeholder="Promo Code (optional)" value={promo}
+          onChange={(e) => setPromo(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && email.includes('@')) onSubmit(); }}
           className="w-full mt-2 bg-white border border-[#E8E2D9] rounded px-4 py-3 text-sm text-[#1A1816] placeholder:text-[#6E675F] focus:outline-none focus:border-[#D5C29F] transition"
         />
         {error && <p className="text-xs text-red-400 mt-2 font-sans">{error}</p>}
