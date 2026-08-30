@@ -16,12 +16,15 @@ const CORAL = '#FF6F91';
 const GRASS = '#5FD068';
 const INK = '#22223B';
 
-const FREE_PLAN_LIMIT = 3;
+const DEFAULT_FREE_PLAN_LIMIT = 3;
 const UNLIMITED_PROMO_CODE = 'EDFAM2026';
+const BONUS_PROMO_CODE = 'SP26';
+const BONUS_PLAN_LIMIT = 8;
 const MONTHLY_PRICE_DISPLAY = '$11.32';
 
 const COUNT_KEY = 'swoon_kidplan_plans_used';
 const UNLIMITED_KEY = 'swoon_kidplan_unlimited';
+const FREE_LIMIT_KEY = 'swoon_kidplan_free_limit';
 
 function getLocalCount(): number {
 try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch { return 0; }
@@ -35,10 +38,17 @@ try { return localStorage.getItem(UNLIMITED_KEY) === 'true'; } catch { return fa
 function setLocalUnlimited(v: boolean) {
 try { localStorage.setItem(UNLIMITED_KEY, v ? 'true' : 'false'); } catch { /* ignore */ }
 }
+function getLocalFreeLimit(): number {
+try { return parseInt(localStorage.getItem(FREE_LIMIT_KEY) || '', 10) || DEFAULT_FREE_PLAN_LIMIT; } catch { return DEFAULT_FREE_PLAN_LIMIT; }
+}
+function setLocalFreeLimit(n: number) {
+try { localStorage.setItem(FREE_LIMIT_KEY, String(n)); } catch { /* ignore */ }
+}
 
 export const KidPlansConciergeApp: React.FC<KidPlansConciergeAppProps> = ({ isOpen, onClose }) => {
 const [screen, setScreen] = useState<Screen>('age');
 const [plansUsed, setPlansUsed] = useState(0);
+const [freeLimit, setFreeLimit] = useState(DEFAULT_FREE_PLAN_LIMIT);
 const [unlimitedAccess, setUnlimitedAccess] = useState(false);
 
 const [ageKey, setAgeKey] = useState<string>('');
@@ -57,7 +67,8 @@ const usedCount = getLocalCount();
 const isUnlimited = getLocalUnlimited();
 setPlansUsed(usedCount);
 setUnlimitedAccess(isUnlimited);
-if (!isUnlimited && usedCount >= FREE_PLAN_LIMIT) {
+setFreeLimit(getLocalFreeLimit());
+if (!isUnlimited && usedCount >= freeLimit) {
 setScreen('paywall');
 } else {
 setScreen('age');
@@ -68,7 +79,7 @@ setScreen('age');
 if (!isOpen) return null;
 
 function reset() {
-if (!unlimitedAccess && plansUsed >= FREE_PLAN_LIMIT) {
+if (!unlimitedAccess && plansUsed >= freeLimit) {
 setScreen('paywall');
 return;
 }
@@ -122,9 +133,16 @@ setScreen('age');
 }
 
 function applyPromoCode() {
-if (promoCode.trim().toUpperCase() === UNLIMITED_PROMO_CODE) {
+const code = promoCode.trim().toUpperCase();
+if (code === UNLIMITED_PROMO_CODE) {
 setLocalUnlimited(true);
 setUnlimitedAccess(true);
+setPromoError('');
+setScreen('age');
+} else if (code === BONUS_PROMO_CODE) {
+const nextLimit = Math.max(freeLimit, BONUS_PLAN_LIMIT);
+setLocalFreeLimit(nextLimit);
+setFreeLimit(nextLimit);
 setPromoError('');
 setScreen('age');
 } else {
@@ -195,7 +213,7 @@ Let's crack the code. 🧠
 sounds like <em>you get them</em>.
 </p>
 <p className="text-xs font-sans font-black" style={{ color: unlimitedAccess ? GRASS : '#5C5A73' }}>
-{unlimitedAccess ? 'Unlimited plans' : `${Math.max(0, FREE_PLAN_LIMIT - plansUsed)} free plan${FREE_PLAN_LIMIT - plansUsed === 1 ? '' : 's'} left`}
+{unlimitedAccess ? 'Unlimited plans' : `${Math.max(0, freeLimit - plansUsed)} free plan${freeLimit - plansUsed === 1 ? '' : 's'} left`}
 </p>
 <p className="text-xs font-sans font-bold uppercase tracking-widest mb-3 mt-4" style={{ color: '#5C5A73' }}>
 First, how old are they?
@@ -327,7 +345,7 @@ style={{ background: SUN, color: INK }}
 </div>
 
 <p className="text-xs font-sans font-black text-center mb-4" style={{ color: unlimitedAccess ? GRASS : '#5C5A73' }}>
-{unlimitedAccess ? 'Unlimited plans' : `${Math.max(0, FREE_PLAN_LIMIT - plansUsed)} free plan${FREE_PLAN_LIMIT - plansUsed === 1 ? '' : 's'} left`}
+{unlimitedAccess ? 'Unlimited plans' : `${Math.max(0, freeLimit - plansUsed)} free plan${freeLimit - plansUsed === 1 ? '' : 's'} left`}
 </p>
 
 <div className="flex gap-3">
