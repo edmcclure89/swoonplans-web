@@ -34,6 +34,8 @@ function clearPendingPlan() {
 // enforces "first plan free" in the meantime.
 const TRIAL_KEY = 'swoon_trial_used';
 const UNLIMITED_PROMO_CODE = 'EDFAM2026';
+const BONUS_PROMO_CODE = 'SP26';
+const BONUS_PLAN_LIMIT = 8;
 function markLocalTrialUsed() {
   try { localStorage.setItem(TRIAL_KEY, '1'); } catch { /* ignore */ }
 }
@@ -122,7 +124,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     const entitled = ms.subscription_status === 'active'
       || ms.subscription_status === 'trialing'
       || ms.subscription_status === 'past_due';
-    if (entitled || !ms.trial_used) { setScreen('welcome'); }
+    if (entitled || !ms.trial_used || (ms.bonus_plans_remaining || 0) > 0) { setScreen('welcome'); }
     else { setScreen('pricing'); }
   }
 
@@ -146,9 +148,18 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
       const entitled = ms?.subscription_status === 'active'
         || ms?.subscription_status === 'trialing'
         || ms?.subscription_status === 'past_due';
-      if (vip || entitled || ms?.trial_used) return;
-      await supabase.auth.updateUser({ data: { trial_used: true } });
-      setMeStatus((prev) => (prev ? { ...prev, trial_used: true } : prev));
+      if (vip || entitled) return;
+      if (!ms?.trial_used) {
+        await supabase.auth.updateUser({ data: { trial_used: true } });
+        setMeStatus((prev) => (prev ? { ...prev, trial_used: true } : prev));
+        return;
+      }
+      const bonus = ms?.bonus_plans_remaining || 0;
+      if (bonus > 0) {
+        const nextBonus = bonus - 1;
+        await supabase.auth.updateUser({ data: { bonus_plans_remaining: nextBonus } });
+        setMeStatus((prev) => (prev ? { ...prev, bonus_plans_remaining: nextBonus } : prev));
+      }
     } catch {
       /* non-fatal */
     }
@@ -158,6 +169,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     if (!regEmail || !regEmail.includes('@')) { setRegError('Enter a valid email address.'); return; }
     setRegError(''); setRegBusy(true);
     const vip = regPromo.trim().toUpperCase() === UNLIMITED_PROMO_CODE;
+    const bonusRequested = regPromo.trim().toUpperCase() === BONUS_PROMO_CODE;
     const cleanName = regName;
 
     if (itinerary) {
@@ -177,6 +189,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
             createAccount: true,
             name: cleanName,
             isVipFamily: vip,
+bonusPlans: bonusRequested ? BONUS_PLAN_LIMIT : undefined,
           }),
         });
         if (!res.ok) {
@@ -202,7 +215,7 @@ export const DateConciergeApp: React.FC<DateConciergeAppProps> = ({ isOpen, onCl
     // email, redirected back into the app instead of the bare homepage.
     const { error } = await supabase.auth.signInWithOtp({
       email: regEmail,
-      options: { data: { name: cleanName, is_vip_family: vip }, emailRedirectTo: window.location.origin + '/?app=1' },
+      options: { data: { name: cleanName, is_vip_family: vip, bonus_plans_remaining: bonusRequested ? BONUS_PLAN_LIMIT : 0 }, emailRedirectTo: window.location.origin + '/?app=1' },
     });
     setRegBusy(false);
     if (error) { setRegError(error.message || 'Could not send the link. Try again.'); return; }
