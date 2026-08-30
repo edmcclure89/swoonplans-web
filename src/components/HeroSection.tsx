@@ -36,9 +36,9 @@ style={{ transitionProperty: 'opacity, transform' }}
 <img
 src={s.image}
 alt={s.title}
-className="w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05]"
+className="w-full h-full object-cover object-center filter brightness-[1.1] contrast-[1.02]"
 />
-<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/50" />
+<div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-black/20" />
 <div className="absolute inset-0 bg-grain pointer-events-none" />
 </div>
 ))}
