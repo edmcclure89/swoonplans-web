@@ -63,7 +63,7 @@ ${addr ? `<div style="font-family:Arial,sans-serif;font-size:12px;color:#6E675F;
 // address verified without Supabase sending anything. Non-fatal on failure:
 // a mail hiccup or a duplicate account should never block the itinerary
 // email from going out.
-async function createAccountServerSide(email: string, name: string, isVipFamily: boolean): Promise<void> {
+async function createAccountServerSide(email: string, name: string, isVipFamily: boolean, bonusPlans: number): Promise<void> {
   const supabaseUrl = process.env.SUPABASE_URL || 'https://dvabymxhcefstjpzvznw.supabase.co';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) return;
@@ -76,6 +76,7 @@ async function createAccountServerSide(email: string, name: string, isVipFamily:
         name: name || '',
         is_vip_family: !!isVipFamily,
         trial_used: !isVipFamily,
+        bonus_plans_remaining: Number(bonusPlans) || 0,
       },
     });
     // "already registered" just means this email has used its free plan
@@ -91,14 +92,14 @@ async function createAccountServerSide(email: string, name: string, isVipFamily:
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
 
-  const { email, dateName, itinerary, createAccount, name, isVipFamily } = (req.body || {}) as any;
+  const { email, dateName, itinerary, createAccount, name, isVipFamily, bonusPlans } = (req.body || {}) as any;
   if (!email || !itinerary || !Array.isArray(itinerary.stops)) {
     res.status(400).json({ error: 'email and itinerary required' });
     return;
   }
 
   if (createAccount) {
-    await createAccountServerSide(email, name, !!isVipFamily);
+    await createAccountServerSide(email, name, !!isVipFamily, Number(bonusPlans) || 0);
   }
 
   const who = dateName ? ` for ${dateName}` : '';
