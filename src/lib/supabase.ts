@@ -13,6 +13,7 @@ export interface MeStatus {
   plan: string | null;
   subscription_status: string | null;
   trial_used: boolean;
+  bonus_plans_remaining: number;
 }
 
 // Account status is derived entirely from the client-side Supabase session,
@@ -31,6 +32,7 @@ export async function refreshMe(): Promise<{ meStatus: MeStatus | null; isVipFam
         plan: meta.plan || (vip ? 'vip' : null),
         subscription_status: meta.subscription_status || (vip ? 'active' : null),
         trial_used: !!meta.trial_used,
+        bonus_plans_remaining: Number(meta.bonus_plans_remaining) || 0,
       },
       isVipFamily: vip,
     };
