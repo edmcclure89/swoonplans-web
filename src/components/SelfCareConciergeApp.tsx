@@ -11,12 +11,15 @@ onClose: () => void;
 
 type Screen = 'quiz' | 'loading' | 'output' | 'paywall';
 
-const FREE_PLAN_LIMIT = 3;
+const DEFAULT_FREE_PLAN_LIMIT = 3;
 const CORAL = '#E08B6F';
 const UNLIMITED_PROMO_CODE = 'EDFAM2026';
+const BONUS_PROMO_CODE = 'SP26';
+const BONUS_PLAN_LIMIT = 8;
 
 const COUNT_KEY = 'swoon_selfcare_plans_used';
 const UNLIMITED_KEY = 'swoon_selfcare_unlimited';
+const FREE_LIMIT_KEY = 'swoon_selfcare_free_limit';
 
 function getLocalCount(): number {
 try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch { return 0; }
@@ -30,10 +33,17 @@ try { return localStorage.getItem(UNLIMITED_KEY) === 'true'; } catch { return fa
 function setLocalUnlimited(v: boolean) {
 try { localStorage.setItem(UNLIMITED_KEY, v ? 'true' : 'false'); } catch { /* ignore */ }
 }
+function getLocalFreeLimit(): number {
+try { return parseInt(localStorage.getItem(FREE_LIMIT_KEY) || '', 10) || DEFAULT_FREE_PLAN_LIMIT; } catch { return DEFAULT_FREE_PLAN_LIMIT; }
+}
+function setLocalFreeLimit(n: number) {
+try { localStorage.setItem(FREE_LIMIT_KEY, String(n)); } catch { /* ignore */ }
+}
 
 export const SelfCareConciergeApp: React.FC<SelfCareConciergeAppProps> = ({ isOpen, onClose }) => {
 const [screen, setScreen] = useState<Screen>('quiz');
 const [plansUsed, setPlansUsed] = useState(0);
+const [freeLimit, setFreeLimit] = useState(DEFAULT_FREE_PLAN_LIMIT);
 const [unlimitedAccess, setUnlimitedAccess] = useState(false);
 
 const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -60,7 +70,8 @@ const usedCount = getLocalCount();
 const isUnlimited = getLocalUnlimited();
 setPlansUsed(usedCount);
 setUnlimitedAccess(isUnlimited);
-if (!isUnlimited && usedCount >= FREE_PLAN_LIMIT) {
+setFreeLimit(getLocalFreeLimit());
+if (!isUnlimited && usedCount >= freeLimit) {
 setScreen('paywall');
 } else {
 setScreen('quiz');
@@ -104,7 +115,7 @@ setItinerary(rerollStop(itinerary, stopIndex, metroKey, budget));
 }
 
 function startAnotherPlan() {
-if (!unlimitedAccess && plansUsed >= FREE_PLAN_LIMIT) {
+if (!unlimitedAccess && plansUsed >= freeLimit) {
 setScreen('paywall');
 return;
 }
@@ -115,9 +126,16 @@ setScreen('quiz');
 }
 
 function applyPromoCode() {
-if (promoCode.trim().toUpperCase() === UNLIMITED_PROMO_CODE) {
+const code = promoCode.trim().toUpperCase();
+if (code === UNLIMITED_PROMO_CODE) {
 setLocalUnlimited(true);
 setUnlimitedAccess(true);
+setPromoError('');
+setScreen('quiz');
+} else if (code === BONUS_PROMO_CODE) {
+const nextLimit = Math.max(freeLimit, BONUS_PLAN_LIMIT);
+setLocalFreeLimit(nextLimit);
+setFreeLimit(nextLimit);
 setPromoError('');
 setScreen('quiz');
 } else {
@@ -165,7 +183,7 @@ Self Care
 Question {stepIndex + 1} of {QUESTIONS.length}
 </span>
 <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-[#6E675F]">
-{unlimitedAccess ? 'Unlimited plans' : `${FREE_PLAN_LIMIT - plansUsed} free plan${FREE_PLAN_LIMIT - plansUsed === 1 ? '' : 's'} left`}
+{unlimitedAccess ? 'Unlimited plans' : `${freeLimit - plansUsed} free plan${freeLimit - plansUsed === 1 ? '' : 's'} left`}
 </span>
 </div>
 <div className="h-1.5 w-full bg-[#E8E2D9] rounded-full overflow-hidden">
@@ -281,7 +299,7 @@ onClick={startAnotherPlan}
 className="w-full py-3.5 text-white font-bold text-xs uppercase tracking-[0.2em] font-sans rounded-sm transition-all"
 style={{ backgroundColor: CORAL }}
 >
-{unlimitedAccess ? 'Plan Another Day' : `Plan Another Day (${Math.max(0, FREE_PLAN_LIMIT - plansUsed)} free left)`}
+{unlimitedAccess ? 'Plan Another Day' : `Plan Another Day (${Math.max(0, freeLimit - plansUsed)} free left)`}
 </button>
 </div>
 </div>
