@@ -66,6 +66,46 @@ setIsKidPlansOpen(true);
 }
 }, []);
 
+// WebMCP: register real product actions as agent-callable tools. Purely
+// additive and experimental (Chrome origin trial as of 2026); no-ops
+// safely in every other browser since it just returns early below.
+useEffect(() => {
+const modelContext = (typeof document !== 'undefined' && (document as any).modelContext)
+|| (typeof navigator !== 'undefined' && (navigator as any).modelContext);
+if (!modelContext || typeof modelContext.registerTool !== 'function') return;
+
+const tools = [
+{
+name: 'open_swoon_her_planner',
+description: "Open the Swoon Her date-planning quiz. Use when the user wants to plan a romantic date night for a partner. Answers 20 quick questions to generate a custom itinerary with real venues and reservation links.",
+inputSchema: { type: 'object', properties: {}, required: [] },
+execute: async () => { setIsInquireOpen(true); return { opened: 'swoon_her' }; },
+},
+{
+name: 'open_self_care_planner',
+description: "Open the Self Care solo date-planning quiz. Use when the user wants to plan a solo day or night out for themselves, built around their own vibe and budget.",
+inputSchema: { type: 'object', properties: {}, required: [] },
+execute: async () => { setIsSelfCareOpen(true); return { opened: 'self_care' }; },
+},
+{
+name: 'open_kid_plan_planner',
+description: "Open the Kid Plan family activity quiz. Use when the user wants weekend activity ideas for a child, matched to the kid's personality, for ages 0-18.",
+inputSchema: { type: 'object', properties: {}, required: [] },
+execute: async () => { setIsKidPlansOpen(true); return { opened: 'kid_plan' }; },
+},
+];
+
+tools.forEach((tool) => {
+try { modelContext.registerTool(tool); } catch { /* ignore */ }
+});
+
+return () => {
+tools.forEach((tool) => {
+try { modelContext.unregisterTool && modelContext.unregisterTool(tool.name); } catch { /* ignore */ }
+});
+};
+}, []);
+
 // Standalone article pages. Routed at /blog/:slug (see vercel.json
 // rewrite) so every post has its own real, shareable URL instead of
 // living inside a modal.
