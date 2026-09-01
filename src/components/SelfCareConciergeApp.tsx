@@ -278,7 +278,7 @@ style={{ color: CORAL, backgroundColor: `${CORAL}1A` }}
 <div className="flex items-center gap-1.5"><MapPin className="w-3 h-3" /> {stop.venue.address}</div>
 {stop.venue.phone && <div className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> {stop.venue.phone}</div>}
 <div>
-{res.type === 'link' ? (
+{res.url ? (
 <a href={res.url} target="_blank" rel="noopener noreferrer" className="font-medium hover:underline" style={{ color: CORAL }}>
 {res.label} →
 </a>
