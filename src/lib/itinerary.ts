@@ -1,5 +1,22 @@
 import { METROS, Venue } from '../data/metros';
 import { TYPE_PROFILES } from '../data/personality';
+import { QUARANTINED_VENUES, isQuarantined } from '../data/venueLinkStatus';
+
+// URL-level index of everything quarantined, so a link can be judged even when
+// the caller doesn't have the metro key to hand.
+const QUARANTINED_URLS = new Set(
+  Object.values(QUARANTINED_VENUES).map((q) => q.url.trim().toLowerCase()),
+);
+
+function isQuarantinedUrl(url: string): boolean {
+  return QUARANTINED_URLS.has((url || '').trim().toLowerCase());
+}
+
+/** Always-works fallback: a maps search for the venue by name and address. */
+export function directionsUrl(v: Venue): string {
+  const q = [v.name, v.address].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
 
 const METRO_LOGISTICS: Record<string, string> = {
   'washington-dc': 'Every stop is minutes apart around Clarendon and Courthouse, so park once and walk. If a stop needs a reservation, lock it in at least a day ahead.',
@@ -19,12 +36,46 @@ export function venuesByType(metroKey: string, type: Venue['type']): Venue[] {
   return (m.venues || []).filter((v) => v && v.type === type);
 }
 
-export function venueReservation(v: Venue): { type: 'walkin' | 'link'; label: string; url?: string } {
+export interface Reservation {
+  type: 'walkin' | 'link' | 'directions';
+  label: string;
+  url?: string;
+  /** Present when the venue's own site failed validation. */
+  degraded?: boolean;
+}
+
+/**
+ * What to show for a venue's booking action.
+ *
+ * A venue whose website failed validation never gets a "Website" button — we
+ * send the customer to map directions and their phone instead. A dead button
+ * in a paid itinerary reads as carelessness; directions plus a phone number
+ * still gets them through the door.
+ *
+ * `metroKey` is optional so existing callers keep working; without it we still
+ * catch quarantined venues by URL.
+ */
+export function venueReservation(v: Venue, metroKey?: string): Reservation {
   const url = (v.linkUrl || '').trim();
-  if (!url || /example\.com/i.test(url)) return { type: 'walkin', label: 'Walk-in — no reservation needed' };
+  const quarantined =
+    isQuarantinedUrl(url) || (metroKey ? isQuarantined(metroKey, v.name) : false);
+
+  if (quarantined) {
+    return { type: 'directions', label: 'Get directions', url: directionsUrl(v), degraded: true };
+  }
+  if (!url || /example\.com/i.test(url)) {
+    return { type: 'walkin', label: 'Walk-in, no reservation needed' };
+  }
   const lt = (v.linkText || 'Website').trim();
   const label = /^(OpenTable|Resy|Tock)$/i.test(lt) ? `Reserve on ${lt}` : lt;
   return { type: 'link', label, url };
+}
+
+/** Venues of a type whose links pass validation. */
+export function healthyVenuesByType(metroKey: string, type: Venue['type']): Venue[] {
+  return venuesByType(metroKey, type).filter(
+    (v) => !isQuarantined(metroKey, v.name) && !isQuarantinedUrl(v.linkUrl),
+  );
 }
 
 export interface ItineraryStop {
@@ -47,7 +98,12 @@ const STOP_LABELS = ['Stop 1 // Arrival & Drinks', 'Stop 2 // The Main Event', '
 // Picks the closest-budget-match venue from a metro's pool for each stop type,
 // optionally excluding a previous pick (used by the re-roll button).
 function pickVenue(metroKey: string, type: Venue['type'], budget: string, exclude?: string): Venue {
-  const pool = venuesByType(metroKey, type);
+  const all = venuesByType(metroKey, type);
+  // Never recommend a venue whose link is known broken. If quarantine would
+  // empty the pool entirely, fall back to the full list rather than returning
+  // nothing — venueReservation still degrades the dead link to directions.
+  const vetted = all.filter((v) => !isQuarantined(metroKey, v.name) && !isQuarantinedUrl(v.linkUrl));
+  const pool = vetted.length > 0 ? vetted : all;
   if (pool.length === 0) return venuesByType('washington-dc', type)[0];
   const targetRank = budgetRank(budget);
   const sorted = [...pool].sort((a, b) => Math.abs(budgetRank(a.budget) - targetRank) - Math.abs(budgetRank(b.budget) - targetRank));
