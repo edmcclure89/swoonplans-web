@@ -795,7 +795,7 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
   const planText = useMemo(() => {
     const lines = itinerary.stops.map((s, i) => {
       const r = venueReservation(s.venue);
-      const link = r.type === 'link' ? `\n${r.url}` : '';
+      const link = r.url ? `\n${r.url}` : '';
       return `${i + 1}. ${s.venue.name}\n${s.venue.address}${link}`;
     });
     return `Tonight's plan:\n\n${lines.join('\n\n')}`;
@@ -848,7 +848,7 @@ function OutputScreen({ itinerary, onReroll, onSwitchDate, plan, isVip }: { itin
                 <div className="flex items-center gap-1.5"><MapPin className="w-3 h-3" /> {stop.venue.address}</div>
                 {stop.venue.phone && <div className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> {stop.venue.phone}</div>}
                 <div>
-                  {res.type === 'link' ? (
+                  {res.url ? (
                     <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-[#D5C29F] font-medium hover:underline">{res.label} →</a>
                   ) : (
                     <span className="text-[#6E675F]">{res.label}</span>
