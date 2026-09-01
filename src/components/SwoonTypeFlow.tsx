@@ -45,7 +45,7 @@ export const SwoonTypeFlow: React.FC<SwoonTypeFlowProps> = ({ onClose, initialSc
       scores={scores}
       onRetake={() => setScores(null)}
       onTrackChange={(track) => logSwoonEvent('track_viewed', scores, track)}
-      onShare={() => logSwoonEvent('share_clicked', scoreq)}
+      onShare={() => logSwoonEvent('share_clicked', scores)}
     />
   );
 };
