@@ -51,6 +51,32 @@ render the correct route at build time without a real `window.location`.
   before touching payment code, and confirm `STRIPE_WEBHOOK_SECRET` in Vercel env
   matches the current signing secret.
 
+- **Venue links rot, and not as 404s**: venue domains expire and get bought by
+  squatters. The failures we have actually seen are a parked IP serving a
+  self-signed cert (`columbiaroomdc.com`), an HTTP 200 "Coming Soon" placeholder
+  (`ujnsq.com`), GoDaddy for-sale landers, and one domain that now redirects to a
+  *different* restaurant (`anticopizza.com` → `desanopizza.com`). A status-code
+  check catches none of these. Three layers guard this now:
+  1. `src/lib/linkHealth.ts` — the validator. Its `inconclusive` verdict is
+     load-bearing: hotel sites return 403 to bots and many venue sites render in
+     JS, so only a CONFIDENT failure quarantines a venue. A false positive
+     silently deletes a real venue from the catalogue, which is worse.
+  2. `src/data/venueLinkStatus.ts` — the quarantine list `pickVenue` reads.
+     Regenerate with `npm run audit:links -- --browser --write`. Run it from a
+     normal network; a proxied/datacentre IP produces false failures.
+  3. `api/send-itinerary.ts` — a send-time re-check. Dead links become "Get
+     directions" + the venue phone number rather than a broken button. It never
+     blocks the email. Degradations are logged as `[link-guard]` in Vercel logs;
+     if a venue shows up there repeatedly, fix the dataset.
+  `npm run test:links` covers the detection rules offline and runs in CI.
+
+- **Catalogue depth is a quality gate, not just a nice-to-have**: `pickVenue`
+  filters to venues within one budget rank of the target, so a stop type with
+  only 1-2 venues returns the same venue every time AND makes the "Swap this
+  stop" button a no-op (it falls back to the same pick). Keep every metro at 3+
+  venues per stop type with a spread of budgets. `scripts/` has no checker for
+  this yet; the audit script prints a NOTE when a pool drops to 1.
+
 ## Target markets
 DMV (primary: DC, Alexandria, Arlington), expanding to NYC, LA, Chicago, Dallas,
 Philadelphia.
