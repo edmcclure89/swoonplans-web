@@ -46,6 +46,7 @@ async function browserPass(rows: Row[]): Promise<void> {
 
   let chromium: any;
   try {
+    // @ts-ignore optional dependency, resolved at runtime only (see package.json note)
     ({ chromium } = await import('playwright'));
   } catch {
     console.log(`\n(skipping browser pass: playwright not installed — \`npm i -D playwright\` to enable)`);
