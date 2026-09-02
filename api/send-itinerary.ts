@@ -41,15 +41,165 @@ Questions? <a href="mailto:admin@makeherswoon.com" style="color:#1A1816">admin@m
 
 interface Stop { label: string; venue: any; }
 
+// --- inlined link guard (see src/lib/linkHealth.ts for the canonical version) ---
+//
+// Last line of defence before an itinerary reaches a customer. Terence received
+// a plan where 2 of 3 venue links were dead — one a parked domain with a
+// self-signed certificate, one an HTTP 200 "Coming Soon" placeholder. Neither
+// was a 404, so a status-code check would have passed both.
+//
+// This runs at send time, in parallel, with a hard time budget. If a link fails
+// we do NOT block the email — we swap the dead button for map directions, which
+// always work. A plan that arrives with directions beats a plan that never
+// arrives, and both beat a plan with a broken button.
+//
+// The `api/` functions here are deliberately self-contained (no imports outside
+// npm deps) so Vercel bundles each one cleanly. If you change the rules in
+// src/lib/linkHealth.ts, mirror them here.
+
+const LINK_CHECK_BUDGET_MS = 4000;
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
+
+const TRUSTED_LINK_HOSTS = ['opentable.com', 'resy.com', 'exploretock.com', 'tock.com', 'sevenrooms.com', 'yelp.com', 'google.com', 'nps.gov'];
+
+const DEAD_PAGE_PATTERNS = [
+  /coming\s+soon/i,
+  /under\s+construction/i,
+  /domain\s+(is\s+)?for\s+sale/i,
+  /buy\s+this\s+domain/i,
+  /is\s+parked\s+(free\s+)?(courtesy|by)/i,
+  /this\s+domain\s+has\s+expired/i,
+  /account\s+(has been\s+)?suspended/i,
+  /this\s+ip\s+address\s+is\s+managed\s+by/i,
+  /godaddy|sedo|hugedomains|afternic/i,
+];
+
+// Bot protection proves nothing is wrong with the venue's site — never degrade on these.
+const BOT_CHALLENGE_PATTERNS = [
+  /sgcaptcha|cf-browser-verification|challenge-platform|just a moment|checking your browser/i,
+  /access denied|incapsula|perimeterx|datadome|verify you are human/i,
+];
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function linkHost(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch { return ''; }
+}
+
+function trustedLink(url: string): boolean {
+  const h = linkHost(url);
+  return TRUSTED_LINK_HOSTS.some((t) => h === t || h.endsWith('.' + t));
+}
+
+/**
+ * Returns true only when we are CONFIDENT the link is bad. Anything ambiguous
+ * (timeout, bot block, JS-rendered shell) returns false and the link ships —
+ * degrading a working venue on a false positive is its own brand problem.
+ */
+async function isLinkBroken(url: string, venueName: string): Promise<boolean> {
+  const clean = (url || '').trim();
+  if (!clean || /example\.com/i.test(clean)) return false;
+  if (trustedLink(clean)) return false;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), LINK_CHECK_BUDGET_MS);
+  try {
+    const res = await fetch(clean, {
+      redirect: 'follow',
+      signal: controller.signal,
+      headers: { 'User-Agent': BROWSER_UA, Accept: 'text/html,*/*' },
+    });
+
+    if (res.status === 404 || res.status === 410) return true;
+    // 401/403/405/429 = bot protection. 5xx = their server hiccup. Not our call to make.
+    if (res.status >= 400) return false;
+
+    const endHost = linkHost(res.url || clean);
+    if (/godaddy|sedo|hugedomains|afternic|dan\.com|parking|bodis|squadhelp/i.test(endHost)) return true;
+
+    const html = await res.text();
+    if (BOT_CHALLENGE_PATTERNS.some((p) => p.test(html))) return false;
+    if (/location\.(href|replace)\s*=?\s*\(?["']\/lander/i.test(html)) return true;
+
+    const text = stripHtml(html);
+    // Venue names itself on the page: definitely real.
+    if (venueName && venueName.length > 3 && text.toLowerCase().includes(venueName.toLowerCase())) return false;
+    // Placeholder copy on a thin page.
+    if (text.length < 1200 && DEAD_PAGE_PATTERNS.some((p) => p.test(text))) return true;
+    // Thin in both markup and text = parked, not a JS app.
+    if (text.length < 200 && html.length < 1500) return true;
+    return false;
+  } catch (e: any) {
+    const msg = String(e?.cause?.code || e?.cause?.message || e?.message || '');
+    // A certificate a browser refuses, or a name that does not resolve, is a
+    // broken link for the customer. This is the columbiaroomdc.com case.
+    if (/cert|ssl|tls|self-signed|self signed/i.test(msg)) return true;
+    if (/enotfound|eai_again/i.test(msg)) return true;
+    if (/econnrefused/i.test(msg)) return true;
+    return false; // timeout / proxy / unknown: give the link the benefit of the doubt
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function directionsLink(venue: any): string {
+  const q = [venue?.name, venue?.address].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
+
+/**
+ * Validate every stop's link in parallel and mark the dead ones. Bounded by an
+ * overall budget so a slow venue site can never hold up the send.
+ */
+async function vetStops(stops: Stop[]): Promise<{ stops: Stop[]; degraded: string[] }> {
+  const degraded: string[] = [];
+  const overall = new Promise<void>((r) => setTimeout(r, LINK_CHECK_BUDGET_MS + 1500));
+
+  const checks = stops.map(async (stop) => {
+    const v: any = stop?.venue || {};
+    const url = (v.linkUrl || '').trim();
+    if (!url) return stop;
+    const broken = await Promise.race([
+      isLinkBroken(url, v.name || ''),
+      overall.then(() => false), // budget blown: ship the link as-is
+    ]);
+    if (!broken) return stop;
+    degraded.push(v.name || url);
+    return { ...stop, venue: { ...v, linkBroken: true, directionsUrl: directionsLink(v) } };
+  });
+
+  return { stops: await Promise.all(checks), degraded };
+}
+// --- end inlined link guard ---
+
+
 function stopRow(stop: Stop): string {
   const v = stop.venue || {};
   const name = v.name || 'Venue';
   const addr = v.address || '';
   const url = (v.linkUrl || '').trim();
   const linkText = (v.linkText || 'Reserve').trim();
-  const reserve = url && !/example\.com/i.test(url)
-    ? `<a href="${url}" style="display:inline-block;margin-top:6px;background:#D5C29F;color:#1A1816;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-decoration:none;padding:8px 16px;border-radius:4px">${linkText}</a>`
-    : `<span style="font-family:Arial,sans-serif;font-size:12px;color:#8C8377">Walk-in, no reservation needed</span>`;
+  const btn = (href: string, text: string) =>
+    `<a href="${href}" style="display:inline-block;margin-top:6px;background:#D5C29F;color:#1A1816;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-decoration:none;padding:8px 16px;border-radius:4px">${text}</a>`;
+
+  // Link failed validation at send time: send them to directions and their
+  // phone instead of a button that goes nowhere.
+  const reserve = v.linkBroken
+    ? btn(v.directionsUrl || directionsLink(v), 'Get directions') +
+      (v.phone
+        ? `<div style="font-family:Arial,sans-serif;font-size:12px;color:#6E675F;margin-top:6px">Call ahead: ${v.phone}</div>`
+        : '')
+    : url && !/example\.com/i.test(url)
+      ? btn(url, linkText)
+      : `<span style="font-family:Arial,sans-serif;font-size:12px;color:#8C8377">Walk-in, no reservation needed</span>`;
   return `<tr><td style="padding:14px 0;border-bottom:1px solid #E8E2D9">
 <div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;color:#8C8377">${(stop.label || '').toUpperCase()}</div>
 <div style="font-size:18px;color:#1A1816;margin-top:4px">${name}</div>
@@ -103,7 +253,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const who = dateName ? ` for ${dateName}` : '';
-  const rows = itinerary.stops.map(stopRow).join('');
+
+  // Validate every venue link before it goes in front of a paying customer.
+  // Never fatal: if the guard itself fails, send the original itinerary.
+  let stops: Stop[] = itinerary.stops;
+  let degraded: string[] = [];
+  try {
+    const vetted = await vetStops(itinerary.stops);
+    stops = vetted.stops;
+    degraded = vetted.degraded;
+    if (degraded.length) {
+      // Shows up in Vercel logs so a dead venue gets fixed in the dataset
+      // instead of quietly degrading on every future send.
+      console.warn(`[link-guard] degraded ${degraded.length} link(s) for ${email}: ${degraded.join(', ')}`);
+    }
+  } catch (e: any) {
+    console.error('[link-guard] check failed, sending unmodified:', e?.message);
+  }
+
+  const rows = stops.map(stopRow).join('');
   const logistics = itinerary.logistics
     ? `<p style="font-family:Arial,sans-serif;font-size:13px;color:#6E675F;line-height:1.6;margin-top:20px">${itinerary.logistics}</p>`
     : '';
@@ -122,5 +290,5 @@ ${logistics}
   });
 
   if (!sent.ok) { res.status(502).json({ error: sent.error }); return; }
-  res.status(200).json({ sent: true });
+  res.status(200).json({ sent: true, degradedLinks: degraded });
 }

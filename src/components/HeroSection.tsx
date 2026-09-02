@@ -138,7 +138,7 @@ fontWeight="900"
 fontSize="17"
 fill="#D2232A"
 stroke="#1A1816"
-sstrokeWidth="0.6"
+strokeWidth="0.6"
 >
 NEW
 </text>
