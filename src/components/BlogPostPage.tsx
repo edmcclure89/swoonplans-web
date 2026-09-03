@@ -83,9 +83,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
     };
   }, [post, postUrl]);
 
-  const goHome = () => { window.location.href = '/'; };
-  const goJournal = () => { window.location.href = '/?tab=blog'; };
-
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(postUrl);
@@ -121,12 +118,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
       <div className="min-h-screen bg-[#FAF8F5] text-[#1A1816] font-serif flex items-center justify-center px-4 py-16">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-serif italic">Article not found</h1>
-          <button
-            onClick={goHome}
+          <a
+            href="/"
             className="text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
           >
             Back to home
-          </button>
+          </a>
         </div>
       </div>
     );
@@ -142,19 +139,19 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
     <div className="min-h-screen bg-[#FAF8F5] text-[#1A1816] font-serif selection:bg-[#E2D5C3] selection:text-[#1A1816]">
       <header className="border-b border-[#E8E2D9] bg-[#FAF8F5]/90 backdrop-blur-sm sticky top-0 z-30">
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
-          <button
-            onClick={goHome}
+          <a
+            href="/"
             className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Swoon Plans
-          </button>
-          <button
-            onClick={goJournal}
+          </a>
+          <a
+            href="/blog"
             className="text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
           >
             The Journal
-          </button>
+          </a>
         </div>
       </header>
 
