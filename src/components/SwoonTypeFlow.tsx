@@ -20,8 +20,10 @@ function logSwoonEvent(eventType: string, scores: SwoonScores | null, track?: st
       p_energy: scores?.energy ?? null,
       p_track: track ?? null,
     })
-    .then(() => {})
-    .catch(() => {});
+    // supabase.rpc() returns a PromiseLike, not a real Promise, so it has no
+    // .catch. The two-argument then swallows failures the same way: this is
+    // fire-and-forget analytics and must never break the quiz.
+    .then(() => {}, () => {});
 }
 
 export const SwoonTypeFlow: React.FC<SwoonTypeFlowProps> = ({ onClose, initialScores = null }) => {
