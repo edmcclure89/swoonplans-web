@@ -41,7 +41,7 @@ subheadline: 'Zero mental load. Curated solo itineraries built entirely around y
 title: 'Solo Self Care Afternoon',
 location: 'Neighborhood Cafe',
 date: 'ANY DAY',
-image: '/images/happy%20solo%20date.png'
+image: '/images/happy-solo-date.webp'
 },
 {
 id: 'hero-3',
@@ -50,7 +50,7 @@ subheadline: 'Custom family plans that remove the guesswork from weekends.',
 title: 'Weekend Family Adventure',
 location: 'Your City',
 date: 'ALL AGES',
-image: '/images/kids%20plan%20fun%20party.png'
+image: '/images/kids-plan-fun-party.webp'
 }
 ];
 
