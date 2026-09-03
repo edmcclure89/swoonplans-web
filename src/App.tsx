@@ -41,7 +41,8 @@ export default function App({ ssrPath }: AppProps = {}) {
 const [activeTab, setActiveTab] = useState<string>(() => {
 if (typeof window === 'undefined') return 'stories';
 const params = new URLSearchParams(window.location.search);
-return params.get('tab') === 'blog' ? 'blog' : 'stories';
+const onBlogRoute = window.location.pathname.replace(/\/$/, '') === '/blog';
+    return onBlogRoute || params.get('tab') === 'blog' ? 'blog' : 'stories';
 });
 const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 const [isInquireOpen, setIsInquireOpen] = useState(false);
