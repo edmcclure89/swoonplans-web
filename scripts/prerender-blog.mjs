@@ -183,6 +183,19 @@ for (const post of BLOG_POSTS) {
   };
   let jsonLdBlocks = `<script type="application/ld+json">${JSON.stringify(articleLd)}</script>\n`;
 
+  // Breadcrumbs make the Home > Journal > Article hierarchy explicit and are
+  // eligible for the breadcrumb trail Google shows in place of a raw URL.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Journal', item: SITE_URL + '/blog' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: postUrl },
+    ],
+  };
+  jsonLdBlocks += `<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>\n`;
+
   if (Array.isArray(post.faqs) && post.faqs.length > 0) {
     const faqLd = {
       '@context': 'https://schema.org',
@@ -281,6 +294,44 @@ try {
     fail('/blog hub rendered without article links (found ' + linkCount + ').');
   }
   hubHtml = hubHtml.replace(ROOT_DIV, '<div id="root">' + hubApp + '</div>');
+
+  // The shell carries the homepage's ConciergeService + FAQPage schema, which
+  // describes the wrong page here. Strip the FAQPage and describe the hub as
+  // what it is: an index of every article.
+  hubHtml = hubHtml.replace(
+    /<script type="application\/ld\+json">[^<]*"@type":\s*"FAQPage"[\s\S]*?<\/script>\s*/i,
+    ''
+  );
+
+  const hubLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'The Swoon Plans Journal',
+    description: hubDesc,
+    url: hubUrl,
+    publisher: { '@type': 'Organization', name: 'Swoon Plans Concierge' },
+    blogPost: BLOG_POSTS.map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.summary,
+      url: `${SITE_URL}/blog/${p.slug}`,
+      datePublished: toIsoDate(p.date) || undefined,
+      author: { '@type': 'Organization', name: p.author },
+    })),
+  };
+  const hubCrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Journal', item: hubUrl },
+    ],
+  };
+  hubHtml = hubHtml.replace(
+    '</head>',
+    `<script type="application/ld+json">${JSON.stringify(hubLd)}</script>\n` +
+      `<script type="application/ld+json">${JSON.stringify(hubCrumbLd)}</script>\n</head>`
+  );
 
   const hubDir = path.join(DIST, 'blog');
   fs.mkdirSync(hubDir, { recursive: true });
