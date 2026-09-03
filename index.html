@@ -138,5 +138,12 @@
 <body class="bg-[#FAF8F5] text-[#1A1816] antialiased selection:bg-[#E2D5C3] selection:text-[#1A1816]">
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
+<!-- Vercel Web Analytics. Script-tag install rather than @vercel/analytics
+     so no npm dependency or lockfile churn is introduced into the Vite build.
+     Vercel serves /_vercel/insights/script.js automatically. -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
