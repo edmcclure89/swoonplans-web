@@ -39,11 +39,15 @@ export default function App({ ssrPath }: AppProps = {}) {
 // Deep-link into the Journal tab, e.g. a "More From the Journal" link
 // from a standalone article pointing back at /?tab=blog.
 const [activeTab, setActiveTab] = useState<string>(() => {
-if (typeof window === 'undefined') return 'stories';
-const params = new URLSearchParams(window.location.search);
-const onBlogRoute = window.location.pathname.replace(/\/$/, '') === '/blog';
+    // ssrPath is set at build time so the prerenderer can emit a real /blog
+    // hub page. Without it SSR always falls through to 'stories' and crawlers
+    // never see a single link to any article.
+    const path = ssrPath ?? (typeof window !== 'undefined' ? window.location.pathname : null);
+    const onBlogRoute = path ? path.replace(/\/$/, '') === '/blog' : false;
+    if (typeof window === 'undefined') return onBlogRoute ? 'blog' : 'stories';
+    const params = new URLSearchParams(window.location.search);
     return onBlogRoute || params.get('tab') === 'blog' ? 'blog' : 'stories';
-});
+  });
 const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 const [isInquireOpen, setIsInquireOpen] = useState(false);
 const [isAudioPlaying, setIsAudioPlaying] = useState(false);
