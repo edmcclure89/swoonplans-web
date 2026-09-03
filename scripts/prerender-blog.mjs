@@ -68,7 +68,18 @@ if (!Array.isArray(BLOG_POSTS) || BLOG_POSTS.length === 0) {
 }
 
 const { render } = await import(pathToFileURL(SSR_ENTRY).href);
-const baseTemplate = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
+// scripts/prerender.mjs saves this BEFORE it injects the homepage into the
+// root div. Reading dist/index.html here instead would hand us a template
+// whose root div is already full, making every ROOT_DIV replace below a
+// silent no-op and shipping homepage body content on every article.
+const SHELL_PATH = path.join(ROOT, 'dist-ssr/.shell.html');
+if (!fs.existsSync(SHELL_PATH)) {
+  fail('missing ' + SHELL_PATH + '. scripts/prerender.mjs must run first and save the shell.');
+}
+const baseTemplate = fs.readFileSync(SHELL_PATH, 'utf-8');
+if (!baseTemplate.includes(ROOT_DIV)) {
+  fail('the saved shell has no empty root div, so article content could not be injected.');
+}
 
 function escapeHtml(str) {
   return String(str)
@@ -208,14 +219,17 @@ html = html.replace('</head>', jsonLdBlocks + '</head>');
     if (typeof appHtml === 'string' && appHtml.length >= MIN_HTML_BYTES && titleMatches) {
       html = html.replace(ROOT_DIV, '<div id="root">' + appHtml + '</div>');
     } else {
-      console.warn(`[prerender-blog] warning: SSR output for "${post.slug}" looked too small, keeping shell.`);
+      fail(`SSR output for "${post.slug}" was too small or missing its title, so the page would have shipped homepage content instead of the article.`);
     }
   } catch (err) {
-    console.warn(`[prerender-blog] warning: SSR threw for "${post.slug}", keeping shell.\n  ${err}`);
+    fail(`SSR threw for "${post.slug}".\n  ${err && err.stack ? err.stack : err}`);
   }
 
   const outDir = path.join(DIST, 'blog', post.slug);
   fs.mkdirSync(outDir, { recursive: true });
+  if (!html.includes('<div id="root"><')) {
+    fail('article "' + post.slug + '" was written with an empty root div.');
+  }
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
   count += 1;
 }
