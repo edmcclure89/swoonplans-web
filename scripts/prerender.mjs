@@ -19,6 +19,12 @@ const DIST = path.resolve('dist');
 const SSR_ENTRY = path.resolve('dist-ssr/entry-server.js');
 const TEMPLATE = path.join(DIST, 'index.html');
 const ROOT_DIV = '<div id="root"></div>';
+// Pristine copy of the built shell, saved BEFORE the homepage is injected.
+// scripts/prerender-blog.mjs needs a template whose root div is still empty;
+// if it reads dist/index.html after this script runs, its own root-div
+// replace silently no-ops and every article ships homepage body content.
+// Lives in dist-ssr so it is never deployed.
+const SHELL_OUT = path.resolve('dist-ssr/.shell.html');
 
 // Content that MUST be present. If any is missing the prerender did not work.
 const REQUIRED = ['11.87', '32.50', '197'];
@@ -36,6 +42,9 @@ const template = fs.readFileSync(TEMPLATE, 'utf-8');
 if (!template.includes(ROOT_DIV)) {
   fail('could not find the root div in dist/index.html. If the markup changed, update ROOT_DIV.');
 }
+
+fs.mkdirSync(path.dirname(SHELL_OUT), { recursive: true });
+fs.writeFileSync(SHELL_OUT, template);
 
 let appHtml;
 try {
