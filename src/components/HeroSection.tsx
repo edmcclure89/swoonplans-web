@@ -47,7 +47,7 @@ className="w-full h-full object-cover object-center filter brightness-[1.1] cont
 <div className="absolute top-6 right-6 z-20 bg-white/10 backdrop-blur-md border border-white/15 rounded-lg px-4 py-2.5 max-w-[220px] text-left hidden sm:block">
 <div className="text-[#E08B6F] text-xs mb-1">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
 <p className="font-sans text-xs text-[#E8E2D9] leading-snug">"Planned an unforgettable anniversary in under two minutes without a single argument."</p>
-<p className="font-sans text-[10px] text-[#B5ADA2] mt-1">&#mdash; Marcus T.</p>
+<p className="font-sans text-[10px] text-[#B5ADA2] mt-1">Marcus T.</p>
 </div>
 
 {/* Dual-entry overlay content */}
