@@ -220,4 +220,60 @@ html = html.replace('</head>', jsonLdBlocks + '</head>');
   count += 1;
 }
 
+// --- /blog hub page ---
+// The homepage prerender always renders the "stories" tab, so no crawler
+// ever saw a link to a single article. This emits dist/blog/index.html with
+// the Journal tab server-rendered, giving Google a real crawl path:
+// homepage -> /blog -> every post.
+try {
+  let hubHtml = baseTemplate;
+  const hubTitle = 'The Swoon Plans Journal: Date Night Ideas, Guides and Playbooks';
+  const hubDesc =
+    'Guides on planning better dates, self-care days and kid activities, ' +
+    'with real venues across DC, Alexandria, Arlington and beyond.';
+  const hubUrl = SITE_URL + '/blog';
+
+  hubHtml = replaceMeta(hubHtml, /<title>[^<]*<\/title>/, `<title>${escapeHtml(hubTitle)}</title>`);
+  hubHtml = replaceMeta(
+    hubHtml,
+    /<meta name="description" content="[^"]*" \/>/,
+    `<meta name="description" content="${escapeHtml(hubDesc)}" />`
+  );
+  hubHtml = replaceMeta(
+    hubHtml,
+    /<meta property="og:title" content="[^"]*" \/>/,
+    `<meta property="og:title" content="${escapeHtml(hubTitle)}" />`
+  );
+  hubHtml = replaceMeta(
+    hubHtml,
+    /<meta property="og:description" content="[^"]*" \/>/,
+    `<meta property="og:description" content="${escapeHtml(hubDesc)}" />`
+  );
+
+  const HUB_CANONICAL_RE = /<link rel="canonical"[^>]*\/?>/i;
+  if (!HUB_CANONICAL_RE.test(hubHtml)) {
+    fail('template is missing a canonical tag for the /blog hub.');
+  }
+  hubHtml = hubHtml.replace(HUB_CANONICAL_RE, `<link rel="canonical" href="${hubUrl}" />`);
+
+  const hubApp = render('/blog');
+  if (typeof hubApp !== 'string' || hubApp.length < MIN_HTML_BYTES) {
+    fail('/blog hub rendered only ' + (hubApp ? hubApp.length : 0) + ' bytes.');
+  }
+  // The whole point is the outbound links. If they are absent the hub is
+  // useless, so fail loudly rather than ship another orphan page.
+  const linkCount = (hubApp.match(/href="\/blog\//g) || []).length;
+  if (linkCount < 2) {
+    fail('/blog hub rendered without article links (found ' + linkCount + ').');
+  }
+  hubHtml = hubHtml.replace(ROOT_DIV, '<div id="root">' + hubApp + '</div>');
+
+  const hubDir = path.join(DIST, 'blog');
+  fs.mkdirSync(hubDir, { recursive: true });
+  fs.writeFileSync(path.join(hubDir, 'index.html'), hubHtml);
+  console.log(`[prerender-blog] OK. Wrote /blog hub with ${linkCount} article links.`);
+} catch (err) {
+  fail('failed to build the /blog hub page.\n  ' + (err && err.stack ? err.stack : err));
+}
+
 console.log(`\n[prerender-blog] OK. Wrote ${count} static blog pages with per-article OG/meta/JSON-LD to dist/blog/<slug>/index.html\n`);
