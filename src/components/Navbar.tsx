@@ -72,7 +72,7 @@ onClick={() => setActiveTab('stories')}
 className="group cursor-pointer inline-block text-center"
 >
 <img
-src="/images/swoonplans-logo.png"
+src="/images/swoonplans-logo.webp"
 alt="Swoon Plans"
 className="h-6 sm:h-7 md:h-8 w-auto mx-auto group-hover:opacity-80 transition-opacity"
 />
