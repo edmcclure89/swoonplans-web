@@ -43,16 +43,26 @@ activeTab === 'itineraries'
 >
 Itineraries
 </button>
-<button
-onClick={() => setActiveTab('blog')}
-className={`transition-all duration-200 cursor-pointer ${
+<a
+              href="/blog"
+              onClick={(e) => {
+                // Keep the SPA behaviour, but ship a real crawlable href so
+                // Google has a path from the homepage into the Journal.
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                setActiveTab('blog');
+                if (typeof window !== 'undefined' && window.history) {
+                  window.history.pushState({}, '', '/blog');
+                }
+              }}
+              className={`transition-all duration-200 cursor-pointer ${
 activeTab === 'blog'
 ? 'text-[#1A1816] font-bold border-b-2 border-[#1A1816] pb-0.5'
 : 'text-[#6E675F] hover:text-[#1A1816]'
 }`}
->
-Blog
-</button>
+            >
+              Blog
+            </a>
 </nav>
 
 {/* Center Logo */}
@@ -105,12 +115,22 @@ className={activeTab === 'itineraries' ? 'text-[#1A1816] font-bold underline' : 
 >
 Itineraries
 </button>
-<button
-onClick={() => setActiveTab('blog')}
-className={activeTab === 'blog' ? 'text-[#1A1816] font-bold underline' : ''}
->
-Blog
-</button>
+<a
+              href="/blog"
+              onClick={(e) => {
+                // Keep the SPA behaviour, but ship a real crawlable href so
+                // Google has a path from the homepage into the Journal.
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                setActiveTab('blog');
+                if (typeof window !== 'undefined' && window.history) {
+                  window.history.pushState({}, '', '/blog');
+                }
+              }}
+              className={activeTab === 'blog' ? 'text-[#1A1816] font-bold underline' : ''}
+            >
+              Blog
+            </a>
 <div className="flex items-center gap-3 pl-1 ml-1 border-l border-[#E8E2D9] shrink-0">
 {socialLinks.map(({ label, href, Icon }) => (
 <a
