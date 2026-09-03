@@ -78,6 +78,24 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// post.date is display copy like "AUGUST 2026". Schema.org datePublished
+// requires ISO 8601, and Google discards the field otherwise.
+const MONTHS = {
+  JANUARY: '01', FEBRUARY: '02', MARCH: '03', APRIL: '04',
+  MAY: '05', JUNE: '06', JULY: '07', AUGUST: '08',
+  SEPTEMBER: '09', OCTOBER: '10', NOVEMBER: '11', DECEMBER: '12',
+};
+
+function toIsoDate(raw) {
+  const str = String(raw || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0, 10);
+  const m = str.toUpperCase().match(/^([A-Z]+)\s+(\d{4})$/);
+  if (m && MONTHS[m[1]]) return `${m[2]}-${MONTHS[m[1]]}-01`;
+  const parsed = new Date(str);
+  if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  return null;
+}
+
 function replaceMeta(html, selectorRegex, newContentAttr) {
   if (!selectorRegex.test(html)) {
     fail('template is missing an expected tag matching ' + selectorRegex);
@@ -147,7 +165,7 @@ for (const post of BLOG_POSTS) {
     headline: post.title,
     description: post.summary,
     image: imageUrl,
-    datePublished: post.date,
+    datePublished: toIsoDate(post.date) || undefined,
     author: { '@type': 'Organization', name: post.author },
     publisher: { '@type': 'Organization', name: 'Swoon Plans Concierge' },
     mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
@@ -167,7 +185,16 @@ for (const post of BLOG_POSTS) {
     jsonLdBlocks += `<script type="application/ld+json">${JSON.stringify(faqLd)}</script>\n`;
   }
 
-  html = html.replace('</head>', canonicalTag + jsonLdBlocks + '</head>');
+  // The base index.html already carries a homepage canonical. Replace it
+// rather than appending, or every post ships two conflicting canonicals
+// and Google may treat each article as a duplicate of the homepage.
+const CANONICAL_RE = /<link rel="canonical"[^>]*\/?>/i;
+if (!CANONICAL_RE.test(html)) {
+  fail('template is missing a <link rel="canonical"> tag to replace.');
+}
+html = html.replace(CANONICAL_RE, canonicalTag.trim());
+
+html = html.replace('</head>', jsonLdBlocks + '</head>');
 
   // Server-render the real article into the root div so non-JS crawlers
   // get actual content, not just a title tag. Falls back to the homepage
