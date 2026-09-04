@@ -24,34 +24,74 @@ intro: string;
 photos: PhotoItem[];
 }
 
-export const HERO_SLIDES = [
-{
-id: 'hero-1',
-headline: "Look like a genius without lifting a finger.",
-subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
-title: 'Skyline Terrace Rendezvous',
-location: 'Rooftop Garden Lounge',
-date: 'GOLDEN HOUR',
-image: '/images/date_african_american_couple_1785457444161.jpg'
-},
-{
-id: 'hero-2',
-headline: "Reclaim your time. Reward your soul.",
-subheadline: 'Zero mental load. Curated solo itineraries built entirely around your vibe.',
-title: 'Solo Self Care Afternoon',
-location: 'Neighborhood Cafe',
-date: 'ANY DAY',
-image: '/images/happy-solo-date.webp'
-},
-{
-id: 'hero-3',
-headline: "Be the cool parent. Skip the planning panic.",
-subheadline: 'Custom family plans that remove the guesswork from weekends.',
-title: 'Weekend Family Adventure',
-location: 'Your City',
-date: 'ALL AGES',
-image: '/images/kids-plan-fun-party.webp'
+export type HeroPathway = 'swoonHer' | 'selfCare' | 'kidPlans';
+
+export interface HeroReview {
+  rating: number;
+  name: string;
 }
+
+export interface HeroSlide {
+  id: string;
+  headline: string;
+  subheadline: string;
+  title: string;
+  location: string;
+  date: string;
+  image: string;
+  /** Which flow the slide's Begin button opens. */
+  pathway: HeroPathway;
+  /** Short name for the pathway selector under the hero. */
+  label: string;
+  /** Accent colour that identifies this pathway. */
+  accent: string;
+  /**
+   * Only real, attributable reviews belong here. Slides without one simply
+   * render no review bar rather than showing an invented endorsement.
+   */
+  review?: HeroReview;
+}
+
+export const HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 'hero-1',
+    headline: 'Look like a genius without lifting a finger.',
+    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
+    title: 'Skyline Terrace Rendezvous',
+    location: 'Rooftop Garden Lounge',
+    date: 'GOLDEN HOUR',
+    image: '/images/date_african_american_couple_1785457444161.jpg',
+    pathway: 'swoonHer',
+    label: 'Swoon Her',
+    accent: '#D5C29F',
+    review: { rating: 5, name: 'Marcus T.' },
+  },
+  {
+    id: 'hero-2',
+    headline: 'Reclaim your time. Reward your soul.',
+    subheadline: 'Zero mental load. Curated solo itineraries built entirely around your vibe.',
+    title: 'Solo Self Care Afternoon',
+    location: 'Neighborhood Cafe',
+    date: 'ANY DAY',
+    image: '/images/happy-solo-date.webp',
+    pathway: 'selfCare',
+    label: 'Self Care',
+    accent: '#E08B6F',
+    // TODO: add a real Self Care reviewer, e.g. { rating: 5, name: 'First L.' }
+  },
+  {
+    id: 'hero-3',
+    headline: 'Be the cool parent. Skip the planning panic.',
+    subheadline: 'Custom family plans that remove the guesswork from weekends.',
+    title: 'Weekend Family Adventure',
+    location: 'Your City',
+    date: 'ALL AGES',
+    image: '/images/kids-plan-fun-party.webp',
+    pathway: 'kidPlans',
+    label: 'Kid Plan',
+    accent: '#5FD068',
+    // TODO: add a real Kid Plan reviewer, e.g. { rating: 5, name: 'First L.' }
+  },
 ];
 
 export const PORTFOLIO_PHOTOS: PhotoItem[] = [
