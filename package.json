@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "npm run build:client && npm run build:ssr && npm run prerender && npm run prerender:blog",
+    "build": "npm run decode:assets && npm run build:client && npm run build:ssr && npm run prerender && npm run prerender:blog",
     "build:client": "vite build",
     "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist-ssr",
     "prerender": "node scripts/prerender.mjs",
@@ -14,7 +14,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "audit:links": "tsx scripts/audit-venue-links.ts",
-    "test:links": "tsx scripts/test-link-health.ts"
+    "test:links": "tsx scripts/test-link-health.ts",
+    "decode:assets": "node scripts/decode-assets.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
