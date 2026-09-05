@@ -46,6 +46,10 @@ export interface HeroSlide {
   /** Accent colour that identifies this pathway. */
   accent: string;
   /**
+   * CSS object-position for the photo. Defaults to centre when omitted.
+   */
+  focal?: string;
+  /**
    * Only real, attributable reviews belong here. Slides without one simply
    * render no review bar rather than showing an invented endorsement.
    */
@@ -61,6 +65,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     location: 'Rooftop Garden Lounge',
     date: 'GOLDEN HOUR',
     image: '/images/date_african_american_couple_1785457444161.jpg',
+    focal: 'center 40%',
     pathway: 'swoonHer',
     label: 'Swoon Her',
     accent: '#D5C29F',
@@ -77,7 +82,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'selfCare',
     label: 'Self Care',
     accent: '#E08B6F',
-    // TODO: add a real Self Care reviewer, e.g. { rating: 5, name: 'First L.' }
+    review: { rating: 5, name: 'Alex' },
   },
   {
     id: 'hero-3',
@@ -90,7 +95,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'kidPlans',
     label: 'Kid Plan',
     accent: '#5FD068',
-    // TODO: add a real Kid Plan reviewer, e.g. { rating: 5, name: 'First L.' }
+    review: { rating: 5, name: 'Shawn' },
   },
 ];
 
