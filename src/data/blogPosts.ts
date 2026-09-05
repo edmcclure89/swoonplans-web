@@ -94,7 +94,7 @@ content: [
 {
 id: 'post-5',
 slug: 'turn-a-tuesday-into-a-core-memory',
-title: 'How to Turn a Standard Tuesday into a Core Memory',
+title: 'How to Turn a Standard Tuesday Into a Core Memory',
 category: 'SURPRISE & DELIGHT',
 readTime: '5 min read',
 date: 'MARCH 2026',
