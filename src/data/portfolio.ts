@@ -50,6 +50,12 @@ export interface HeroSlide {
    */
   focal?: string;
   /**
+   * Set for portrait sources. On wide screens the photo is pinned right at its
+   * natural aspect with a blurred copy of itself behind, so the subject clears
+   * the copy column instead of being cropped into.
+   */
+  portraitSource?: boolean;
+  /**
    * Only real, attributable reviews belong here. Slides without one simply
    * render no review bar rather than showing an invented endorsement.
    */
@@ -91,7 +97,8 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Weekend Family Adventure',
     location: 'Your City',
     date: 'ALL AGES',
-    image: '/images/kids-plan-fun-party.webp',
+    image: '/images/kids-birthday-hug.webp',
+    portraitSource: true,
     pathway: 'kidPlans',
     label: 'Kid Plan',
     accent: '#5FD068',
