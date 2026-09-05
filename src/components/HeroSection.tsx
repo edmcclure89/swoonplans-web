@@ -81,12 +81,41 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             }`}
             aria-hidden={idx !== currentIndex}
           >
-            <img
-              src={s.image}
-              alt={s.title}
-              className="w-full h-full object-cover filter brightness-[1.05] contrast-[1.03]"
-              style={{ objectPosition: s.focal ?? 'center' }}
-            />
+            {s.portraitSource ? (
+              <>
+                {/* A tall photo in a wide hero would crop straight into the
+                    faces. Instead a blurred copy fills the width behind, and
+                    the sharp frame sits right, clear of the copy column. */}
+                <img
+                  src={s.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl brightness-[0.72] sm:block"
+                />
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  className="absolute inset-y-0 right-0 hidden h-full w-auto max-w-none sm:block"
+                  style={{
+                    maskImage: 'linear-gradient(to right, transparent 0%, black 14%)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 14%)',
+                  }}
+                />
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  className="h-full w-full object-cover filter brightness-[1.05] contrast-[1.03] sm:hidden"
+                  style={{ objectPosition: s.focal ?? 'center' }}
+                />
+              </>
+            ) : (
+              <img
+                src={s.image}
+                alt={s.title}
+                className="h-full w-full object-cover filter brightness-[1.05] contrast-[1.03]"
+                style={{ objectPosition: s.focal ?? 'center' }}
+              />
+            )}
             {/* Scrim runs left to right so the copy stays legible while the
                 right side of the photograph is left clear. */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/5" />
