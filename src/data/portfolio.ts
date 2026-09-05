@@ -97,7 +97,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Weekend Family Adventure',
     location: 'Your City',
     date: 'ALL AGES',
-    image: '/images/kids-birthday-hug.webp',
+    image: '/images/kids-birthday-hug-portrait.webp',
     portraitSource: true,
     pathway: 'kidPlans',
     label: 'Kid Plan',
