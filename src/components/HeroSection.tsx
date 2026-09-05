@@ -84,7 +84,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <img
               src={s.image}
               alt={s.title}
-              className="w-full h-full object-cover object-center filter brightness-[1.1] contrast-[1.02]"
+              className="w-full h-full object-cover filter brightness-[1.05] contrast-[1.03]"
+              style={{ objectPosition: s.focal ?? 'center' }}
             />
             {/* Scrim runs left to right so the copy stays legible while the
                 right side of the photograph is left clear. */}
@@ -97,17 +98,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Copy and call to action, vertically centred on the left. */}
         <div className="relative z-10 flex min-h-[72vh] sm:min-h-[80vh] items-center">
           <div className="w-full max-w-lg px-6 pb-24 sm:max-w-xl sm:px-12 sm:pb-0 lg:px-16 text-left">
-            <h1 className="font-serif italic font-light text-white text-3xl sm:text-5xl leading-tight drop-shadow-lg">
+            {/* Short accent rule keys the copy to whichever pathway is showing. */}
+            <span
+              className="block h-[3px] w-14 rounded-full"
+              style={{ backgroundColor: activeSlide.accent }}
+              aria-hidden="true"
+            />
+            <h1 className="mt-6 font-serif italic font-light text-white text-[2.1rem] leading-[1.08] sm:text-[3.4rem] lg:text-[4rem] drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
               {activeSlide.headline}
             </h1>
-            <p className="font-sans text-[#E8E2D9] mt-4 max-w-md text-sm sm:text-base">
+            <p className="mt-5 max-w-sm font-sans text-sm font-light leading-relaxed text-[#E8E2D9]/90 sm:text-base">
               {activeSlide.subheadline}
             </p>
 
             <button
               onClick={actions[activeSlide.pathway]}
-              className="mt-7 inline-flex items-center justify-center rounded-sm px-10 py-3.5 font-sans text-sm font-bold text-[#1A1816] transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/50 cursor-pointer"
-              style={{ backgroundColor: activeSlide.accent }}
+              className="mt-8 inline-flex items-center justify-center rounded-full px-12 py-4 font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-[#1A1816] transition duration-200 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/50 cursor-pointer"
+              style={{
+                backgroundColor: activeSlide.accent,
+                boxShadow: `0 10px 30px -8px ${activeSlide.accent}99`,
+              }}
             >
               Begin
             </button>
