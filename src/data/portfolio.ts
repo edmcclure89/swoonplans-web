@@ -65,7 +65,7 @@ export interface HeroSlide {
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'hero-1',
-    headline: 'Look like a genius without lifting a finger.',
+    headline: 'Get the plan that makes her heart flutter',
     subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
     title: 'Skyline Terrace Rendezvous',
     location: 'Rooftop Garden Lounge',
@@ -75,11 +75,10 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'swoonHer',
     label: 'Swoon Her',
     accent: '#D5C29F',
-    review: { rating: 5, name: 'Marcus T.' },
   },
   {
     id: 'hero-2',
-    headline: 'Reclaim your time. Reward your soul.',
+    headline: 'Treat yourself',
     subheadline: 'Zero mental load. Curated solo itineraries built entirely around your vibe.',
     title: 'Solo Self Care Afternoon',
     location: 'Neighborhood Cafe',
@@ -88,11 +87,10 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'selfCare',
     label: 'Self Care',
     accent: '#E08B6F',
-    review: { rating: 5, name: 'Alex' },
   },
   {
     id: 'hero-3',
-    headline: 'Be the cool parent. Skip the planning panic.',
+    headline: 'Be the coolest parent ever',
     subheadline: 'Custom family plans that remove the guesswork from weekends.',
     title: 'Weekend Family Adventure',
     location: 'Your City',
@@ -102,7 +100,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'kidPlans',
     label: 'Kid Plan',
     accent: '#5FD068',
-    review: { rating: 5, name: 'Shawn' },
   },
 ];
 
