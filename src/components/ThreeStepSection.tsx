@@ -25,6 +25,12 @@ const STEPS = [
   },
 ];
 
+const HEADLINE_LINES = [
+  { n: '1', line: 'Give us their traits.' },
+  { n: '2', line: 'We send custom plan.' },
+  { n: '3', line: 'You take the credit.' },
+];
+
 export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquire }) => {
   return (
     <section className="w-full bg-[#FAF8F5] pt-8 pb-14 sm:pt-12 sm:pb-20 px-6 sm:px-12">
@@ -59,10 +65,15 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
         </div>
 
         <div>
-          <h2 className="font-serif italic font-light text-4xl sm:text-5xl text-[#1A1816] leading-[1.15]">
-            <span className="block">Give us the traits.</span>
-            <span className="block">We send the custom plan.</span>
-            <span className="block">You get the credit.</span>
+          <h2 className="font-serif italic font-light text-2xl sm:text-3xl text-[#1A1816] leading-[1.35]">
+            {HEADLINE_LINES.map(({ n, line }) => (
+              <span key={n} className="flex items-baseline gap-2.5 whitespace-nowrap">
+                <span className="font-serif not-italic text-[0.6em] leading-none text-[#D5C29F]">
+                  {n}
+                </span>
+                <span>{line}</span>
+              </span>
+            ))}
           </h2>
           <p className="text-sm sm:text-base text-[#6E675F] font-sans font-light mt-4 leading-relaxed">
             She thinks you planned it all week. Her group chat is green with envy.
