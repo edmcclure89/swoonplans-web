@@ -9,31 +9,31 @@ export const AppProcessSection: React.FC<AppProcessSectionProps> = ({ onOpenInqu
 const steps = [
 {
 number: '01',
-title: 'Answer 20 questions about her',
+title: 'Answer 20 Questions About Her',
 icon: Calendar,
 badge: '20 Targeted Questions'
 },
 {
 number: '02',
-title: 'Select budget',
+title: 'Select Budget',
 icon: DollarSign,
 badge: '$ to $$$$'
 },
 {
 number: '03',
-title: 'Receive custom date plan',
+title: 'Receive Custom Date Plan',
 icon: FileText,
 badge: 'Tailored Blueprint'
 },
 {
 number: '04',
-title: '1-Click booking & reservation',
+title: '1-Click Booking & Reservation',
 icon: Zap,
 badge: 'OpenTable & Resy Links'
 },
 {
 number: '05',
-title: 'She texts her girls to brag about you...',
+title: 'She Texts Her Girls to Brag About You...',
 icon: Heart,
 badge: 'Unforgettable Date'
 }
