@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { HERO_SLIDES } from '../data/portfolio';
-import type { HeroPathway, HeroReview } from '../data/portfolio';
+import type { HeroPathway } from '../data/portfolio';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -10,22 +10,6 @@ interface HeroSectionProps {
   onOpenSelfCare: () => void;
   onOpenKidPlans: () => void;
 }
-
-const ReviewBar: React.FC<{ review: HeroReview; accent: string }> = ({ review, accent }) => (
-  <div className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-black/35 px-3.5 py-2 backdrop-blur-md">
-    <span
-      className="text-xs leading-none tracking-[0.15em]"
-      style={{ color: accent }}
-      aria-hidden="true"
-    >
-      {'\u2605'.repeat(review.rating)}
-    </span>
-    <span className="sr-only">{review.rating} out of 5 stars.</span>
-    <span className="font-sans text-[11px] font-medium leading-none text-[#E8E2D9]">
-      {review.name}
-    </span>
-  </div>
-);
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenInquire,
@@ -150,12 +134,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             >
               Begin
             </button>
-
-            {activeSlide.review && (
-              <div>
-                <ReviewBar review={activeSlide.review} accent={activeSlide.accent} />
-              </div>
-            )}
           </div>
         </div>
 
