@@ -60,7 +60,9 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
 
         <div>
           <h2 className="font-serif italic font-light text-4xl sm:text-5xl text-[#1A1816] leading-[1.15]">
-            Curated spots. Instant reservations. Zero sweat.
+            <span className="block">Give us the traits.</span>
+            <span className="block">We send the custom plan.</span>
+            <span className="block">You get the credit.</span>
           </h2>
           <p className="text-sm sm:text-base text-[#6E675F] font-sans font-light mt-4 leading-relaxed">
             She thinks you planned it all week. Her group chat is green with envy.
