@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
+import { PathwayMessagingSection } from './components/PathwayMessagingSection';
 import { AppProcessSection } from './components/AppProcessSection';
 import { HusbandsTestimonialsSection } from './components/HusbandsTestimonialsSection';
 import { ItinerariesSection } from './components/ItinerariesSection';
@@ -236,6 +237,11 @@ onOpenInquire={() => setIsInquireOpen(true)}
 onOpenSwoonType={() => setIsSwoonTypeOpen(true)}
 onOpenSelfCare={() => setIsSelfCareOpen(true)}
 onOpenKidPlans={() => setIsKidPlansOpen(true)}
+/>
+<PathwayMessagingSection
+  onOpenSwoonHer={() => setIsInquireOpen(true)}
+  onOpenSelfCare={() => setIsSelfCareOpen(true)}
+  onOpenKidPlans={() => setIsKidPlansOpen(true)}
 />
 <ThreeStepSection onOpenInquire={() => setIsInquireOpen(true)} />
 <HusbandsTestimonialsSection />
