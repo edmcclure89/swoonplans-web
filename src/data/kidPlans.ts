@@ -1,8 +1,13 @@
 // Kid Plans: a 12-question read on a kid's personality and interests,
 // used to recommend activities/experiences that make a parent look
-// unusually tuned-in. No real venue data is claimed here (unlike the
-// adult date engine) — recommendations are honest activity categories,
-// not fabricated specific businesses.
+// unusually tuned-in.
+//
+// Venues: when the parent's metro has curated, verified venue data in
+// kidVenues.ts, the plan returns real places with real addresses. When it does
+// not, the plan falls back to the generic activity categories below. We never
+// invent a business to fill the gap.
+
+import { KidVenue, pickKidVenues } from './kidVenues';
 
 export interface KidOption {
   key: string;
@@ -257,6 +262,10 @@ export interface KidPlanResult {
   ageLabel: string;
   fandomLabel: string;
   recommendations: { title: string; blurb: string }[];
+  /** Real venues for the chosen metro. Empty when we have no curated data. */
+  venues: KidVenue[];
+  /** Metro the venues came from, for display. Empty when none. */
+  metroKey: string;
   flexLine: string;
   funFact: string;
 }
@@ -276,7 +285,7 @@ const FUN_FACTS = [
   'Novelty plus their existing obsession is the combination that tends to stick.',
 ];
 
-export function buildKidPlan(ageKey: string, answers: Record<string, string>): KidPlanResult {
+export function buildKidPlan(ageKey: string, answers: Record<string, string>, metroKey = ''): KidPlanResult {
   const scores: Record<KidTag, number> = {
     ADVENTURER: 0,
     MAKER: 0,
@@ -318,6 +327,8 @@ export function buildKidPlan(ageKey: string, answers: Record<string, string>): K
     ageLabel: `${ageBand.label} (${ageBand.range})`,
     fandomLabel,
     recommendations: profile.recommendations,
+    venues: metroKey ? pickKidVenues(metroKey, bestTag, ageKey) : [],
+    metroKey,
     flexLine: profile.flexLine(fandomLabel),
     funFact,
   };
