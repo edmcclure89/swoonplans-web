@@ -545,7 +545,7 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-21',
     slug: 'immersive-kids-party-themes',
-    title: "Immersive and Magical Themes for Children's Parties That Captivate the Imagination",
+    title: "Immersive and Magical Themes for Children’s Parties That Captivate the Imagination",
     category: 'IMAGINE THE POSSIBILITIES',
     readTime: '5 min read',
     date: 'SEPTEMBER 2026',
