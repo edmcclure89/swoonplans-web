@@ -64,19 +64,6 @@ export interface HeroSlide {
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
-    id: 'hero-1',
-    headline: 'Get the plan that makes her heart flutter',
-    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
-    title: 'Skyline Terrace Rendezvous',
-    location: 'Rooftop Garden Lounge',
-    date: 'GOLDEN HOUR',
-    image: '/images/date_african_american_couple_1785457444161.jpg',
-    focal: 'center 40%',
-    pathway: 'swoonHer',
-    label: 'Swoon Her',
-    accent: '#D5C29F',
-  },
-  {
     id: 'hero-2',
     headline: 'Treat yourself',
     subheadline: 'Zero mental load. Curated solo itineraries built entirely around your vibe.',
@@ -100,6 +87,19 @@ export const HERO_SLIDES: HeroSlide[] = [
     pathway: 'kidPlans',
     label: 'Kid Plan',
     accent: '#5FD068',
+  },
+  {
+    id: 'hero-1',
+    headline: 'Get the plan that makes her heart flutter',
+    subheadline: 'No guesswork. Curated venues, exact addresses, and one-tap reservations.',
+    title: 'Skyline Terrace Rendezvous',
+    location: 'Rooftop Garden Lounge',
+    date: 'GOLDEN HOUR',
+    image: '/images/date_african_american_couple_1785457444161.jpg',
+    focal: 'center 40%',
+    pathway: 'swoonHer',
+    label: 'Swoon Her',
+    accent: '#D5C29F',
   },
 ];
 
