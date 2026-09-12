@@ -38,7 +38,53 @@ export const HusbandsTestimonialsSection: React.FC = () => {
       location: "Private Ocean Cove Dinner",
       rating: 5,
       highlight: "Finally Able To Spoil Her"
+    },
+    {
+      id: 5,
+      quote: "Planning my daughter\u2019s 7th birthday used to fill me with dread, but the Kid Plan framework completely changed the game. Having a structured 4-week countdown and an activity flow that kept ten high-energy kids fully engaged meant I actually got to enjoy the party instead of running around like a stressed-out stage manager. Absolute lifesaver!",
+      author: "Sarah M.",
+      title: "Verified Parent",
+      location: "Austin, TX",
+      rating: 5,
+      highlight: "Actually Enjoyed The Party"
+    },
+    {
+      id: 6,
+      quote: "Managing severe peanut and dairy allergies for a group of eight-year-olds felt terrifying until we used the SwoonPlans kid menu guide. The build-your-own taco bar and allergen-safe snack ideas were a massive hit with both the kids and the parents. Everyone felt included, and it took all the guesswork out of hosting.",
+      author: "David K.",
+      title: "Verified Parent",
+      location: "Denver, CO",
+      rating: 4,
+      highlight: "Zero Guesswork, Fully Included"
+    },
+    {
+      id: 7,
+      quote: "I was completely burnt out from juggling a demanding career and daily schedules. Taking just one weekend to follow the digital sunset and self-care blueprint felt like hitting a hard reset on my nervous system. I returned to my work week completely centered, calm, and clear-headed for the first time in months.",
+      author: "Elena R.",
+      title: "Verified Member",
+      location: "Seattle, WA",
+      rating: 5,
+      highlight: "Complete Reset, Totally Centered"
+    },
+    {
+      id: 8,
+      quote: "The morning routine framework gave me back my mornings before the rest of the world started demanding my energy. Shifting away from my phone first thing and setting up a quiet, intentional start to my day has transformed my baseline anxiety. It\u2019s the ultimate form of everyday self-respect.",
+      author: "Chloe V.",
+      title: "Verified Member",
+      location: "Chicago, IL",
+      rating: 5,
+      highlight: "Ultimate Self-Respect Habit"
+    },
+    {
+      id: 9,
+      quote: "I used SwoonPlans to coordinate a weekend getaway trip for my six bridesmaids in the mountains, and it was a total triumph. Between managing everyone\u2019s dietary needs, scheduling downtime, and keeping the itinerary seamless without feeling over-programmed, it eliminated all the usual group travel friction. We all laughed, bonded, and actually got to rest!",
+      author: "Maya S.",
+      title: "Verified Group Planner",
+      location: "Nashville, TN",
+      rating: 4,
+      highlight: "Zero Group Travel Friction"
     }
+
   ];
 
   return (
