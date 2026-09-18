@@ -9,24 +9,24 @@ import { HeroSection } from './components/HeroSection';
 import { PathwayMessagingSection } from './components/PathwayMessagingSection';
 import { AppProcessSection } from './components/AppProcessSection';
 import { HusbandsTestimonialsSection } from './components/HusbandsTestimonialsSection';
-import { ItinerariesSection } from './components/ItinerariesSection';
-import { BlogSection } from './components/BlogSection';
-import { BlogPostPage } from './components/BlogPostPage';
 import { ImageLightbox } from './components/ImageLightbox';
-import { DateConciergeApp } from './components/DateConciergeApp';
-import { TermsPage } from './components/TermsPage';
-import { PrivacyPage } from './components/PrivacyPage';
-import { WelcomePage } from './components/WelcomePage';
-import { RegisterPage } from './components/RegisterPage';
 import { PricingSection } from './components/PricingSection';
 import { ThreeStepSection } from './components/ThreeStepSection';
 import { AudioPlayer } from './components/AudioPlayer';
-import { SwoonTypeFlow, readScoresFromQuery } from './components/SwoonTypeFlow';
-import { SelfCareConciergeApp } from './components/SelfCareConciergeApp';
-import { KidPlansConciergeApp } from './components/KidPlansConciergeApp';
+import { readScoresFromQuery } from './lib/swoonQuery';
+// Quizzes, blog, legal and account screens are code-split: see src/lib/lazyModules.tsx.
+import { Lazy, ModalLoading } from './lib/lazyModules';
 import { PORTFOLIO_PHOTOS, PhotoItem } from './data/portfolio';
-import { Film, Mail, ArrowUp, ShieldCheck } from 'lucide-react';
+import { Mail, ArrowUp } from 'lucide-react';
 import { socialLinks } from './data/socialLinks';
+
+// True from the first time `open` is true onwards. Lets a split-out modal
+// download only when first opened, then stay mounted so it keeps its state.
+function useOpenedOnce(open: boolean): boolean {
+const [opened, setOpened] = useState(open);
+if (open && !opened) setOpened(true);
+return opened || open;
+}
 
 interface AppProps {
 // Only set during build-time SSR (see src/entry-server.tsx). Lets the
@@ -55,6 +55,9 @@ const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 const [isSwoonTypeOpen, setIsSwoonTypeOpen] = useState(false);
 const [isSelfCareOpen, setIsSelfCareOpen] = useState(false);
 const [isKidPlansOpen, setIsKidPlansOpen] = useState(false);
+const dateOpened = useOpenedOnce(isInquireOpen);
+const selfCareOpened = useOpenedOnce(isSelfCareOpen);
+const kidPlansOpened = useOpenedOnce(isKidPlansOpen);
 
 // Magic-link / gate emails redirect here with ?app=1 so returning users
 // land back inside the concierge modal instead of a bare homepage.
@@ -112,66 +115,67 @@ try { modelContext.unregisterTool && modelContext.unregisterTool(tool.name); } c
 };
 }, []);
 
+// Current route. ssrPath is set at build time (src/entry-server.tsx) so every
+// route below can be prerendered with its real content; in the browser it is
+// always undefined and window.location is used.
+const ssrOrBrowserPath = ssrPath ?? (typeof window !== 'undefined' ? window.location.pathname : null);
+const routePath = ssrOrBrowserPath ? ssrOrBrowserPath.replace(/\/+$/, '') || '/' : '/';
+const goHome = () => { window.location.href = '/'; };
+
 // Standalone article pages. Routed at /blog/:slug (see vercel.json
 // rewrite) so every post has its own real, shareable URL instead of
 // living inside a modal.
-const ssrOrBrowserPath = ssrPath ?? (typeof window !== 'undefined' ? window.location.pathname : null);
-const blogSlugMatch = ssrOrBrowserPath ? ssrOrBrowserPath.match(/^\/blog\/([^/]+)\/?$/) : null;
+const blogSlugMatch = routePath.match(/^\/blog\/([^/]+)$/);
 if (blogSlugMatch) {
-return <BlogPostPage slug={blogSlugMatch[1]} />;
+return <Lazy k="blogPost" slug={blogSlugMatch[1]} />;
 }
 
 // Post-checkout landing. Stripe's success_url sends buyers to /welcome; this
 // SPA renders the confirmation screen for that path instead of the funnel.
-const isWelcomeRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/welcome';
-if (isWelcomeRoute) {
-return <WelcomePage />;
+if (routePath === '/welcome') {
+return <Lazy k="welcome" />;
 }
 
-const isRegisterRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/register';
-if (isRegisterRoute) {
-return <RegisterPage />;
+if (routePath === '/register') {
+return <Lazy k="register" />;
 }
 
 // Standalone legal pages, routed at /terms and /privacy (see vercel.json
 // rewrite) so they have real, shareable, crawlable URLs instead of living
 // in a modal.
-const isTermsRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/terms';
-if (isTermsRoute) {
-return <TermsPage />;
+if (routePath === '/terms') {
+return <Lazy k="terms" />;
 }
 
-const isPrivacyRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/privacy';
-if (isPrivacyRoute) {
-return <PrivacyPage />;
+if (routePath === '/privacy') {
+return <Lazy k="privacy" />;
 }
 
 // Swoon Type quiz + results, routed at /swoon-type (see vercel.json
 // rewrite). A shared results link carries ?v=&p=&e= so it opens straight
 // to results instead of the quiz. Also reachable from the homepage dual
 // entry without a full navigation, via isSwoonTypeOpen below.
-const isSwoonTypeRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/swoon-type';
-if (isSwoonTypeRoute) {
+if (routePath === '/swoon-type') {
+const sharedScores = readScoresFromQuery();
 return (
-<SwoonTypeFlow
-onClose={() => { window.location.href = '/'; }}
-initialScores={readScoresFromQuery()}
-/>
+<>
+{/* The quiz screen's visible title is an h2; the results screen has its own h1. */}
+{!sharedScores && <h1 className="sr-only">Swoon Type quiz: find your date night type</h1>}
+<Lazy k="swoonType" onClose={goHome} initialScores={sharedScores} />
+</>
 );
 }
 
 // Kid Plans quiz, routed at /kid-plans (see vercel.json rewrite) so it has
 // a real, shareable URL. Also reachable from the homepage dual entry
 // without a full navigation, via isKidPlansOpen below.
-const isKidPlansRoute =
-typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/kid-plans';
-if (isKidPlansRoute) {
-return <KidPlansConciergeApp isOpen={true} onClose={() => { window.location.href = '/'; }} />;
+if (routePath === '/kid-plans') {
+return (
+<>
+<h1 className="sr-only">Kid Plans: weekend activity ideas matched to your kid</h1>
+<Lazy k="kidPlans" isOpen={true} onClose={goHome} />
+</>
+);
 }
 
 const selectedPhoto = selectedPhotoIndex !== null ? PORTFOLIO_PHOTOS[selectedPhotoIndex] : null;
@@ -202,7 +206,7 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 if (isSwoonTypeOpen) {
-return <SwoonTypeFlow onClose={() => setIsSwoonTypeOpen(false)} />;
+return <Lazy k="swoonType" fallback={<ModalLoading />} onClose={() => setIsSwoonTypeOpen(false)} />;
 }
 
 return (
@@ -231,6 +235,9 @@ toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
 <main className="flex-1">
 {activeTab === 'stories' && (
 <>
+{/* The page's single H1. The hero headline rotates every few seconds, so it
+    is styled text rather than a heading; this names what the page is. */}
+<h1 className="sr-only">Swoon Plans: custom date nights, self-care days and kid activity plans with real venues</h1>
 <HeroSection
 onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
@@ -251,14 +258,14 @@ onOpenKidPlans={() => setIsKidPlansOpen(true)}
 
 {activeTab === 'itineraries' && (
 <>
-<ItinerariesSection onOpenInquire={() => setIsInquireOpen(true)} />
+<Lazy k="itineraries" fallback={<div className="min-h-[60vh]" />} onOpenInquire={() => setIsInquireOpen(true)} />
 <AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
 </>
 )}
 
 {activeTab === 'blog' && (
 <>
-<BlogSection onOpenInquire={() => setIsInquireOpen(true)} />
+<Lazy k="blogIndex" fallback={<div className="min-h-[60vh]" />} onOpenInquire={() => setIsInquireOpen(true)} />
 <AppProcessSection onOpenInquire={() => setIsInquireOpen(true)} />
 </>
 )}
@@ -269,9 +276,9 @@ onOpenKidPlans={() => setIsKidPlansOpen(true)}
 <footer className="bg-[#FAF8F5] text-[#1A1816] py-16 px-6 sm:px-12 border-t border-[#E8E2D9] mt-20 relative z-20">
 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
 <div className="text-center md:text-left space-y-1">
-<h3 className="text-2xl sm:text-3xl font-serif tracking-[0.2em] italic font-light">
+<p className="text-2xl sm:text-3xl font-serif tracking-[0.2em] italic font-light">
 SWOON PLANS
-</h3>
+</p>
 <p className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#6E675F] font-bold">
 YOUR DATE PLANNING CONCIERGE
 </p>
@@ -286,7 +293,7 @@ href={href}
 target="_blank"
 rel="noopener noreferrer"
 aria-label={label}
-className="text-[#6E675F] hover:text-[#B89860] transition-colors"
+className="p-2 -m-2 text-[#6E675F] hover:text-[#B89860] transition-colors"
 >
 <Icon className="w-4 h-4" />
 </a>
@@ -309,7 +316,15 @@ title="Return to top"
 </div>
 </div>
 
-<div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between text-[9px] uppercase tracking-[0.25em] font-sans text-[#8C8377] gap-4">
+{/* Real links (not buttons) so crawlers can reach the Journal and the
+    standalone planner pages from every page. */}
+<nav aria-label="Footer" className="max-w-7xl mx-auto mt-10 flex flex-wrap items-center justify-center md:justify-start gap-x-7 gap-y-3 text-[10px] uppercase tracking-[0.3em] font-sans font-bold">
+<a href="/blog" className="text-[#B89860] hover:underline">Journal</a>
+<a href="/kid-plans" className="text-[#B89860] hover:underline">Kid Plans</a>
+<a href="/swoon-type" className="text-[#B89860] hover:underline">Swoon Type Quiz</a>
+</nav>
+
+<div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between text-[9px] uppercase tracking-[0.25em] font-sans text-[#8C8377] gap-4">
 <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
 <span>© {new Date().getFullYear()} SWOON PLANS CONCIERGE • A DIVISION OF FOR LOVE COACHING. ALL RIGHTS RESERVED.</span>
 <span className="flex items-center gap-3 ml-1">
@@ -337,20 +352,29 @@ setIsInquireOpen(true);
 }}
 />
 
-{/* Interactive Quiz + Date Plan Generator */}
-<DateConciergeApp
+{/* Interactive Quiz + Date Plan Generator (code-split; loads on first open) */}
+<Lazy
+k="date"
+load={dateOpened}
+fallback={isInquireOpen ? <ModalLoading /> : null}
 isOpen={isInquireOpen}
 onClose={() => setIsInquireOpen(false)}
 />
 
 {/* Self Care concierge */}
-<SelfCareConciergeApp
+<Lazy
+k="selfCare"
+load={selfCareOpened}
+fallback={isSelfCareOpen ? <ModalLoading /> : null}
 isOpen={isSelfCareOpen}
 onClose={() => setIsSelfCareOpen(false)}
 />
 
 {/* Kid Plans concierge */}
-<KidPlansConciergeApp
+<Lazy
+k="kidPlans"
+load={kidPlansOpened}
+fallback={isKidPlansOpen ? <ModalLoading /> : null}
 isOpen={isKidPlansOpen}
 onClose={() => setIsKidPlansOpen(false)}
 />
