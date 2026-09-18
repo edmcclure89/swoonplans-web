@@ -62,9 +62,9 @@ export const PathwayMessagingSection: React.FC<PathwayMessagingSectionProps> = (
             <div className="text-[10px] sm:text-xs font-bold font-sans tracking-[0.18em] text-[#5A6472]">
               {c.eyebrow}
             </div>
-            <h3 className="mt-2 font-serif italic font-light text-2xl sm:text-3xl text-[#1A2B4A] leading-tight">
+            <h2 className="mt-2 font-serif italic font-light text-2xl sm:text-3xl text-[#1A2B4A] leading-tight">
               {c.headline}
-            </h3>
+            </h2>
             <p className="mt-3 text-sm font-sans text-[#5A6472] leading-relaxed flex-1">
               {c.body}
             </p>

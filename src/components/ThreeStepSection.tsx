@@ -1,4 +1,5 @@
 import React from 'react';
+import { responsiveImg } from '../lib/images';
 
 interface ThreeStepSectionProps {
   onOpenInquire: () => void;
@@ -10,18 +11,21 @@ const STEPS = [
     label: 'TELL US ABOUT HER',
     sub: 'Tap through quick questions. No typing.',
     img: '/images/step-1_1.jpg',
+    alt: 'Man smiling at his phone while answering quick questions about his partner',
   },
   {
     n: '2',
     label: 'THE COMPLETE ITINERARY',
     sub: 'Real venues, addresses, and instant booking.',
     img: '/images/step-2_1.jpg',
+    alt: 'Phone showing a complete date itinerary with three venues, times and reserve buttons',
   },
   {
     n: '3',
     label: 'BOOK IT',
     sub: "One tap to book. You're the hero.",
     img: '/images/step-3.jpg',
+    alt: 'Couple laughing over wine at a rooftop table on date night',
   },
 ];
 
@@ -44,18 +48,19 @@ export const ThreeStepSection: React.FC<ThreeStepSectionProps> = ({ onOpenInquir
                   <div className="font-serif text-3xl sm:text-5xl text-[#D5C29F] leading-none">
                     {s.n}
                   </div>
-                  <h3 className="mt-1.5 sm:mt-2 text-[10px] sm:text-sm font-bold font-sans tracking-[0.08em] text-[#1A2B4A] leading-tight">
+                  <p className="mt-1.5 sm:mt-2 text-[10px] sm:text-sm font-bold font-sans tracking-[0.08em] text-[#1A2B4A] leading-tight">
                     {s.label}
-                  </h3>
+                  </p>
                   <p className="mt-1 text-[9px] sm:text-xs font-sans text-[#5A6472] leading-snug min-h-[2.2em] sm:min-h-[2.6em]">
                     {s.sub}
                   </p>
                 </div>
                 <div className="mt-2 sm:mt-3 rounded-lg overflow-hidden bg-[#1A1816] aspect-[7/5]">
                   <img
-                    src={s.img}
-                    alt=""
+                    {...responsiveImg(s.img, '(min-width: 1024px) 240px, 31vw')}
+                    alt={s.alt}
                     loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 </div>

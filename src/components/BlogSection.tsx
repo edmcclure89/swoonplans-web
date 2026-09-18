@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, ArrowRight, ChevronRight, Share2, Check } from 'lucide-react';
 import { BLOG_POSTS } from '../data/blogPosts';
+import { responsiveImg } from '../lib/images';
 
 interface BlogSectionProps {
 onOpenInquire: () => void;
@@ -49,9 +50,9 @@ return (
 <BookOpen className="w-3.5 h-3.5" />
 <span>SWOON PLANS JOURNAL</span>
 </div>
-<h2 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic">
+<h1 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic">
 The Date Planning Journal
-</h2>
+</h1>
 <p className="text-xs sm:text-sm text-[#6E675F] font-sans mt-3 font-light leading-relaxed">
 Insider guides, romance psychology, and effortless date night strategies for the modern gentleman.
 </p>
@@ -68,9 +69,9 @@ FEATURED GUIDE
 <span>•</span>
 <span>{featured.readTime}</span>
 </div>
-<h3 className="text-2xl sm:text-4xl font-serif italic font-light text-[#1A1816] leading-tight">
+<h2 className="text-2xl sm:text-4xl font-serif italic font-light text-[#1A1816] leading-tight">
 {featured.title}
-</h3>
+</h2>
 <p className="text-xs sm:text-sm text-[#6E675F] font-sans font-light leading-relaxed">
 {featured.summary}
 </p>
@@ -95,8 +96,9 @@ className="px-6 py-3 bg-[#1A1816]/5 hover:bg-[#1A1816]/10 text-[#1A1816] font-bo
 
 <div className="lg:col-span-5 relative rounded overflow-hidden h-72 border border-[#E8E2D9]">
 <img
-src={featured.image}
+{...responsiveImg(featured.image, '(min-width: 1280px) 500px, (min-width: 1024px) 38vw, 100vw')}
 alt={featured.title}
+decoding="async"
 className="w-full h-full object-cover"
 />
 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -116,8 +118,10 @@ className="group bg-[#EFEDEB]/60 border border-[#E8E2D9] rounded-sm overflow-hid
 <a href={`/blog/${post.slug}`} className="block cursor-pointer">
 <div className="relative h-48 overflow-hidden">
 <img
-src={post.image}
+{...responsiveImg(post.image, '(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 768px) 46vw, 100vw')}
 alt={post.title}
+loading="lazy"
+decoding="async"
 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 />
 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80" />
@@ -131,9 +135,9 @@ className="w-full h-full object-cover group-hover:scale-105 transition-transform
 <span>{post.date}</span>
 <span>{post.readTime}</span>
 </div>
-<h3 className="text-xl font-serif italic text-[#1A1816] group-hover:text-[#8C8377] transition-colors">
+<h2 className="text-xl font-serif italic text-[#1A1816] group-hover:text-[#8C8377] transition-colors">
 {post.title}
-</h3>
+</h2>
 <p className="text-xs text-[#6E675F] font-sans font-light leading-relaxed line-clamp-3">
 {post.summary}
 </p>
