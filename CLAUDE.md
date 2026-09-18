@@ -21,15 +21,55 @@ clean, effortless (NOT dark/moody).
 ```
 npm run build
 ```
-Runs, in order: `vite build` (client) → SSR build of `src/entry-server.tsx` →
-`scripts/prerender.mjs` (prerenders the homepage shell into `dist/index.html` for
-crawlers) → `scripts/prerender-blog.mjs` (generates `dist/blog/<slug>/index.html` per
-post with correct per-article `<title>`, OG/twitter meta, canonical link, and
-Article/FAQPage JSON-LD — Vercel serves these static files ahead of the
-`/blog/:slug -> /` rewrite in `vercel.json`, no rewrite change needed).
+Runs, in order:
+1. `vite build` (client; code-split, see "Code splitting" below)
+2. SSR build of `src/entry-server.tsx`
+3. `scripts/prerender.mjs`: homepage into `dist/index.html` (+ hero image preload)
+4. `scripts/prerender-pages.mjs`: `/kid-plans`, `/swoon-type`, `/terms`, `/privacy`,
+   `/welcome`, `/register` into `dist/<route>/index.html`, each with its own title,
+   description, canonical, robots and body
+5. `scripts/prerender-blog.mjs`: `/blog` hub + `dist/blog/<slug>/index.html` per post
+   (BlogPosting, BreadcrumbList, FAQPage JSON-LD)
+6. `scripts/build-sitemap.mjs`: generates `dist/sitemap.xml` from the pages above and
+   every post. Never hand-edit a sitemap; there is no `public/sitemap.xml` any more.
 
-`App.tsx` accepts an optional `ssrPath` prop so the per-post prerender script can
-render the correct route at build time without a real `window.location`.
+Vercel serves these static files ahead of the rewrites in `vercel.json`. There is
+deliberately no `/blog/:slug` rewrite any more: every real post has its own file, so
+an unknown slug gets a true 404 (`public/404.html`) instead of a "soft 404" copy of
+the homepage.
+`App.tsx` accepts an optional `ssrPath` prop so build-time SSR renders the right
+route without a real `window.location`.
+
+## SEO rules (read before touching pages, copy or images)
+- **Titles, descriptions, robots, canonicals live in `src/lib/seo.ts`**, shared by the
+  app and the prerender scripts. New standalone route: add it to `PAGE_SEO` there and
+  to the route list in `src/App.tsx`. Account/checkout screens get `NOINDEX_ROBOTS`.
+- **`index.html` must start with `<!doctype html>`.** It once said `<doctype html>`
+  (missing `!`): browsers ran in quirks mode and parsed the whole `<head>` into
+  `<body>`, where Google ignores canonical, robots and description. The build now
+  fails if this regresses. Keep the exact meta tag shapes in `index.html`; the
+  prerender scripts match on them.
+- **Exactly one `<h1>` per page.** The homepage H1 is visually hidden in `App.tsx`
+  because the hero headline rotates (it is a styled `<p>`). Section titles are
+  `h2`, sub-items `h3`. The prerender scripts warn when a page has 0 or 2+ H1s.
+- **JSON-LD**: site-wide Organization + WebSite (`id="ld-site"`) on every page;
+  blocks with `id="ld-home-*"` (Service, FAQPage) are homepage-only and are
+  stripped from every other page at build time.
+- **Images**: every UI image needs `alt` and should go through `responsiveImg()`
+  (`src/lib/images.ts`), which adds srcset + width/height from
+  `src/data/imageMeta.ts`. New image: add smaller WebP copies named
+  `<name>-<width>w.webp` next to it and list it in `imageMeta.ts`.
+- **Blog posts** need `pathway` (`swoonHer` | `selfCare` | `kidPlans`; drives the
+  end-of-article CTA and related posts) and, if the headline is over ~60
+  characters, a shorter `seoTitle`. Slugs must be lowercase-hyphenated (the build
+  checks).
+- **Code splitting**: quizzes, blog, legal and account screens load on demand via
+  `src/lib/lazyModules.tsx`. Import them through `<Lazy k="...">`, never
+  statically from `App.tsx`, or Supabase and the venue catalogue end up back in
+  the homepage bundle. A screen with its own URL must also be mapped in
+  `keysForLocation()` so its chunk loads before first render.
+- Caching: `/assets/*` (content-hashed) is immutable for a year; `/images/*` is
+  cached a day. Replacing an image in place can show the old one for up to a day.
 
 ## Known gotchas
 - **Supabase RLS**: an RLS policy alone causes 401s. You need both the RLS policy AND
@@ -41,11 +81,9 @@ render the correct route at build time without a real `window.location`.
   "15" in copy multiple times across sessions (blog posts, pricing, terms modal,
   gallery, comments) — grep for "15" near "question" before shipping any copy change
   and fix on sight.
-- **Blog SSR is partial, not full**: `scripts/prerender.mjs` renders only the
-  homepage shell into `dist/index.html`. Per-article correctness comes entirely from
-  `scripts/prerender-blog.mjs`. If you add a new blog post, rerun the full build and
-  spot-check `dist/blog/<new-slug>/index.html` has real title/OG tags, not the
-  homepage's.
+- **Every route is prerendered**, but only routes listed in `src/lib/seo.ts`
+  (plus `/` and the blog). If you add a blog post, rerun the full build and
+  spot-check `dist/blog/<new-slug>/index.html` has real title/OG tags.
 - Two Stripe webhook endpoints existed pointed at `/api/stripe-webhook` (an old one
   with 4 events, a new one with 1) — worth confirming this is cleaned up to one
   before touching payment code, and confirm `STRIPE_WEBHOOK_SECRET` in Vercel env

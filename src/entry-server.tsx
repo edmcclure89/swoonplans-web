@@ -1,5 +1,6 @@
 /**
- * Server-render entry point, used only at build time by scripts/prerender.mjs.
+ * Server-render entry point, used only at build time by scripts/prerender.mjs,
+ * scripts/prerender-pages.mjs and scripts/prerender-blog.mjs.
  *
  * WHY THIS EXISTS
  * ---------------
@@ -15,10 +16,16 @@
  * This renders <App /> to a static HTML string at build time so the real content
  * ships inside index.html. The browser still boots the full React app on top of
  * it exactly as before, so runtime behaviour is unchanged.
+ *
+ * Code-split screens: callers MUST `await preloadAll()` once before render(),
+ * otherwise lazily loaded routes (blog, legal, quizzes) render empty.
  */
 
 import { renderToString } from 'react-dom/server';
 import App from './App';
+import { preloadAll } from './lib/lazyModules';
+
+export { preloadAll };
 
 export function render(path: string = '/'): string {
   return renderToString(<App ssrPath={path} />);

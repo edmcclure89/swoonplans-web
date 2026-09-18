@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { HERO_SLIDES } from '../data/portfolio';
 import type { HeroPathway } from '../data/portfolio';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { IMAGE_META } from '../data/imageMeta';
 
 interface HeroSectionProps {
   onOpenLightbox?: (photo: any) => void;
@@ -22,11 +23,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   // reaching for it would start the wrong flow.
   const [paused, setPaused] = useState(false);
   const reduceMotion = useRef(false);
+  // Only the first slide's photo is in the initial HTML, so it is the one
+  // image competing for bandwidth at load (it is the LCP element). The other
+  // slides' photos are added once the page is idle, well before autoplay
+  // (6s) or a tap on a pathway button shows them.
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
 
   useEffect(() => {
     reduceMotion.current =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
+    const reveal = () => setShowAllPhotos(true);
+    if (w.requestIdleCallback) w.requestIdleCallback(reveal, { timeout: 2000 });
+    else setTimeout(reveal, 1200);
   }, []);
 
   useEffect(() => {
@@ -45,8 +58,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     kidPlans: onOpenKidPlans,
   };
 
-  const go = (next: number) =>
+  const go = (next: number) => {
+    setShowAllPhotos(true);
     setCurrentIndex((next + HERO_SLIDES.length) % HERO_SLIDES.length);
+  };
 
   return (
     <section className="relative w-full px-4 sm:px-8 pt-4 pb-6">
@@ -57,7 +72,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         onFocusCapture={() => setPaused(true)}
         onBlurCapture={() => setPaused(false)}
       >
-        {HERO_SLIDES.map((s, idx) => (
+        {HERO_SLIDES.map((s, idx) => {
+          const isFirst = idx === 0;
+          const renderPhoto = isFirst || showAllPhotos || idx === currentIndex;
+          const dims = IMAGE_META[s.image];
+          const sizeAttrs = dims ? { width: dims.w, height: dims.h } : {};
+          const priorityAttrs = isFirst ? ({ fetchPriority: 'high' } as const) : ({ loading: 'lazy', decoding: 'async' } as const);
+          return (
           <div
             key={s.id}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -65,19 +86,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             }`}
             aria-hidden={idx !== currentIndex}
           >
-            {s.portraitSource ? (
+            {!renderPhoto ? null : s.portraitSource ? (
               <>
                 {/* A tall photo in a wide hero would crop straight into the
                     faces. Instead a blurred copy fills the width behind, and
                     the sharp frame sits right, clear of the copy column. */}
                 <img
                   src={s.image}
+                  {...sizeAttrs}
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl brightness-[0.72] sm:block"
                 />
                 <img
                   src={s.image}
+                  {...sizeAttrs}
+                  {...priorityAttrs}
                   alt={s.title}
                   className="absolute inset-y-0 right-0 hidden h-full w-auto max-w-none sm:block"
                   style={{
@@ -87,6 +111,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 />
                 <img
                   src={s.image}
+                  {...sizeAttrs}
+                  {...priorityAttrs}
                   alt={s.title}
                   className="h-full w-full object-cover filter brightness-[1.05] contrast-[1.03] sm:hidden"
                   style={{ objectPosition: s.focal ?? 'center' }}
@@ -95,6 +121,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             ) : (
               <img
                 src={s.image}
+                {...sizeAttrs}
+                {...priorityAttrs}
                 alt={s.title}
                 className="h-full w-full object-cover filter brightness-[1.05] contrast-[1.03]"
                 style={{ objectPosition: s.focal ?? 'center' }}
@@ -106,7 +134,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent sm:hidden" />
             <div className="absolute inset-0 bg-grain pointer-events-none" />
           </div>
-        ))}
+          );
+        })}
 
         {/* Copy and call to action, vertically centred on the left. */}
         <div className="relative z-10 flex min-h-[72vh] sm:min-h-[80vh] items-center">
@@ -117,9 +146,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               style={{ backgroundColor: activeSlide.accent }}
               aria-hidden="true"
             />
-            <h1 className="mt-6 font-serif italic font-light text-white text-[2.1rem] leading-[1.08] sm:text-[3.4rem] lg:text-[4rem] drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+            {/* Rotates with the slides, so it is styled text rather than a
+                heading. The page's H1 lives in App.tsx. */}
+            <p className="mt-6 font-serif italic font-light text-white text-[2.1rem] leading-[1.08] sm:text-[3.4rem] lg:text-[4rem] drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
               {activeSlide.headline}
-            </h1>
+            </p>
             <p className="mt-5 max-w-sm font-sans text-sm font-light leading-relaxed text-[#E8E2D9]/90 sm:text-base">
               {activeSlide.subheadline}
             </p>
@@ -145,7 +176,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             return (
               <button
                 key={s.id}
-                onClick={() => setCurrentIndex(idx)}
+                onClick={() => {
+                  setShowAllPhotos(true);
+                  setCurrentIndex(idx);
+                }}
                 aria-current={active ? 'true' : undefined}
                 className={`rounded-full border px-3.5 py-1.5 font-sans text-[11px] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
                   active

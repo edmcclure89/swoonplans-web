@@ -1,6 +1,7 @@
 import React from 'react';
 import { Camera, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { socialLinks } from '../data/socialLinks';
+import { responsiveImg } from '../lib/images';
 
 interface NavbarProps {
 activeTab: string;
@@ -72,7 +73,7 @@ onClick={() => setActiveTab('stories')}
 className="group cursor-pointer inline-block text-center"
 >
 <img
-src="/images/swoonplans-logo.webp"
+{...responsiveImg('/images/swoonplans-logo.webp', '(min-width: 768px) 190px, (min-width: 640px) 166px, 143px')}
 alt="Swoon Plans"
 className="h-6 sm:h-7 md:h-8 w-auto mx-auto group-hover:opacity-80 transition-opacity"
 />
@@ -92,7 +93,7 @@ href={href}
 target="_blank"
 rel="noopener noreferrer"
 aria-label={label}
-className="text-[#6E675F] hover:text-[#1A1816] transition-colors"
+className="p-2 -m-2 text-[#6E675F] hover:text-[#1A1816] transition-colors"
 >
 <Icon className="w-4 h-4" />
 </a>
@@ -139,7 +140,7 @@ href={href}
 target="_blank"
 rel="noopener noreferrer"
 aria-label={label}
-className="text-[#6E675F] hover:text-[#1A1816] transition-colors"
+className="p-2 -m-2 text-[#6E675F] hover:text-[#1A1816] transition-colors"
 >
 <Icon className="w-4 h-4" />
 </a>

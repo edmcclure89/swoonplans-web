@@ -1,15 +1,19 @@
-<doctype html>
+<!doctype html>
 <html lang="en" class="scroll-smooth">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Swoon Plans — Custom Date, Self-Care & Family Plans</title>
+<title>Swoon Plans | Custom Date, Self-Care &amp; Family Plans</title>
 
-<!-- Primary SEO Meta Tags -->
-<meta name="description" content="Custom date plans for him, self-care itineraries for her, and kid activity plans — all in 90 seconds, with real venues and zero guesswork. First plan free." />
+<!-- Primary SEO Meta Tags.
+     These are the homepage's values. Every other page gets its own title,
+     description, canonical, robots and og/twitter values swapped in at build
+     time from src/lib/seo.ts (scripts/prerender-pages.mjs and
+     scripts/prerender-blog.mjs match these exact tag shapes, so keep them). -->
+<meta name="description" content="Custom date plans for him, self-care itineraries for her, and kid activity plans, all in 90 seconds, with real venues and zero guesswork. First plan free." />
 <meta name="keywords" content="date planning app for men, custom date night planner, AI date planning algorithm, bespoke date itinerary, turnkey date night, romance concierge, date night ideas, secret reservations, For Love Coaching, date planner for men, custom date experience, date night ideas DC, date night Alexandria VA, date night Arlington VA, DMV date ideas, Old Town Alexandria date night, self care date ideas, solo date ideas, date ideas for her, kid friendly activities near me, family weekend planner, kid activity finder" />
 <meta name="author" content="Swoon Plans Concierge · For Love Coaching" />
-<meta name="robots" content="index, follow" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
 
 <!-- GEO Optimization Tags -->
 <meta name="geo.region" content="US-VA" />
@@ -18,36 +22,87 @@
 
 <!-- Open Graph / Facebook / WhatsApp -->
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Swoon Plans — Custom Date, Self-Care & Family Plans" />
-<meta property="og:description" content="Custom date plans for him, self-care itineraries for her, and kid activity plans — all in 90 seconds, with real venues and zero guesswork. First plan free." />
-<meta property="og:image" content="https://www.makeherswoon.com/images/date_african_american_couple_1785457444161.jpg" />
+<meta property="og:title" content="Swoon Plans | Custom Date, Self-Care &amp; Family Plans" />
+<meta property="og:description" content="Custom date plans for him, self-care itineraries for her, and kid activity plans, all in 90 seconds, with real venues and zero guesswork. First plan free." />
+<meta property="og:image" content="https://www.makeherswoon.com/images/og-default.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Swoon Plans: custom date, self-care and family plans. First plan free." />
 <meta property="og:url" content="https://www.makeherswoon.com/" />
-<meta property="og:site_name" content="Swoon Plans Concierge" />
+<meta property="og:site_name" content="Swoon Plans" />
+<meta property="og:locale" content="en_US" />
 
 <!-- Twitter Card Tags -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Swoon Plans — Custom Date, Self-Care & Family Plans" />
+<meta name="twitter:title" content="Swoon Plans | Custom Date, Self-Care &amp; Family Plans" />
 <meta name="twitter:description" content="Custom date plans for him, self-care itineraries for her, and kid activity plans, all in 90 seconds. First plan free." />
-<meta name="twitter:image" content="https://www.makeherswoon.com/images/date_african_american_couple_1785457444161.jpg" />
+<meta name="twitter:image" content="https://www.makeherswoon.com/images/og-default.jpg" />
+<meta name="twitter:image:alt" content="Swoon Plans: custom date, self-care and family plans. First plan free." />
 
 <!-- Canonical -->
 <link rel="canonical" href="https://www.makeherswoon.com/" />
 
-<!-- Typography Fonts -->
+<!-- Typography Fonts. Loaded without blocking first paint: text shows in the
+     fallback serif/sans for a moment, then swaps (display=swap). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300&display=swap"></noscript>
 
-<!-- Structured Data: AEO (Answer Engine Optimization) & GEO (LocalBusiness / ConciergeService) -->
-<script type="application/ld+json">
+<!-- Structured Data: site-wide (every page). -->
+<script type="application/ld+json" id="ld-site">
 {
 "@context": "https://schema.org",
-"@type": "ConciergeService",
-"name": "Swoon Plans Concierge",
-"legalName": "Swoon Plans • A Division of For Love Coaching",
-"description": "Bespoke date planning concierge offering turnkey date night itineraries, self-care solo itineraries, kid activity plans, secret restaurant reservations, and customized romantic experiences for couples and families.",
-"url": "https://www.makeherswoon.com",
-"priceRange": "$$",
+"@graph": [
+{
+"@type": "Organization",
+"@id": "https://www.makeherswoon.com/#organization",
+"name": "Swoon Plans",
+"alternateName": "Swoon Plans Concierge",
+"url": "https://www.makeherswoon.com/",
+"logo": {
+"@type": "ImageObject",
+"url": "https://www.makeherswoon.com/images/swoonplans-logo.png",
+"width": 1559,
+"height": 263
+},
+"email": "admin@makeherswoon.com",
+"parentOrganization": {
+"@type": "Organization",
+"name": "For Love Coaching"
+},
+"sameAs": [
+"https://www.instagram.com/swoon_plans/",
+"https://www.tiktok.com/@swoon_plans",
+"https://www.facebook.com/profile.php?id=61592905060139",
+"https://www.linkedin.com/company/137294183/",
+"https://www.youtube.com/@SwoonPlans"
+]
+},
+{
+"@type": "WebSite",
+"@id": "https://www.makeherswoon.com/#website",
+"url": "https://www.makeherswoon.com/",
+"name": "Swoon Plans",
+"inLanguage": "en-US",
+"publisher": { "@id": "https://www.makeherswoon.com/#organization" }
+}
+]
+}
+</script>
+
+<!-- Structured Data: homepage only. The build strips every id="ld-home-*"
+     block from other pages, which get their own page-specific data instead. -->
+<script type="application/ld+json" id="ld-home-service">
+{
+"@context": "https://schema.org",
+"@type": "Service",
+"@id": "https://www.makeherswoon.com/#service",
+"name": "Swoon Plans",
+"serviceType": "Date night, self-care and family activity planning",
+"description": "Date planning concierge offering turnkey date night itineraries, self-care solo itineraries and kid activity plans, with real venues, exact addresses and direct reservation links.",
+"url": "https://www.makeherswoon.com/",
+"provider": { "@id": "https://www.makeherswoon.com/#organization" },
 "areaServed": [
 { "@type": "City", "name": "Washington DC" },
 { "@type": "City", "name": "Alexandria" },
@@ -59,11 +114,6 @@
 { "@type": "City", "name": "Philadelphia" },
 { "@type": "Country", "name": "United States" }
 ],
-"parentOrganization": {
-"@type": "Organization",
-"name": "For Love Coaching",
-"description": "Relationship and romance coaching organization."
-},
 "offers": {
 "@type": "Offer",
 "name": "First Curated Date Plan Free",
@@ -74,8 +124,8 @@
 }
 </script>
 
-<!-- Structured Data: FAQPage for AEO (Answer Engine Optimization) -->
-<script type="application/ld+json">
+<!-- Structured Data: FAQPage for AEO (Answer Engine Optimization). Homepage only. -->
+<script type="application/ld+json" id="ld-home-faq">
 {
 "@context": "https://schema.org",
 "@type": "FAQPage",

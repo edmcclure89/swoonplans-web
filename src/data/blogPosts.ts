@@ -3,9 +3,15 @@ question: string;
 answer: string;
 }
 
+export type BlogPathway = 'swoonHer' | 'selfCare' | 'kidPlans';
+
 export interface BlogPost {
 id: string;
 slug: string;
+/** Which planner the post leads to. Drives the end-of-article CTA and related posts. */
+pathway: BlogPathway;
+/** Optional shorter <title> for search results when the headline runs long. */
+seoTitle?: string;
 title: string;
 category: string;
 readTime: string;
@@ -22,6 +28,7 @@ export const BLOG_POSTS: BlogPost[] = [
 {
 id: 'post-1',
 slug: 'four-steps-to-date-night-perfection',
+pathway: 'swoonHer',
 title: '4 Simple Steps to Date Night Perfection',
 category: 'CONCIERGE GUIDE',
 readTime: '4 min read',
@@ -40,6 +47,7 @@ content: [
 {
 id: 'post-2',
 slug: 'psychology-of-unforgettable-date-atmosphere',
+pathway: 'swoonHer',
 title: 'The Psychology of an Unforgettable Date Atmosphere',
 category: 'ROMANCE STRATEGY',
 readTime: '5 min read',
@@ -58,6 +66,7 @@ content: [
 {
 id: 'post-3',
 slug: 'why-direct-reservation-links-matter',
+pathway: 'swoonHer',
 title: 'Why Direct Reservation Links Change the Entire Evening',
 category: 'EXECUTIVE ETIQUETTE',
 readTime: '3 min read',
@@ -76,6 +85,7 @@ content: [
 {
 id: 'post-4',
 slug: 'conversation-starters-that-spark-romance',
+pathway: 'swoonHer',
 title: '3 Conversation Starters That Spark Genuine Romance',
 category: 'CONNECTION & TALK',
 readTime: '4 min read',
@@ -94,6 +104,7 @@ content: [
 {
 id: 'post-5',
 slug: 'turn-a-tuesday-into-a-core-memory',
+pathway: 'swoonHer',
 title: 'How to Turn a Standard Tuesday Into a Core Memory',
 category: 'SURPRISE & DELIGHT',
 readTime: '5 min read',
@@ -113,6 +124,7 @@ content: [
 {
 id: 'post-6',
 slug: 'modern-gentlemans-guide-to-effortless-romance',
+pathway: 'swoonHer',
 title: 'The Modern Gentleman’s Guide to Effortless Romance',
 category: 'LIFESTYLE & LEADERSHIP',
 readTime: '4 min read',
@@ -131,6 +143,7 @@ content: [
 {
 id: 'post-7',
 slug: 'best-date-night-ideas-near-me',
+pathway: 'swoonHer',
 title: 'Best Date Night Ideas Near You: The Complete Guide to Planning the Perfect Date',
 category: 'DATE NIGHT IDEAS',
 readTime: '6 min read',
@@ -164,6 +177,8 @@ answer: 'A good date idea matches her stated preferences, gives you something ge
 {
 id: 'post-8',
 slug: 'date-night-guide-dc-nyc-la-chicago-dallas-philadelphia',
+pathway: 'swoonHer',
+seoTitle: 'Best Date Night Spots in DC, NYC, LA, Chicago and More',
 title: 'The Best Date Night Spots in DC, NYC, LA, Chicago, Dallas & Philadelphia',
 category: 'CITY GUIDE',
 readTime: '7 min read',
@@ -198,6 +213,7 @@ answer: 'Pick one neighborhood and stay in it for the whole night. West Hollywoo
 {
 id: 'post-9',
 slug: 'how-to-plan-a-date-in-5-minutes',
+pathway: 'swoonHer',
 title: 'How to Plan a Date Night in Under 5 Minutes (Without an Hour on Yelp)',
 category: 'DATE PLANNING TOOLS',
 readTime: '5 min read',
@@ -231,6 +247,8 @@ answer: 'No, that is the point of the questions. You answer what you do know, bu
 {
 id: 'post-10',
 slug: 'best-date-night-ideas-old-town-alexandria-arlington-dc',
+pathway: 'swoonHer',
+seoTitle: 'Date Night in Old Town Alexandria, Del Ray, Arlington & DC',
 title: 'Date Night in the DMV: Old Town Alexandria, Del Ray, Arlington & DC',
 category: 'CITY GUIDE',
 readTime: '6 min read',
@@ -268,6 +286,7 @@ answer: 'Yes. Swoon Plans asks 20 short questions about your partner and your ci
 {
 id: 'post-11',
 slug: 'self-care-date-ideas-for-when-you-need-a-day',
+pathway: 'selfCare',
 title: '20 Self-Care Date Ideas for When You Need a Day Just for You',
 category: 'SELF CARE',
 readTime: '6 min read',
@@ -301,6 +320,8 @@ answer: 'No. Treating rest as optional is usually what leads to the burnout that
 {
 id: 'post-12',
 slug: 'solo-date-ideas-plan-a-day-just-for-you',
+pathway: 'selfCare',
+seoTitle: 'Solo Date Ideas: Plan a Self-Care Day Without Overthinking',
 title: 'Solo Date Ideas: How to Plan a Day of Self-Care Without Overthinking It',
 category: 'SELF CARE',
 readTime: '5 min read',
@@ -334,6 +355,7 @@ answer: 'Use a structured tool rather than an open-ended search. Self Care by Sw
 {
 id: 'post-13',
 slug: 'weekend-activities-for-kids-by-personality',
+pathway: 'kidPlans',
 title: 'Weekend Activities for Kids That Actually Match Their Personality',
 category: 'KID PLAN',
 readTime: '5 min read',
@@ -367,6 +389,7 @@ answer: 'Kids\' interests shift faster than most activity guides account for, so
 {
 id: 'post-14',
 slug: 'cheap-date-ideas-that-still-feel-thoughtful',
+pathway: 'swoonHer',
 title: 'Cheap Date Ideas That Still Feel Thoughtful (Not Cheap)',
 category: 'BUDGET DATES',
 readTime: '5 min read',
@@ -400,6 +423,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-15',
     slug: 'weekend-mental-reset-ritual',
+    pathway: 'selfCare',
+    seoTitle: 'The Ultimate Weekend Reset for Mental Recharge',
     title: 'The Ultimate Weekend Reset: Curating a Sacred Space for Mental Recharge',
     category: 'UNPLUG + RESET',
     readTime: '4 min read',
@@ -424,6 +449,7 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-16',
     slug: 'stepping-away-creative-catalyst',
+    pathway: 'selfCare',
     title: 'Why Stepping Away Is the Ultimate Creative Catalyst',
     category: 'HONOR YOUR ENERGY',
     readTime: '4 min read',
@@ -448,6 +474,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-17',
     slug: 'sanctuary-bedroom-deep-rest',
+    pathway: 'selfCare',
+    seoTitle: 'Designing a Sanctuary Bedroom for Deep Rest',
     title: 'Designing a Sanctuary Bedroom for Deep Rest and Spirit Restoration',
     category: 'OPTIMIZE YOUR REST',
     readTime: '4 min read',
@@ -472,6 +500,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-18',
     slug: 'intentional-morning-routine',
+    pathway: 'selfCare',
+    seoTitle: 'Crafting a Morning Routine That Centers Your Spirit',
     title: 'Crafting a Morning Routine That Centers Your Spirit Before the World Demands Your Energy',
     category: 'START WITH INTENTION',
     readTime: '3 min read',
@@ -496,6 +526,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-19',
     slug: 'reclaiming-physical-flow',
+    pathway: 'selfCare',
+    seoTitle: 'Reclaiming Your Physical Flow: Gentle Movement and Stretching',
     title: 'Reclaiming Your Physical Flow: Gentle Movement and Restorative Stretching',
     category: 'NOURISH YOUR BODY',
     readTime: '3 min read',
@@ -520,6 +552,7 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-20',
     slug: 'stress-free-birthday-party-blueprint',
+    pathway: 'kidPlans',
     title: 'The Stress-Free Birthday Party Blueprint: A Timeline for Effortless Hosting',
     category: 'ELIMINATE CHAOS',
     readTime: '5 min read',
@@ -545,6 +578,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-21',
     slug: 'immersive-kids-party-themes',
+    pathway: 'kidPlans',
+    seoTitle: 'Immersive, Magical Themes for Children’s Parties',
     title: "Immersive and Magical Themes for Children’s Parties That Captivate the Imagination",
     category: 'IMAGINE THE POSSIBILITIES',
     readTime: '5 min read',
@@ -570,6 +605,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-22',
     slug: 'smart-party-budgeting',
+    pathway: 'kidPlans',
+    seoTitle: 'Smart Party Budgeting: Where to Splurge and Where to Save',
     title: 'Smart Party Budgeting: Where to Splurge and Where to Save for Maximum Impact',
     category: 'MAXIMIZE YOUR FUN',
     readTime: '4 min read',
@@ -594,6 +631,8 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-23',
     slug: 'managing-high-energy-kids-at-parties',
+    pathway: 'kidPlans',
+    seoTitle: 'Keeping High-Energy Kids Engaged and Happy at Parties',
     title: 'The Art of Holding Space: Keeping High-Energy Kids Engaged and Happy',
     category: 'CONTAIN THE CHAOS',
     readTime: '4 min read',
@@ -618,6 +657,7 @@ answer: 'Yes. Budget is one of the core questions in the itinerary quiz, so a lo
   {
     id: 'post-24',
     slug: 'allergy-safe-party-menus',
+    pathway: 'kidPlans',
     title: 'Allergy-Safe Party Menus That Both Kids and Parents Adore',
     category: 'DELICIOUSLY INCLUSIVE',
     readTime: '4 min read',

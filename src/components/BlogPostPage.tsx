@@ -1,13 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, User, Share2, Link as LinkIcon, Mail, MessageCircle, Check, ChevronRight } from 'lucide-react';
 import { BLOG_POSTS, BlogPost } from '../data/blogPosts';
-import { DateConciergeApp } from './DateConciergeApp';
+import { Lazy, ModalLoading } from '../lib/lazyModules';
+import { responsiveImg } from '../lib/images';
+import { SITE_URL, postSeoTitle, clampDescription } from '../lib/seo';
 
 interface BlogPostPageProps {
   slug: string;
 }
 
-const SITE_URL = 'https://www.makeherswoon.com';
+// Related reading: other posts from the same planner first, starting just
+// after this one so every article links to different neighbours (not the
+// same three everywhere), then the newest posts from the other planners.
+function pickRelated(post: BlogPost, count = 3): BlogPost[] {
+  const idx = BLOG_POSTS.findIndex((p) => p.slug === post.slug);
+  const rotated = [...BLOG_POSTS.slice(idx + 1), ...BLOG_POSTS.slice(0, idx)];
+  const same = rotated.filter((p) => p.pathway === post.pathway);
+  const others = [...BLOG_POSTS].reverse().filter((p) => p.slug !== post.slug && p.pathway !== post.pathway);
+  return [...same, ...others].slice(0, count);
+}
 
 // Standalone article page. Routed at /blog/:slug (see App.tsx + vercel.json
 // rewrite). Each post gets its own real, shareable URL instead of living
@@ -15,22 +26,26 @@ const SITE_URL = 'https://www.makeherswoon.com';
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
   const post = useMemo(() => BLOG_POSTS.find((p) => p.slug === slug) || null, [slug]);
   const [isInquireOpen, setIsInquireOpen] = useState(false);
+  const [isSelfCareOpen, setIsSelfCareOpen] = useState(false);
+  const [inquireOpened, setInquireOpened] = useState(false);
+  const [selfCareOpened, setSelfCareOpened] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const postUrl = post ? `${SITE_URL}/blog/${post.slug}` : SITE_URL;
 
-  // Per-article SEO: title, description, canonical, and JSON-LD (Article +
-  // FAQPage when the post has FAQs). This is client-rendered, so it helps
-  // JS-executing crawlers and in-app previews; it does not fix server-side
-  // og: tags for platforms that scrape without executing JS.
+  // Per-article title, description and canonical. The same values ship in
+  // the prerendered HTML (scripts/prerender-blog.mjs, along with the
+  // BlogPosting/FAQPage/BreadcrumbList JSON-LD), so this only keeps the
+  // live document in sync. Structured data is NOT re-injected here: doing so
+  // used to leave duplicate Article and FAQPage blocks on every article.
   useEffect(() => {
     if (!post) return;
     const prevTitle = document.title;
-    document.title = `${post.title} | Swoon Plans Journal`;
+    document.title = postSeoTitle(post);
 
     const metaDescription = document.querySelector('meta[name="description"]');
     const prevDescription = metaDescription ? metaDescription.getAttribute('content') : null;
-    if (metaDescription) metaDescription.setAttribute('content', post.summary);
+    if (metaDescription) metaDescription.setAttribute('content', clampDescription(post.summary));
 
     let canonical = document.querySelector('link[rel="canonical"]');
     const hadCanonical = !!canonical;
@@ -41,45 +56,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
     }
     canonical.setAttribute('href', postUrl);
 
-    const scripts: HTMLScriptElement[] = [];
-
-    const articleLd = document.createElement('script');
-    articleLd.type = 'application/ld+json';
-    articleLd.text = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: post.title,
-      description: post.summary,
-      image: `${SITE_URL}${post.image}`,
-      author: { '@type': 'Organization', name: post.author },
-      publisher: { '@type': 'Organization', name: 'Swoon Plans Concierge' },
-      datePublished: post.date,
-      mainEntityOfPage: postUrl,
-    });
-    document.head.appendChild(articleLd);
-    scripts.push(articleLd);
-
-    if (post.faqs && post.faqs.length > 0) {
-      const faqLd = document.createElement('script');
-      faqLd.type = 'application/ld+json';
-      faqLd.text = JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: post.faqs.map((f) => ({
-          '@type': 'Question',
-          name: f.question,
-          acceptedAnswer: { '@type': 'Answer', text: f.answer },
-        })),
-      });
-      document.head.appendChild(faqLd);
-      scripts.push(faqLd);
-    }
-
     return () => {
       document.title = prevTitle;
       if (metaDescription && prevDescription !== null) metaDescription.setAttribute('content', prevDescription);
       if (!hadCanonical && canonical) canonical.remove();
-      scripts.forEach((s) => s.remove());
     };
   }, [post, postUrl]);
 
@@ -133,7 +113,15 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
   const smsHref = `sms:?&body=${encodeURIComponent(`${post.title} ${postUrl}`)}`;
   const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  const related = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const related = pickRelated(post);
+  const openDatePlanner = () => {
+    setInquireOpened(true);
+    setIsInquireOpen(true);
+  };
+  const openSelfCarePlanner = () => {
+    setSelfCareOpened(true);
+    setIsSelfCareOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#1A1816] font-serif selection:bg-[#E2D5C3] selection:text-[#1A1816]">
@@ -205,7 +193,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
           </div>
 
           <div className="relative rounded overflow-hidden h-64 sm:h-96 border border-[#E8E2D9] mt-8">
-            <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+            <img
+              {...responsiveImg(post.image, '(min-width: 768px) 704px, 100vw')}
+              alt={post.title}
+              fetchPriority="high"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div className="bg-[#1A1816] text-[#FAF8F5] p-5 rounded border-l-4 border-[#D5C29F] space-y-1 mt-8">
@@ -237,17 +230,48 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
             </div>
           )}
 
+          {/* End-of-article CTA, matched to the planner the post is about. */}
           <div className="mt-12 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#EFEDEB]/60 rounded p-6">
-            <div>
-              <p className="text-sm font-serif italic text-[#1A1816]">Ready for a curated date plan?</p>
-              <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">Answer 20 short questions today.</p>
-            </div>
-            <button
-              onClick={() => setIsInquireOpen(true)}
-              className="px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded cursor-pointer whitespace-nowrap"
-            >
-              FIRST PLAN FREE
-            </button>
+            {post.pathway === 'kidPlans' ? (
+              <>
+                <div>
+                  <p className="text-sm font-serif italic text-[#1A1816]">Planning family time?</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">12 quick questions about your kid's personality, not just their age.</p>
+                </div>
+                <a
+                  href="/kid-plans"
+                  className="px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded cursor-pointer whitespace-nowrap"
+                >
+                  START A KID PLAN
+                </a>
+              </>
+            ) : post.pathway === 'selfCare' ? (
+              <>
+                <div>
+                  <p className="text-sm font-serif italic text-[#1A1816]">Want a day that's just yours?</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">Curated solo itineraries built around your vibe.</p>
+                </div>
+                <button
+                  onClick={openSelfCarePlanner}
+                  className="px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded cursor-pointer whitespace-nowrap"
+                >
+                  PLAN MY DAY
+                </button>
+              </>
+            ) : (
+              <>
+                <div>
+                  <p className="text-sm font-serif italic text-[#1A1816]">Ready for a curated date plan?</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#8C8377] mt-1">Answer 20 short questions today.</p>
+                </div>
+                <button
+                  onClick={openDatePlanner}
+                  className="px-6 py-3 bg-[#1A1816] hover:bg-[#38332E] text-[#D5C29F] font-bold text-xs uppercase tracking-[0.2em] font-sans rounded cursor-pointer whitespace-nowrap"
+                >
+                  FIRST PLAN FREE
+                </button>
+              </>
+            )}
           </div>
         </article>
 
@@ -262,7 +286,13 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
                   className="group block bg-[#EFEDEB]/60 border border-[#E8E2D9] rounded-sm overflow-hidden hover:shadow-md transition-all"
                 >
                   <div className="relative h-32 overflow-hidden">
-                    <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img
+                      {...responsiveImg(p.image, '(min-width: 640px) 224px, 100vw')}
+                      alt={p.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
                   <div className="p-4">
                     <h3 className="text-sm font-serif italic text-[#1A1816] leading-snug group-hover:text-[#8C8377] transition-colors">
@@ -279,7 +309,21 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
         )}
       </main>
 
-      <DateConciergeApp isOpen={isInquireOpen} onClose={() => setIsInquireOpen(false)} />
+      {/* Planners are code-split and load on first open. */}
+      <Lazy
+        k="date"
+        load={inquireOpened}
+        fallback={isInquireOpen ? <ModalLoading /> : null}
+        isOpen={isInquireOpen}
+        onClose={() => setIsInquireOpen(false)}
+      />
+      <Lazy
+        k="selfCare"
+        load={selfCareOpened}
+        fallback={isSelfCareOpen ? <ModalLoading /> : null}
+        isOpen={isSelfCareOpen}
+        onClose={() => setIsSelfCareOpen(false)}
+      />
     </div>
   );
 };
