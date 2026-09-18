@@ -13,7 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { loadRenderer } from './seo-lib.mjs';
 
 const DIST = path.resolve('dist');
 const SSR_ENTRY = path.resolve('dist-ssr/entry-server.js');
@@ -39,6 +39,12 @@ if (!fs.existsSync(TEMPLATE)) fail('missing ' + TEMPLATE + '. Run "vite build" f
 if (!fs.existsSync(SSR_ENTRY)) fail('missing ' + SSR_ENTRY + '. Run the SSR build first.');
 
 const template = fs.readFileSync(TEMPLATE, 'utf-8');
+// A missing "!" here once put the whole site in quirks mode: browsers parsed
+// every <head> tag into <body>, where Google ignores canonical, robots and
+// description. Never again.
+if (!/^<!doctype html>/i.test(template.trimStart())) {
+  fail('dist/index.html does not start with <!doctype html>. Fix index.html.');
+}
 if (!template.includes(ROOT_DIV)) {
   fail('could not find the root div in dist/index.html. If the markup changed, update ROOT_DIV.');
 }
@@ -48,8 +54,9 @@ fs.writeFileSync(SHELL_OUT, template);
 
 let appHtml;
 try {
-  const mod = await import(pathToFileURL(SSR_ENTRY).href);
-  appHtml = mod.render();
+  // loadRenderer() also loads every code-split screen (see src/lib/lazyModules.tsx).
+  const render = await loadRenderer(fail);
+  appHtml = render('/');
 } catch (err) {
   fail('renderToString threw.\n  ' + (err && err.stack ? err.stack : err) +
        '\n\n  Most likely cause: a component touches window, document or' +
@@ -61,7 +68,19 @@ if (typeof appHtml !== 'string' || appHtml.length < MIN_HTML_BYTES) {
        MIN_HTML_BYTES + '. The app rendered but produced almost nothing.');
 }
 
-const output = template.replace(ROOT_DIV, '<div id="root">' + appHtml + '</div>');
+let output = template.replace(ROOT_DIV, '<div id="root">' + appHtml + '</div>');
+
+// The hero's first photo is the homepage's LCP element. Preload it (homepage
+// only, so other pages don't pay for it) so it starts downloading alongside
+// the CSS instead of after the parser reaches it.
+const heroSrc = (appHtml.match(/<img[^>]*fetchpriority="high"[^>]*>/gi) || [])
+  .map((tag) => (tag.match(/src="([^"]+)"/) || [])[1])
+  .find((src) => src && !src.includes('swoonplans-logo'));
+if (heroSrc) {
+  output = output.replace('</head>', `<link rel="preload" as="image" href="${heroSrc}" fetchpriority="high">\n</head>`);
+} else {
+  console.warn('[prerender] note: no hero image found to preload.');
+}
 
 const missing = REQUIRED.filter(function (m) { return output.indexOf(m) === -1; });
 if (missing.length) {
