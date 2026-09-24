@@ -127,7 +127,7 @@ date: 'AUGUST',
 experienceType: 'Coastal Sunset Picnic',
 aspectRatio: 'landscape',
 caption: 'Sipping champagne with ocean air and golden hour sunlight.',
-quote: "I took her to the ocean cove date Swoon Plans curated. She hasn't stopped talking about it for weeks.",
+quote: "I took her to the ocean cove date Plan Glee curated. She hasn't stopped talking about it for weeks.",
 quoteAuthor: 'Kenji M., Los Angeles'
 },
 {

@@ -34,6 +34,6 @@ export const IMAGE_META: Record<string, ImageMeta> = {
   '/images/step-1_1.jpg': { w: 632, h: 444, variants: [320] },
   '/images/step-2_1.jpg': { w: 632, h: 444, variants: [320] },
   '/images/step-3.jpg': { w: 632, h: 444, variants: [320] },
-  '/images/swoonplans-logo.webp': { w: 600, h: 101, variants: [300, 600] },
+  '/images/planglee-logo.webp': { w: 600, h: 266, variants: [300, 600] },
   '/images/og-default.jpg': { w: 1200, h: 630, variants: [] },
 };
