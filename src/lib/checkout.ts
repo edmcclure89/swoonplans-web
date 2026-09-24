@@ -137,7 +137,7 @@ return { ok: false, error: "Couldn't reach checkout. Check your connection and t
 }
 }
 
-// Swoon Plans Kids unlimited unlock: a recurring subscription (monthly or
+// Plan Glee Kids unlimited unlock: a recurring subscription (monthly or
 // annual), mapped server-side to PRICE_ID_KID_PLANS_MONTHLY /
 // PRICE_ID_KID_PLANS_ANNUAL so the client can never spoof the price (mirrors
 // the Self Care pattern above).

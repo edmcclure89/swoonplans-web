@@ -10,14 +10,14 @@
  * product actually delivers.
  */
 
-export const SITE_URL = 'https://www.makeherswoon.com';
-export const SITE_NAME = 'Swoon Plans';
+export const SITE_URL = 'https://www.planglee.com';
+export const SITE_NAME = 'Plan Glee';
 
 export const DEFAULT_OG_IMAGE = {
   path: '/images/og-default.jpg',
   width: 1200,
   height: 630,
-  alt: 'Swoon Plans: custom date, self-care and family plans. First plan free.',
+  alt: 'Plan Glee: custom date, self-care and family plans. First plan free.',
 };
 
 /** Bump when a page's content changes meaningfully; feeds <lastmod> in the sitemap. */
@@ -40,7 +40,7 @@ export const NOINDEX_ROBOTS = 'noindex, follow';
 
 export const HOME_SEO: PageSeo = {
   path: '/',
-  title: 'Swoon Plans | Custom Date, Self-Care & Family Plans',
+  title: 'Plan Glee | Custom Date, Self-Care & Family Plans',
   description:
     'Custom date plans for him, self-care itineraries for her, and kid activity plans, all in 90 seconds, with real venues and zero guesswork. First plan free.',
   sitemap: { changefreq: 'weekly', priority: 1.0 },
@@ -48,7 +48,7 @@ export const HOME_SEO: PageSeo = {
 
 export const BLOG_INDEX_SEO: PageSeo = {
   path: '/blog',
-  title: 'The Swoon Plans Journal: Date, Self-Care & Family Guides',
+  title: 'The Plan Glee Journal: Date, Self-Care & Family Guides',
   description:
     'Guides on planning better dates, self-care days and kid activities, with real venues across DC, Alexandria, Arlington and beyond.',
   breadcrumb: 'Journal',
@@ -59,7 +59,7 @@ export const BLOG_INDEX_SEO: PageSeo = {
 export const PAGE_SEO: PageSeo[] = [
   {
     path: '/kid-plans',
-    title: 'Kid Plans: Weekend Activities for Kids 0 to 18 | Swoon Plans',
+    title: 'Kid Plans: Weekend Activities for Kids 0 to 18 | Plan Glee',
     description:
       "Answer 12 quick questions about your child's personality, not just their age, and get weekend activity ideas that fit how they like to spend time. Ages 0 to 18.",
     breadcrumb: 'Kid Plans',
@@ -67,7 +67,7 @@ export const PAGE_SEO: PageSeo[] = [
   },
   {
     path: '/swoon-type',
-    title: 'Swoon Type Quiz: Find Your Date Night Type | Swoon Plans',
+    title: 'Swoon Type Quiz: Find Your Date Night Type | Plan Glee',
     description:
       'Take the 12-question Swoon Type quiz to find your date night type, a blend of your vibe, pace and energy, then share it with the person who plans your dates.',
     breadcrumb: 'Swoon Type Quiz',
@@ -75,36 +75,36 @@ export const PAGE_SEO: PageSeo[] = [
   },
   {
     path: '/terms',
-    title: 'Terms of Service | Swoon Plans',
+    title: 'Terms of Service | Plan Glee',
     description:
-      'The terms that govern your use of Swoon Plans, including accounts, plans, billing and cancellation, and third-party venues and reservations.',
+      'The terms that govern your use of Plan Glee, including accounts, plans, billing and cancellation, and third-party venues and reservations.',
     breadcrumb: 'Terms of Service',
     sitemap: { changefreq: 'yearly', priority: 0.3 },
   },
   {
     path: '/privacy',
-    title: 'Privacy Policy | Swoon Plans',
-    description: 'How Swoon Plans collects, uses and protects your information.',
+    title: 'Privacy Policy | Plan Glee',
+    description: 'How Plan Glee collects, uses and protects your information.',
     breadcrumb: 'Privacy Policy',
     sitemap: { changefreq: 'yearly', priority: 0.3 },
   },
   // Account and post-checkout screens: useful to customers, useless in search.
   {
     path: '/welcome',
-    title: "You're In | Swoon Plans",
-    description: 'Your Swoon Plans purchase is confirmed.',
+    title: "You're In | Plan Glee",
+    description: 'Your Plan Glee purchase is confirmed.',
     robots: NOINDEX_ROBOTS,
   },
   {
     path: '/register',
-    title: 'Who Are We Planning For? | Swoon Plans',
-    description: 'Set up who Swoon Plans is planning for.',
+    title: 'Who Are We Planning For? | Plan Glee',
+    description: 'Set up who Plan Glee is planning for.',
     robots: NOINDEX_ROBOTS,
   },
 ];
 
 const TITLE_MAX = 62;
-const BRAND_SUFFIX = ' | Swoon Plans';
+const BRAND_SUFFIX = ' | Plan Glee';
 
 /**
  * Search-result title for an article. Uses the explicit seoTitle when set,
