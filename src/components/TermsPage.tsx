@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 
-const SITE_URL = 'https://www.makeherswoon.com';
+const SITE_URL = 'https://www.planglee.com';
 const LAST_UPDATED = 'August 21, 2026';
 const LEGAL_ENTITY = 'For Love Coaching LLC';
 const GOVERNING_STATE = 'Virginia';
@@ -18,24 +18,24 @@ const SECTIONS: Section[] = [
     body: (
       <p>
         These Terms of Service ("Terms") are a binding agreement between you and {LEGAL_ENTITY},
-        operating as Swoon Plans ("Swoon Plans," "we," "us," or "our"). By creating an account,
-        starting a date plan, or otherwise using makeherswoon.com and the Swoon Plans concierge
+        operating as Plan Glee ("Plan Glee," "we," "us," or "our"). By creating an account,
+        starting a date plan, or otherwise using planglee.com and the Plan Glee concierge
         service (the "Services"), you agree to these Terms. If you do not agree, do not use the
         Services.
       </p>
     ),
   },
   {
-    heading: '2. What Swoon Plans Does',
+    heading: '2. What Plan Glee Does',
     body: (
       <>
         <p>
-          Swoon Plans is a date-planning recommendation service for you and your partner. You
+          Plan Glee is a date-planning recommendation service for you and your partner. You
           answer a 20-question intake about your partner, and our matching engine generates a
           custom itinerary suggesting real venues, addresses, and direct reservation links.
         </p>
         <p>
-          Swoon Plans uses an automated, algorithm-driven system (including AI-assisted matching)
+          Plan Glee uses an automated, algorithm-driven system (including AI-assisted matching)
           to generate itinerary recommendations from the answers you provide. We do not manually
           curate every plan, and recommendations are only as accurate as the information you
           submit.
@@ -70,7 +70,7 @@ const SECTIONS: Section[] = [
           or refund requests, email {CONTACT_EMAIL}.
         </p>
         <p>
-          Payments are processed by Stripe. Swoon Plans does not store your full card number.
+          Payments are processed by Stripe. Plan Glee does not store your full card number.
         </p>
       </>
     ),
@@ -90,7 +90,7 @@ const SECTIONS: Section[] = [
     heading: '6. Third-Party Venues & Reservations',
     body: (
       <p>
-        Swoon Plans provides recommendations and reservation links for independent third-party
+        Plan Glee provides recommendations and reservation links for independent third-party
         venues. We are not affiliated with, and do not accept payment on behalf of, any venue
         listed in a plan. Reservations, venue policies, pricing, availability, and any spending at
         a venue are between you and that venue. We are not responsible for a venue's conduct,
@@ -102,7 +102,7 @@ const SECTIONS: Section[] = [
     heading: '7. Intellectual Property',
     body: (
       <p>
-        The Swoon Plans name, website, recommendation engine, and all associated content and
+        The Plan Glee name, website, recommendation engine, and all associated content and
         branding are the property of {LEGAL_ENTITY} and are protected by applicable copyright and
         trademark law. We grant you a limited, personal, non-transferable license to use the
         Services for your own date planning. You retain ownership of the information you submit
@@ -150,12 +150,12 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          You and Swoon Plans agree to resolve any dispute arising out of or relating to these
+          You and Plan Glee agree to resolve any dispute arising out of or relating to these
           Terms or the Services through final and binding individual arbitration, rather than in
           court, except that either party may bring an individual claim in small claims court.
         </p>
         <p>
-          You and Swoon Plans each waive the right to a jury trial and the right to participate in
+          You and Plan Glee each waive the right to a jury trial and the right to participate in
           a class action, class arbitration, or representative action. Any arbitration will be
           conducted on an individual basis only.
         </p>
@@ -213,7 +213,7 @@ export const TermsPage: React.FC = () => {
             className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Swoon Plans
+            Plan Glee
           </button>
           <a
             href="/privacy"

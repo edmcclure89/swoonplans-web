@@ -2,7 +2,7 @@
  * Offline tests for the link validator.  Run: npm run test:links
  *
  * Every fixture below is a real response captured from a real venue link in the
- * SwoonPlans dataset on 2026-09-01. The point is to lock in BOTH directions:
+ * Plan Glee dataset on 2026-09-01. The point is to lock in BOTH directions:
  *   - the broken ones stay caught
  *   - the working-but-awkward ones (bot walls, JS-only sites) stay UNcaught,
  *     because a false positive silently deletes a good venue from the catalogue.

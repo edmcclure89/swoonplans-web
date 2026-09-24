@@ -64,7 +64,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenInquire })
             Simple Pricing
           </h2>
           <p className="text-sm sm:text-base text-[#6E675F] font-sans mt-4 font-light leading-relaxed">
-            Swoon Plans is a date planning service. Answer 20 short questions about her and
+            Plan Glee is a date planning service. Answer 20 short questions about her and
             we build a full evening: real venues, exact addresses, and direct reservation
             links. Your first plan is free. No card required to try it.
           </p>
@@ -195,7 +195,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenInquire })
           </div>
 
           <p className="text-xs text-[#8C8377] font-sans font-light text-center mt-10 leading-relaxed">
-            Swoon Plans provides date planning recommendations only. We are not affiliated with,
+            Plan Glee provides date planning recommendations only. We are not affiliated with,
             and do not take payment on behalf of, any venue listed in a plan. Reservations and
             any spending at a venue are arranged directly by you.
           </p>

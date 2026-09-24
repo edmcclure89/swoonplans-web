@@ -216,7 +216,7 @@ return (
 
 {/* Side Rail Accents matching Sleek Interface Theme */}
 <aside className="hidden xl:block fixed left-6 top-1/2 -translate-y-1/2 origin-left -rotate-90 text-[9px] uppercase tracking-[0.4em] text-[#8C8377] font-sans pointer-events-none z-30 opacity-60 font-medium">
-SWOON PLANS
+PLAN GLEE
 </aside>
 <aside className="hidden xl:block fixed right-6 top-1/2 translate-y-1/2 origin-right -rotate-90 text-[9px] uppercase tracking-[0.4em] text-[#8C8377] font-sans pointer-events-none z-30 opacity-60 font-medium">
 YOUR DATE CONCIERGE
@@ -237,7 +237,7 @@ toggleAudio={() => setIsAudioPlaying(!isAudioPlaying)}
 <>
 {/* The page's single H1. The hero headline rotates every few seconds, so it
     is styled text rather than a heading; this names what the page is. */}
-<h1 className="sr-only">Swoon Plans: custom date nights, self-care days and kid activity plans with real venues</h1>
+<h1 className="sr-only">Plan Glee: custom date nights, self-care days and kid activity plans with real venues</h1>
 <HeroSection
 onOpenLightbox={handleOpenLightboxByPhoto}
 onOpenInquire={() => setIsInquireOpen(true)}
@@ -276,9 +276,7 @@ onOpenKidPlans={() => setIsKidPlansOpen(true)}
 <footer className="bg-[#FAF8F5] text-[#1A1816] py-16 px-6 sm:px-12 border-t border-[#E8E2D9] mt-20 relative z-20">
 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
 <div className="text-center md:text-left space-y-1">
-<p className="text-2xl sm:text-3xl font-serif tracking-[0.2em] italic font-light">
-SWOON PLANS
-</p>
+<img src="/images/planglee-logo-300w.webp" width={300} height={133} alt="Plan Glee" loading="lazy" className="h-14 sm:h-16 w-auto mx-auto md:mx-0" />
 <p className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#6E675F] font-bold">
 YOUR DATE PLANNING CONCIERGE
 </p>
@@ -326,7 +324,7 @@ title="Return to top"
 
 <div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-[#E8E2D9] flex flex-col sm:flex-row items-center justify-between text-[9px] uppercase tracking-[0.25em] font-sans text-[#8C8377] gap-4">
 <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
-<span>© {new Date().getFullYear()} SWOON PLANS CONCIERGE • A DIVISION OF FOR LOVE COACHING. ALL RIGHTS RESERVED.</span>
+<span>© {new Date().getFullYear()} PLAN GLEE CONCIERGE • A DIVISION OF FOR LOVE COACHING. ALL RIGHTS RESERVED.</span>
 <span className="flex items-center gap-3 ml-1">
 <a href="/terms" className="text-[#B89860] hover:underline cursor-pointer font-bold tracking-widest">
 TERMS

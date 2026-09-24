@@ -156,7 +156,7 @@ for (const post of BLOG_POSTS) {
     {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      name: 'The Swoon Plans Journal',
+      name: 'The Plan Glee Journal',
       description: hub.description,
       url: hubUrl,
       inLanguage: 'en-US',

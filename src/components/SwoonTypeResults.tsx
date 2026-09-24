@@ -125,7 +125,7 @@ export const SwoonTypeResults: React.FC<SwoonTypeResultsProps> = ({ scores, onRe
           <ArrowLeft className="w-3.5 h-3.5" />
           Retake
         </button>
-        <span className="text-[10px] uppercase tracking-[0.3em] font-sans text-[#8C8377]">Swoon Plans</span>
+        <span className="text-[10px] uppercase tracking-[0.3em] font-sans text-[#8C8377]">Plan Glee</span>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 sm:px-12 py-14 text-center">

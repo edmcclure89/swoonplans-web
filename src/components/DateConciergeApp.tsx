@@ -432,7 +432,7 @@ bonusPlans: bonusRequested ? BONUS_PLAN_LIMIT : undefined,
 function RegisterScreen({ name, setName, email, setEmail, promo, setPromo, error, busy, onSubmit, onSwitchToSignIn }: any) {
   return (
     <div>
-      <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">SWOON PLANS · FIRST PLAN FREE</span>
+      <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#D5C29F] font-bold">PLAN GLEE · FIRST PLAN FREE</span>
       <h2 className="text-3xl sm:text-4xl font-serif italic font-light text-[#1A1816] mt-2">Let's Get You Set Up</h2>
       <p className="text-sm text-[#6E675F] font-sans mt-2 font-light">No password needed. We'll email you a link, then your first plan is free.</p>
       <div className="mt-6 space-y-3">

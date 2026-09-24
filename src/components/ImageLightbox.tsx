@@ -35,7 +35,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
       <div className="p-4 sm:p-6 flex items-center justify-between border-b border-white/10 z-10">
         <div className="flex items-center gap-3">
           <span className="text-lg sm:text-xl font-serif tracking-[0.2em] text-[#E2D5C3]">
-            SWOON PLANS
+            PLAN GLEE
           </span>
           <span className="hidden sm:inline-block text-white/30">|</span>
           <span className="hidden sm:inline-block text-[10px] uppercase tracking-[0.3em] font-sans text-white/60">

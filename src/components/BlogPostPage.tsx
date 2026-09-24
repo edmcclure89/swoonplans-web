@@ -132,7 +132,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
             className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Swoon Plans
+            Plan Glee
           </a>
           <a
             href="/blog"

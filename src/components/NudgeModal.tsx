@@ -11,7 +11,7 @@ interface NudgeModalProps {
 // handoff: there is no backend SMS sending here, and this handoff must not
 // be changed to route through checkout or any server.
 const REMINDER_BODY =
-  "Reminder from Swoon Plans: grab the Founders Pass for instant access. https://www.makeherswoon.com";
+  "Reminder from Plan Glee: grab the Founders Pass for instant access. https://www.planglee.com";
 const SMS_HREF = `sms:?&body=${encodeURIComponent(REMINDER_BODY)}`;
 
 export const NudgeModal: React.FC<NudgeModalProps> = ({ isOpen, onClose }) => {

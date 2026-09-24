@@ -89,7 +89,7 @@ export const RegisterPage: React.FC = () => {
   };
 
   const inviteMessage = () =>
-    `I signed up for Swoon Plans and thought of you — it plans real date nights, curated venues and all. First plan is free: https://www.makeherswoon.com/register?ref=${referralCode}`;
+    `I signed up for Plan Glee and thought of you — it plans real date nights, curated venues and all. First plan is free: https://www.planglee.com/register?ref=${referralCode}`;
 
   const recordInviteHash = async (contact: string, channel: 'sms' | 'email') => {
     if (!waitlistId) return;
@@ -113,7 +113,7 @@ export const RegisterPage: React.FC = () => {
     if (isEmail(raw)) {
       await recordInviteHash(raw, 'email');
       window.location.href = `mailto:${encodeURIComponent(raw)}?subject=${encodeURIComponent(
-        'Check out Swoon Plans'
+        'Check out Plan Glee'
       )}&body=${encodeURIComponent(msg)}`;
     } else {
       const digits = digitsOnly(raw);

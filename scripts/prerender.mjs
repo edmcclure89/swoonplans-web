@@ -75,7 +75,7 @@ let output = template.replace(ROOT_DIV, '<div id="root">' + appHtml + '</div>');
 // the CSS instead of after the parser reaches it.
 const heroSrc = (appHtml.match(/<img[^>]*fetchpriority="high"[^>]*>/gi) || [])
   .map((tag) => (tag.match(/src="([^"]+)"/) || [])[1])
-  .find((src) => src && !src.includes('swoonplans-logo'));
+  .find((src) => src && !src.includes('planglee-logo'));
 if (heroSrc) {
   output = output.replace('</head>', `<link rel="preload" as="image" href="${heroSrc}" fetchpriority="high">\n</head>`);
 } else {

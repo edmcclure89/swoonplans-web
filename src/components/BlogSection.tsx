@@ -48,7 +48,7 @@ return (
 <div className="text-center max-w-2xl mx-auto mb-12">
 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#1A1816] text-[#D5C29F] border border-[#D5C29F]/30 rounded-full text-[10px] uppercase tracking-[0.35em] font-sans mb-3">
 <BookOpen className="w-3.5 h-3.5" />
-<span>SWOON PLANS JOURNAL</span>
+<span>PLAN GLEE JOURNAL</span>
 </div>
 <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#1A1816] italic">
 The Date Planning Journal

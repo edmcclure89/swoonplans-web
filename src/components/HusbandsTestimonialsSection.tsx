@@ -23,7 +23,7 @@ export const HusbandsTestimonialsSection: React.FC = () => {
     },
     {
       id: 3,
-      quote: "I love my wife. I am just terrible at this. SwoonPlans handed me real venues, exact addresses, and the booking links, and I looked like I had been planning for weeks. She has told the story four times.",
+      quote: "I love my wife. I am just terrible at this. Plan Glee handed me real venues, exact addresses, and the booking links, and I looked like I had been planning for weeks. She has told the story four times.",
       author: "Carlos M.",
       title: "Husband & Father of 2",
       location: "Hilltop Sunset Wine Date",
@@ -50,7 +50,7 @@ export const HusbandsTestimonialsSection: React.FC = () => {
     },
     {
       id: 6,
-      quote: "Managing severe peanut and dairy allergies for a group of eight-year-olds felt terrifying until we used the SwoonPlans kid menu guide. The build-your-own taco bar and allergen-safe snack ideas were a massive hit with both the kids and the parents. Everyone felt included, and it took all the guesswork out of hosting.",
+      quote: "Managing severe peanut and dairy allergies for a group of eight-year-olds felt terrifying until we used the Plan Glee kid menu guide. The build-your-own taco bar and allergen-safe snack ideas were a massive hit with both the kids and the parents. Everyone felt included, and it took all the guesswork out of hosting.",
       author: "David K.",
       title: "Verified Parent",
       location: "Denver, CO",
@@ -77,7 +77,7 @@ export const HusbandsTestimonialsSection: React.FC = () => {
     },
     {
       id: 9,
-      quote: "I used SwoonPlans to coordinate a weekend getaway trip for my six bridesmaids in the mountains, and it was a total triumph. Between managing everyone\u2019s dietary needs, scheduling downtime, and keeping the itinerary seamless without feeling over-programmed, it eliminated all the usual group travel friction. We all laughed, bonded, and actually got to rest!",
+      quote: "I used Plan Glee to coordinate a weekend getaway trip for my six bridesmaids in the mountains, and it was a total triumph. Between managing everyone\u2019s dietary needs, scheduling downtime, and keeping the itinerary seamless without feeling over-programmed, it eliminated all the usual group travel friction. We all laughed, bonded, and actually got to rest!",
       author: "Maya S.",
       title: "Verified Group Planner",
       location: "Nashville, TN",

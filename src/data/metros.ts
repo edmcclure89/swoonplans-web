@@ -1,5 +1,5 @@
 // Ported directly from the live makeherswoon.com production data.
-// Trimmed to Swoon Plans' core launch markets (DMV + major metros referenced
+// Trimmed to Plan Glee's core launch markets (DMV + major metros referenced
 // in site copy) to keep this deployment payload small; the full 50-metro
 // dataset was built and tested locally and can be restored in a follow-up.
 export interface Venue {
