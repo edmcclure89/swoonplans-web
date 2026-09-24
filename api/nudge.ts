@@ -2,7 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // --- inlined email helper (self-contained so Vercel bundles each function cleanly) ---
-const EMAIL_FROM = 'Plan Glee <admin@makeherswoon.com>';
+const EMAIL_FROM = 'Plan Glee <admin@planglee.com>';
+const EMAIL_REPLY_TO = 'admin@makeherswoon.com';
 
 async function sendEmail(opts: { to: string; subject: string; html: string }): Promise<{ ok: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
@@ -12,7 +13,7 @@ async function sendEmail(opts: { to: string; subject: string; html: string }): P
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: EMAIL_FROM, to: [opts.to], subject: opts.subject, html: opts.html }),
+      body: JSON.stringify({ from: EMAIL_FROM, reply_to: EMAIL_REPLY_TO, to: [opts.to], subject: opts.subject, html: opts.html }),
     });
     if (!r.ok) { const body = await r.text().catch(() => ''); return { ok: false, error: `Resend ${r.status}: ${body.slice(0, 200)}` }; }
     return { ok: true };
