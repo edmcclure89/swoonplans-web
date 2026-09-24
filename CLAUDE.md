@@ -1,4 +1,8 @@
-# SwoonPlans (makeherswoon.com)
+# Plan Glee (planglee.com)
+
+Rebranded from SwoonPlans (makeherswoon.com) in Sept 2026. makeherswoon.com still points at
+this project. Contact/sender email is still admin@makeherswoon.com until a planglee.com
+sender domain is verified in Resend.
 
 AI-powered date-planning concierge app for professional men. Users answer 20 targeted
 questions about their partner and get a custom itinerary: real venues, addresses, and
