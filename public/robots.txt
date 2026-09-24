@@ -1,4 +1,4 @@
-# robots.txt - makeherswoon.com
+# robots.txt - planglee.com
 # Goal: let every answer engine crawl and cite the site.
 
 # ---------- Traditional search ----------
@@ -70,4 +70,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://www.makeherswoon.com/sitemap.xml
+Sitemap: https://www.planglee.com/sitemap.xml
