@@ -9,7 +9,7 @@ export const DualEntryHero: React.FC<DualEntryHeroProps> = ({ onChooseSwoonType,
   return (
     <section className="bg-[#FAF8F5] px-6 sm:px-12 py-16 sm:py-24 text-center">
       <span className="text-[10px] uppercase tracking-[0.35em] font-sans text-[#8C8377] font-bold">
-        Swoon Plans
+        Plan Glee
       </span>
       <h1 className="text-3xl sm:text-5xl font-serif italic font-light text-[#1A1816] mt-4 mb-6 max-w-3xl mx-auto leading-tight">
         Every great date starts with being understood.

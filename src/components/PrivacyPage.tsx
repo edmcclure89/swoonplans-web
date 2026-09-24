@@ -15,8 +15,8 @@ const SECTIONS: Section[] = [
 heading: '1. Overview',
 body: (
 <p>
-This Privacy Policy explains what information Swoon Plans ({LEGAL_ENTITY}) collects when
-you use makeherswoon.com and the Swoon Plans concierge service, how we use it, and the
+This Privacy Policy explains what information Plan Glee ({LEGAL_ENTITY}) collects when
+you use planglee.com and the Plan Glee concierge service, how we use it, and the
 choices you have. It applies to all users of the Services.
 </p>
 ),
@@ -28,7 +28,7 @@ body: (
 <p><strong>Account information:</strong> your email address and any name you provide when you create an account.</p>
 <p><strong>Partner preference data:</strong> the answers you submit in the 20-question intake about your partner, used to generate your itinerary. This may include preferences, interests, and other details you choose to share.</p>
 <p><strong>Swoon Type quiz answers:</strong> if you take the Swoon Type quiz, the answers you give about yourself, used to generate your Swoon Type and cheat sheet.</p>
-<p><strong>Payment information:</strong> if you subscribe to a paid plan, our payment processor Stripe collects your billing details directly. Swoon Plans does not receive or store your full card number.</p>
+<p><strong>Payment information:</strong> if you subscribe to a paid plan, our payment processor Stripe collects your billing details directly. Plan Glee does not receive or store your full card number.</p>
 <p><strong>Usage data:</strong> basic technical information such as pages visited, device and browser type, and general analytics collected through standard web analytics tools.</p>
 <p><strong>Communications:</strong> emails you send us, and transactional or marketing emails we send you.</p>
 </>
@@ -45,7 +45,7 @@ carries your result.
 </p>
 <p>
 If you use "Send to Him," your device's own share sheet, text message app, or email client
-sends that link on your behalf. Swoon Plans does not see or store who you sent it to, and
+sends that link on your behalf. Plan Glee does not see or store who you sent it to, and
 does not access your contacts.
 </p>
 <p>
@@ -70,7 +70,7 @@ than generating and improving your itinerary.
 heading: '5. Automated & AI-Assisted Processing',
 body: (
 <p>
-Swoon Plans uses an automated, algorithm-driven matching engine, including AI-assisted
+Plan Glee uses an automated, algorithm-driven matching engine, including AI-assisted
 processing, to turn your intake answers into a recommended itinerary or Swoon Type. This
 processing happens automatically based on the information you submit and does not involve
 a human reviewing your answers as part of generating the result.
@@ -188,7 +188,7 @@ onClick={goHome}
 className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] font-sans text-[#8C8377] hover:text-[#1A1816] transition-colors cursor-pointer"
 >
 <ArrowLeft className="w-3.5 h-3.5" />
-Swoon Plans
+Plan Glee
 </button>
 <a
 href="/terms"

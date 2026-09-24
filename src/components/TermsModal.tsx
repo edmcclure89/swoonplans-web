@@ -29,7 +29,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
             Terms of Service & Privacy Policy
           </h2>
           <p className="text-xs text-[#8C8377] font-sans font-light">
-            Swoon Plans Concierge is a protected division of For Love Coaching.
+            Plan Glee Concierge is a protected division of For Love Coaching.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               1. Proprietary Concierge & Coaching Services
             </h3>
             <p>
-              Swoon Plans operates under For Love Coaching. All bespoke date itineraries, recommendation frameworks, conversation cards, and concierge processes provided are proprietary intellectual property protected under applicable federal and international copyright laws.
+              Plan Glee operates under For Love Coaching. All bespoke date itineraries, recommendation frameworks, conversation cards, and concierge processes provided are proprietary intellectual property protected under applicable federal and international copyright laws.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               3. Reservations & Third-Party Venues
             </h3>
             <p>
-              Swoon Plans provides curated venue recommendations and direct reservation links for independent third-party venues (restaurants, rooftop lounges, private charters). You are responsible for completing your own reservations; venue policies and fulfillment remain under the jurisdiction of the respective venue management.
+              Plan Glee provides curated venue recommendations and direct reservation links for independent third-party venues (restaurants, rooftop lounges, private charters). You are responsible for completing your own reservations; venue policies and fulfillment remain under the jurisdiction of the respective venue management.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               5. Intellectual Property Notice
             </h3>
             <p>
-              © {new Date().getFullYear()} Swoon Plans Concierge • A Division of For Love Coaching. All rights reserved. Reproduction or unauthorized commercial redistribution of Swoon Plans materials without written consent is strictly prohibited.
+              © {new Date().getFullYear()} Plan Glee Concierge • A Division of For Love Coaching. All rights reserved. Reproduction or unauthorized commercial redistribution of Plan Glee materials without written consent is strictly prohibited.
             </p>
           </div>
         </div>

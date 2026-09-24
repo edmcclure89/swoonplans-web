@@ -27,7 +27,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ onSelectPhoto, filterC
       <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#E8E2D9] pb-6 mb-10 gap-6">
         <div>
           <p className="text-[10px] uppercase tracking-[0.4em] font-sans text-[#8C8377] mb-1 font-bold">
-            HOW SWOON PLANS WORKS
+            HOW PLAN GLEE WORKS
           </p>
           <h2 className="text-3xl sm:text-4xl font-serif font-light text-[#1A1816] italic">
             Curated Date Night Plans

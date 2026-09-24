@@ -73,9 +73,9 @@ onClick={() => setActiveTab('stories')}
 className="group cursor-pointer inline-block text-center"
 >
 <img
-{...responsiveImg('/images/swoonplans-logo.webp', '(min-width: 768px) 190px, (min-width: 640px) 166px, 143px')}
-alt="Swoon Plans"
-className="h-6 sm:h-7 md:h-8 w-auto mx-auto group-hover:opacity-80 transition-opacity"
+{...responsiveImg('/images/planglee-logo.webp', '(min-width: 768px) 127px, (min-width: 640px) 109px, 99px')}
+alt="Plan Glee"
+className="h-11 sm:h-12 md:h-14 w-auto mx-auto mt-1 group-hover:opacity-80 transition-opacity"
 />
 <span className="block text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-[#1A1816] mt-1">
 Your Date Planning Concierge

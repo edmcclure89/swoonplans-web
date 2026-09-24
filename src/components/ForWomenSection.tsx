@@ -14,17 +14,17 @@ const hints = [
 {
 id: 1,
 title: 'The Subtle Wink',
-text: "Hey babe, saw this date concierge for guys that plans turnkey date nights and thought of you 😉 makeherswoon.com"
+text: "Hey babe, saw this date concierge for guys that plans turnkey date nights and thought of you 😉 planglee.com"
 },
 {
 id: 2,
 title: 'The Direct Wishlist',
-text: "Hint hint for our next date night... First plan is free! Check out makeherswoon.com"
+text: "Hint hint for our next date night... First plan is free! Check out planglee.com"
 },
 {
 id: 3,
 title: 'The Group Chat Recommendation',
-text: "A friend was just telling me about this concierge that plans rooftop dates with direct reservation links. Look at makeherswoon.com!"
+text: "A friend was just telling me about this concierge that plans rooftop dates with direct reservation links. Look at planglee.com!"
 }
 ];
 
@@ -60,7 +60,7 @@ Give Him the Cheat Code to Your Dream Date Night
 </h2>
 
 <p className="text-xs sm:text-sm text-[#6E675F] font-sans max-w-2xl mx-auto font-light leading-relaxed mb-6">
-You love a man who takes initiative, books the table, and handles every detail. Swoon Plans gives him curated date plans with direct reservation links and zero stress—making him look like a hero while you get the romantic evening you deserve.
+You love a man who takes initiative, books the table, and handles every detail. Plan Glee gives him curated date plans with direct reservation links and zero stress—making him look like a hero while you get the romantic evening you deserve.
 </p>
 
 <div className="flex flex-wrap justify-center gap-4 text-xs font-sans">
@@ -93,7 +93,7 @@ Copy one of our pre-written text hints below and drop it in his messages.
 </div>
 <h3 className="text-lg font-serif italic text-[#1A1816]">Send an Anonymous Nudge</h3>
 <p className="text-xs text-[#6E675F] font-sans font-light leading-relaxed">
-Use our discreet email tool to send him an intriguing invitation to Swoon Plans.
+Use our discreet email tool to send him an intriguing invitation to Plan Glee.
 </p>
 </div>
 
@@ -170,7 +170,7 @@ copiedIndex === idx
 Send Him an Anonymous Email Nudge
 </h3>
 <p className="text-xs text-[#6E675F] font-sans max-w-lg mx-auto">
-We’ll send him a clean, elegant email inviting him to claim his free date plan on Swoon Plans. We won't sell or spam his email address.
+We’ll send him a clean, elegant email inviting him to claim his free date plan on Plan Glee. We won't sell or spam his email address.
 </p>
 </div>
 
@@ -242,7 +242,7 @@ className="w-full py-3 bg-[#D5C29F] hover:bg-[#c4af89] text-[#1A1816] font-bold 
 <div className="mt-16 pt-12 border-t border-[#E8E2D9] grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
 <div className="p-6 bg-[#EFEDEB]/60 rounded border border-[#E8E2D9] space-y-2">
 <p className="text-xs sm:text-sm font-serif italic text-[#1A1816]">
-"I texted him the link on a Wednesday, and by Friday he had booked a sunset rooftop dinner at the perfect candlelit spot. Swoon Plans is a cheat code!"
+"I texted him the link on a Wednesday, and by Friday he had booked a sunset rooftop dinner at the perfect candlelit spot. Plan Glee is a cheat code!"
 </p>
 <p className="text-[10px] uppercase tracking-widest text-[#8C8377] font-sans font-bold">
 — Elena V., New York
@@ -251,7 +251,7 @@ className="w-full py-3 bg-[#D5C29F] hover:bg-[#c4af89] text-[#1A1816] font-bold 
 
 <div className="p-6 bg-[#EFEDEB]/60 rounded border border-[#E8E2D9] space-y-2">
 <p className="text-xs sm:text-sm font-serif italic text-[#1A1816]">
-"He thought he came up with the whole idea himself! Best date we've had in 3 years. Thank you Swoon Plans!"
+"He thought he came up with the whole idea himself! Best date we've had in 3 years. Thank you Plan Glee!"
 </p>
 <p className="text-[10px] uppercase tracking-widest text-[#8C8377] font-sans font-bold">
 — Chloe R., Los Angeles
